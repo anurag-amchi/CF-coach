@@ -104,9 +104,9 @@ def run_agent(user_question):
             tools=TOOL_SCHEMAS,
         )
         # resp and msg are pydantic objects; model_dump_json turns them into readable JSON.
-        print(f"===== resp (step {step}) =====\n{resp.model_dump_json(indent=2)}")
+        # print(f"===== resp (step {step}) =====\n{resp.model_dump_json(indent=2)}")
         msg = resp.choices[0].message
-        print(f"===== msg (step {step}) =====\n{msg.model_dump_json(indent=2)}")
+        # print(f"===== msg (step {step}) =====\n{msg.model_dump_json(indent=2)}")
         print(f"\n--- step {step} (prompt_tokens={resp.usage.prompt_tokens}) ---")
 
         # No tool calls -> the model is giving its final answer.
