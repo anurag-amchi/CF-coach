@@ -1,5 +1,5 @@
 .venv/
 __pycache__/
-docs/cf-coach-project-plan.pdf
+docs/
 CLAUDE.md
 .env
