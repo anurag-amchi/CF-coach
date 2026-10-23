@@ -1,15 +1,20 @@
 """Client for the public Codeforces API.
 
 Every request goes through call_cf(), which handles three things:
-  1. Rate limiting  - at most one request every MIN_INTERVAL seconds.
+  1. Rate limiting  - at most one request every MIN_INTERVAL seconds, shared  by every process through a token bucket in Redis.
   2. Retries        - temporary failures are retried with exponential backoff.
   3. Error checking - Codeforces wraps every reply in {"status": ..., "result": ...}.
 """
 
 import logging
+import os
 import time
 
 import httpx
+import redis
+from dotenv import load_dotenv
+
+from cf_coach.sync.rate_limiter import TokenBucket
 
 logger = logging.getLogger(__name__)
 
@@ -25,18 +30,22 @@ class CFError(Exception):
 
 
 # ---------- Rate limiting ----------
-# In-memory version: only works inside one Python process.
-# Gets replaced by a Redis token bucket so several workers can share the limit.
+# One token bucket in Redis, shared by every process that calls Codeforces.
+# capacity=1: no bursts, because Codeforces rejects even 2 quick requests in a row.
+# rate=1/MIN_INTERVAL: one new token every 2 seconds.
 
-_last_call_time = 0.0
+_limiter = None
 
 
 def _wait_for_slot():
-    global _last_call_time
-    elapsed = time.monotonic() - _last_call_time
-    if elapsed < MIN_INTERVAL:
-        time.sleep(MIN_INTERVAL - elapsed)
-    _last_call_time = time.monotonic()
+    # Created on first use, not at import time, so importing this module
+    # doesn't need Redis to be running (useful for tests later).
+    global _limiter
+    if _limiter is None:
+        load_dotenv()
+        client = redis.Redis.from_url(os.environ["REDIS_URL"])
+        _limiter = TokenBucket(client, key="ratelimit:codeforces", capacity=1, rate=1 / MIN_INTERVAL)
+    _limiter.acquire()
 
 
 # ---------- The one function every request goes through ----------
