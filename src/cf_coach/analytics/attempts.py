@@ -35,6 +35,8 @@ class SubmissionRow:
     created_at: datetime
     rating: int | None
     tags: tuple[str, ...]
+    participant_type: str = "PRACTICE"   # CONTESTANT, OUT_OF_COMPETITION, VIRTUAL, PRACTICE
+    relative_time_s: int | None = None   # seconds into the contest; None for practice
 
 
 def build_attempts(rows: list[SubmissionRow], now: datetime) -> list[Attempt]:
@@ -83,13 +85,14 @@ def load_rows(session: Session, handle: str) -> list[SubmissionRow]:
     """
     stmt = (
         select(Submission.contest_id, Submission.idx, Submission.verdict,
-               Submission.created_at, Problem.rating, Problem.tags)
+               Submission.created_at, Problem.rating, Problem.tags,
+               Submission.participant_type, Submission.relative_time_s)
         .join(Problem, (Problem.contest_id == Submission.contest_id)
                        & (Problem.idx == Submission.idx))
         .where(Submission.handle == handle)
     )
-    return [SubmissionRow(c, i, v, t, r, tuple(tags))
-            for c, i, v, t, r, tags in session.execute(stmt)]
+    return [SubmissionRow(c, i, v, t, r, tuple(tags), p, rel)
+            for c, i, v, t, r, tags, p, rel in session.execute(stmt)]
 
 
 # ---------- Manual check: per-tag skill for a real user ----------
