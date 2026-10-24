@@ -24,7 +24,8 @@ from sqlalchemy.orm import Session
 from cf_coach.analytics.attempts import build_attempts, load_rows
 from cf_coach.analytics.elo import tag_skills
 from cf_coach.analytics.signals import TagSignals, tag_signals
-from cf_coach.db.models import Problem, Submission, User
+from cf_coach.analytics.tag_profile import start_rating
+from cf_coach.db.models import Problem, Submission
 from cf_coach.db.session import get_engine
 
 BAND = (100, 300)              # practise 100 to 300 above your skill on the tag
@@ -156,7 +157,7 @@ def load_solved(session: Session, handle: str) -> set[tuple[int, str]]:
 
 
 def build_profile(session: Session, handle: str, now: datetime) -> Profile:
-    rating = session.scalar(select(User.rating).where(User.handle == handle))
+    rating = start_rating(session, handle)   # handles unrated users (None -> 1400)
     rows = load_rows(session, handle)
     skills = {t: e.skill for t, e in tag_skills(build_attempts(rows, now), rating).items()}
     newest = session.scalar(select(Problem.contest_id).order_by(Problem.contest_id.desc()).limit(1))

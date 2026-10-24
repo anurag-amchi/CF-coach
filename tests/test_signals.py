@@ -45,11 +45,31 @@ def test_backlog_is_newest_first():
 
 # ---- contest solve times ----
 
-def test_solve_time_is_gap_since_previous_ac_in_same_contest():
-    rows = [sub("OK", idx="A", ptype="CONTESTANT", rel_min=10),
-            sub("WRONG_ANSWER", idx="B", ptype="CONTESTANT", rel_min=20),
-            sub("OK", idx="B", ptype="CONTESTANT", rel_min=35)]
-    assert sorted(m for _, m in contest_solve_times(rows)) == [10, 25]
+def times(rows):
+    """{problem index: minutes} from contest_solve_times (tags identify the problem)."""
+    return {tags[0]: m for tags, m in contest_solve_times(rows)}
+
+
+def test_solve_time_adds_up_gaps_before_own_submissions():
+    rows = [sub("OK", idx="A", tags=("A",), ptype="CONTESTANT", rel_min=10),
+            sub("WRONG_ANSWER", idx="B", tags=("B",), ptype="CONTESTANT", rel_min=20),
+            sub("OK", idx="B", tags=("B",), ptype="CONTESTANT", rel_min=35)]
+    assert times(rows) == {"A": 10, "B": 25}      # B: (20-10) + (35-20)
+
+
+def test_time_between_switching_problems_goes_to_the_right_problem():
+    # WA on A at 10, AC on B at 25, AC on A at 40
+    rows = [sub("WRONG_ANSWER", idx="A", tags=("A",), ptype="CONTESTANT", rel_min=10),
+            sub("OK", idx="B", tags=("B",), ptype="CONTESTANT", rel_min=25),
+            sub("OK", idx="A", tags=("A",), ptype="CONTESTANT", rel_min=40)]
+    assert times(rows) == {"B": 15, "A": 25}      # A = 40 - 15 spent on B
+
+
+def test_time_on_an_unsolved_problem_is_not_given_to_the_next_solve():
+    rows = [sub("OK", idx="A", tags=("A",), ptype="CONTESTANT", rel_min=10),
+            sub("WRONG_ANSWER", idx="C", tags=("C",), ptype="CONTESTANT", rel_min=30),
+            sub("OK", idx="B", tags=("B",), ptype="CONTESTANT", rel_min=50)]
+    assert times(rows) == {"A": 10, "B": 20}      # C's 20 minutes are lost, not B's
 
 
 def test_solve_time_uses_first_ac_and_ignores_practice():

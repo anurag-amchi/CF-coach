@@ -78,29 +78,32 @@ def upsolve_backlog(rows: list[SubmissionRow]) -> list[BacklogItem]:
 def contest_solve_times(rows: list[SubmissionRow]) -> list[tuple[tuple[str, ...], float]]:
     """(tags, minutes) for every problem solved during a contest.
 
-    relative_time_s is time since the contest started, so for a D it includes A to C.
-    Time spent on a problem = its first AC minus the previous AC in the same contest
-    (or minus the start, for the first solve).
-    """
-    first_ac: dict[tuple[int, str], SubmissionRow] = {}
-    for r in rows:
-        if (r.verdict != "OK" or r.participant_type not in CONTEST_TYPES
-                or r.relative_time_s is None):
-            continue
-        key = (r.contest_id, r.idx)
-        if key not in first_ac or r.relative_time_s < first_ac[key].relative_time_s:
-            first_ac[key] = r
+    The gap before each contest submission (any verdict) is charged to that
+    submission's problem: you were working on whatever you submitted next. A problem's
+    solve time = the sum of the gaps charged to it, up to and including its first AC.
 
+    Example: WA on A at 10, AC on B at 25, AC on A at 40 (minutes)
+        B = 25 - 10 = 15
+        A = 10 + (40 - 25) = 25     (= 40 minus the 15 spent on B)
+    Gaps before re-submits of an already-solved problem are charged to nothing.
+    """
     by_contest: dict[int, list[SubmissionRow]] = {}
-    for r in first_ac.values():
-        by_contest.setdefault(r.contest_id, []).append(r)
+    for r in rows:
+        if r.participant_type in CONTEST_TYPES and r.relative_time_s is not None:
+            by_contest.setdefault(r.contest_id, []).append(r)
 
     result = []
-    for solves in by_contest.values():
-        solves.sort(key=lambda r: r.relative_time_s)
+    for subs in by_contest.values():
+        subs.sort(key=lambda r: r.relative_time_s)
+        spent: dict[str, int] = {}    # problem index -> seconds charged so far
+        solved: set[str] = set()
         prev = 0
-        for r in solves:
-            result.append((r.tags, (r.relative_time_s - prev) / 60))
+        for r in subs:
+            if r.idx not in solved:
+                spent[r.idx] = spent.get(r.idx, 0) + (r.relative_time_s - prev)
+                if r.verdict == "OK":
+                    solved.add(r.idx)
+                    result.append((r.tags, spent[r.idx] / 60))
             prev = r.relative_time_s
     return result
 
