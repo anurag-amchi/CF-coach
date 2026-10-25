@@ -40,3 +40,28 @@ def test_scripted_llm_replays_in_order_and_records_messages():
     assert [m[0]["content"] for m in llm.seen] == ["a", "b"]
     with pytest.raises(RuntimeError):
         llm.chat([], [])
+
+
+def test_groq_tool_use_failed_becomes_tool_call_rejected():
+    import httpx
+    from openai import BadRequestError
+
+    from cf_coach.agent.llm import GroqLLM, ToolCallRejected
+
+    def create(**kwargs):
+        response = httpx.Response(400, request=httpx.Request("POST", "https://groq.test"))
+        raise BadRequestError("400", response=response, body={
+            "message": "parameters for tool validate_plan did not match schema",
+            "code": "tool_use_failed"})
+
+    llm = GroqLLM.__new__(GroqLLM)          # skip __init__: no API key, no network
+    llm.model = "test"
+    llm._client = NS(chat=NS(completions=NS(create=create)))
+    with pytest.raises(ToolCallRejected, match="did not match schema"):
+        llm.chat([{"role": "user", "content": "hi"}], [])
+
+
+def test_scripted_llm_raises_an_exception_reply():
+    llm = ScriptedLLM([RuntimeError("down")])
+    with pytest.raises(RuntimeError, match="down"):
+        llm.chat([], [])

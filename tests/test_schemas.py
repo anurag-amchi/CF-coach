@@ -24,7 +24,7 @@ def test_one_schema_per_tool_and_no_handle_argument():
 
 def test_defaults_are_filled_in():
     args = parse_args(FindProblemsInput, '{"tag": "dp"}')
-    assert args == FindProblemsInput(tag="dp", strategy="weakness_first", exclude_tags=[], count=10)
+    assert args == FindProblemsInput(tag="dp", strategy="weakness_first", avoid_tags=[], count=10)
 
 
 def test_empty_arguments_are_allowed_for_a_tool_without_fields():

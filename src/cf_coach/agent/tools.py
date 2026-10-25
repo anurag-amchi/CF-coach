@@ -120,7 +120,7 @@ def all_tags(problems: list[ProblemRow]) -> set[str]:
 
 def find_problems(ctx: ToolContext, args: FindProblemsInput) -> FindProblemsOut:
     problems = load_problems(ctx.session)
-    check_tags(([args.tag] if args.tag else []) + args.exclude_tags, all_tags(problems))
+    check_tags(([args.tag] if args.tag else []) + args.avoid_tags, all_tags(problems))
     candidates = select_candidates(
         problems,
         load_solved(ctx.session, ctx.handle),
@@ -128,7 +128,7 @@ def find_problems(ctx: ToolContext, args: FindProblemsInput) -> FindProblemsOut:
         ctx.get_running_contests(),
         STRATEGIES[args.strategy](),
         tag=args.tag,
-        excluded_tags=frozenset(args.exclude_tags),
+        excluded_tags=frozenset(args.avoid_tags),
         count=args.count,
     )
     return FindProblemsOut(problems=[problem_out(c) for c in candidates])
@@ -306,7 +306,7 @@ if __name__ == "__main__":
         ("get_tag_profile", GetTagProfileInput()),
         ("get_upsolve_backlog", GetUpsolveBacklogInput(limit=3)),
         ("find_problems", FindProblemsInput(tag="dp", count=3)),
-        ("find_problems", FindProblemsInput(strategy="contest_prep", exclude_tags=["geometry"],
+        ("find_problems", FindProblemsInput(strategy="contest_prep", avoid_tags=["geometry"],
                                             count=3)),
         ("find_problems", FindProblemsInput(tag="DP")),
         ("get_progress_since", GetProgressSinceInput(since=date(2026, 9, 1))),

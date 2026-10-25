@@ -38,6 +38,12 @@ class LLMReply:
     message: dict      # the assistant turn, ready to append to `messages`
 
 
+class ToolCallRejected(Exception):
+    """The provider refused the model's tool call before we saw it (Groq checks the
+    arguments against our schema: error code "tool_use_failed"). The model can fix this,
+    so the loop sends the message back instead of stopping."""
+
+
 class LLM(ABC):
     model: str
 
@@ -81,16 +87,26 @@ class GroqLLM(LLM):
                               max_retries=3, timeout=60)
 
     def chat(self, messages, tools):
+        from openai import BadRequestError
         kwargs = {"tools": tools} if tools else {}
-        resp = self._client.chat.completions.create(
-            model=self.model, messages=messages, temperature=0, **kwargs)
+        try:
+            resp = self._client.chat.completions.create(
+                model=self.model, messages=messages, temperature=0, **kwargs)
+        except BadRequestError as e:
+            if e.code == "tool_use_failed":
+                body = e.body if isinstance(e.body, dict) else {}
+                raise ToolCallRejected(body.get("message", str(e))) from None
+            raise
         return parse_response(resp)
 
 
 @dataclass
 class ScriptedLLM(LLM):
-    """Returns `replies` one by one and records every `messages` list it was sent."""
-    replies: list[LLMReply]
+    """Returns `replies` one by one and records every `messages` list it was sent.
+
+    A reply can also be an exception, which is raised instead (to test failures).
+    """
+    replies: list[LLMReply | Exception]
     model: str = "scripted"
     seen: list[list[dict]] = field(default_factory=list)
 
@@ -98,7 +114,10 @@ class ScriptedLLM(LLM):
         self.seen.append(list(messages))
         if not self.replies:
             raise RuntimeError("ScriptedLLM ran out of replies")
-        return self.replies.pop(0)
+        reply = self.replies.pop(0)
+        if isinstance(reply, Exception):
+            raise reply
+        return reply
 
 
 def scripted_reply(text: str | None = None, calls: list[ToolCall] = ()) -> LLMReply:

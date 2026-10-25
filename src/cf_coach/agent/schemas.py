@@ -46,7 +46,7 @@ class FindProblemsInput(ToolInput):
         "weakness_first",
         description="weakness_first: the user's weakest tags first. "
                     "contest_prep: recent contest problems, in tags where the user is slow.")
-    exclude_tags: list[str] = Field(default_factory=list,
+    avoid_tags: list[str] = Field(default_factory=list,
                                     description="Skip problems that have any of these tags.")
     count: int = Field(10, ge=1, le=20)
 
