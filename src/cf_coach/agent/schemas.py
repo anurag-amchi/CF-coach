@@ -125,18 +125,20 @@ class SolvedOut(BaseModel):
     idx: str
     rating: int | None
     tags: list[str]
+    solved_on: date
 
 
 class TagChangeOut(BaseModel):
     tag: str
-    before: float
-    after: float
+    before: int
+    after: int
 
 
 class ProgressOut(BaseModel):
     since: date
-    solved: list[SolvedOut]
-    skill_changes: list[TagChangeOut]
+    solved_total: int              # every problem first solved since then
+    solved: list[SolvedOut]        # the newest ones, cut to a maximum
+    skill_changes: list[TagChangeOut]   # only tags that moved, biggest move first
 
 
 class ValidationOut(BaseModel):
