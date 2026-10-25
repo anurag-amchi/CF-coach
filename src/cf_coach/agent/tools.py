@@ -14,12 +14,15 @@ validate_plan, save_plan (the only one that writes).
 
 The user's own constraints (hours, avoided tags; ToolContext.user_constraints) are applied
 by find_problems, validate_plan and save_plan whatever the model passes.
+save_plan writes through ToolContext.plan_store: Postgres (DbPlanStore) unless the caller
+passes another store (the evals use MemoryPlanStore).
 
 Run on real data:  uv run python -m cf_coach.agent.tools TitanCoder1258 [--save]
-Design reasons: docs/decisions.md #26, #28, #29, #32.
+Design reasons: docs/decisions.md #26, #28, #29, #32, #34.
 """
 
 import sys
+from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from datetime import date, datetime, time, timezone
 
@@ -57,6 +60,14 @@ class ToolError(Exception):
     """The request can't be done. The message is written for the model to read."""
 
 
+class PlanStore(ABC):
+    """Where save_plan writes a validated plan: Postgres normally, memory in the evals."""
+
+    @abstractmethod
+    def save(self, handle: str, constraints: PlanConstraints, items: list[PlanItem]) -> int:
+        """Store the plan as the user's active one; return its id."""
+
+
 @dataclass
 class ToolContext:
     handle: str
@@ -67,6 +78,7 @@ class ToolContext:
     # What the user set outside the chat (CLI flags, a form). Enforced on every plan,
     # whatever the model passes. See effective_constraints().
     user_constraints: PlanConstraints = field(default_factory=PlanConstraints)
+    plan_store: PlanStore | None = None        # None = the database (DbPlanStore)
 
     def get_running_contests(self) -> set[int]:
         """Fetched from CF once per run, on first use, then reused by every tool call."""
@@ -301,22 +313,45 @@ def save_plan(ctx: ToolContext, args: SavePlanInput) -> SavePlanOut:
     if errors:
         raise ToolError("plan not saved, it breaks these rules: " + "; ".join(errors)
                         + ". Fix them and call validate_plan again.")
-    session = ctx.session
-    try:
-        session.execute(update(Plan)
-                        .where(Plan.handle == ctx.handle, Plan.status == "active")
-                        .values(status="replaced"))
-        plan = Plan(handle=ctx.handle, constraints=constraints.model_dump(),
-                    items=[item.model_dump() for item in args.items], status="active")
-        session.add(plan)
-        session.flush()            # sends the INSERT, so Postgres assigns plan.id
-        plan_id = plan.id
-        session.commit()           # the UPDATE and the INSERT land together, or neither does
-    except Exception:
-        session.rollback()
-        raise
+    store = ctx.plan_store if ctx.plan_store is not None else DbPlanStore(ctx.session)
+    plan_id = store.save(ctx.handle, constraints, args.items)
     ctx.saved_plan_id = plan_id
     return SavePlanOut(plan_id=plan_id, items=len(args.items))
+
+
+class DbPlanStore(PlanStore):
+    """The real store: one active plan per user in the plans table."""
+
+    def __init__(self, session: Session):
+        self.session = session
+
+    def save(self, handle, constraints, items):
+        session = self.session
+        try:
+            session.execute(update(Plan)
+                            .where(Plan.handle == handle, Plan.status == "active")
+                            .values(status="replaced"))
+            plan = Plan(handle=handle, constraints=constraints.model_dump(),
+                        items=[item.model_dump() for item in items], status="active")
+            session.add(plan)
+            session.flush()        # sends the INSERT, so Postgres assigns plan.id
+            plan_id = plan.id
+            session.commit()       # the UPDATE and the INSERT land together, or neither does
+        except Exception:
+            session.rollback()
+            raise
+        return plan_id
+
+
+@dataclass
+class MemoryPlanStore(PlanStore):
+    """Keeps plans in a dict: the evals use it so they never replace the user's real plan."""
+    plans: dict[int, tuple[PlanConstraints, list[PlanItem]]] = field(default_factory=dict)
+
+    def save(self, handle, constraints, items):
+        plan_id = len(self.plans) + 1
+        self.plans[plan_id] = (constraints, list(items))
+        return plan_id
 
 
 # name -> function. The input class for each name is in schemas.TOOLS.

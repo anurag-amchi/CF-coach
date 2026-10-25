@@ -9,9 +9,10 @@ from cf_coach.agent.schemas import (
     ValidatePlanInput,
 )
 from cf_coach.agent.tools import (
-    STRATEGIES, TOOL_FUNCTIONS, ToolContext, ToolError, all_tags, backlog_out, check_tags,
-    effective_constraints, find_problems, first_solves_since, get_progress_since, plan_errors,
-    problem_out, profile_out, progress_out, save_plan, user_constraints, validate_plan,
+    STRATEGIES, TOOL_FUNCTIONS, MemoryPlanStore, ToolContext, ToolError, all_tags, backlog_out,
+    check_tags, effective_constraints, find_problems, first_solves_since, get_progress_since,
+    plan_errors, problem_out, profile_out, progress_out, save_plan, user_constraints,
+    validate_plan,
 )
 from cf_coach.analytics.attempts import SubmissionRow
 from cf_coach.analytics.selection import Candidate, ProblemRow, Profile
@@ -308,3 +309,14 @@ def test_unknown_user_tag_is_rejected_up_front(monkeypatch):
     with pytest.raises(ToolError, match=r"unknown tag\(s\) \['geomtry'\]"):
         user_constraints(None, 4, ["geomtry"])
     assert user_constraints(None, 4, ["trees"]) == PlanConstraints(hours=4, avoid_tags=["trees"])
+
+
+def test_memory_store_keeps_the_plan_out_of_the_database(monkeypatch):
+    monkeypatch.setattr(tools, "check_plan", lambda ctx, items, c: [])
+    store = MemoryPlanStore()
+    ctx = ToolContext("me", session=None, now=TODAY, plan_store=store)   # session=None: no DB
+    out = save_plan(ctx, SavePlanInput(items=[item(2000, "A")],
+                                       constraints=PlanConstraints(hours=2)))
+    assert out.plan_id == 1 and ctx.saved_plan_id == 1
+    constraints, items = store.plans[1]
+    assert constraints.hours == 2 and [(i.contest_id, i.idx) for i in items] == [(2000, "A")]
