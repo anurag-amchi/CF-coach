@@ -82,7 +82,7 @@ class SavePlanInput(ValidatePlanInput):
 
 class TagSkillOut(BaseModel):
     tag: str
-    skill: float
+    skill: int                     # rounded: decimals are noise and cost tokens
     attempts: int
     abandon_rate: float
 
@@ -112,7 +112,7 @@ class ProblemOut(BaseModel):
     rating: int
     tags: list[str]
     matched_tag: str               # the tag whose band it fell in
-    tag_skill: float
+    tag_skill: int
     score: float
 
 
