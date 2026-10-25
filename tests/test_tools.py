@@ -6,11 +6,12 @@ import pytest
 import cf_coach.agent.tools as tools
 from cf_coach.agent.schemas import (
     TOOLS, FindProblemsInput, GetProgressSinceInput, PlanConstraints, PlanItem, SavePlanInput,
+    ValidatePlanInput,
 )
 from cf_coach.agent.tools import (
     STRATEGIES, TOOL_FUNCTIONS, ToolContext, ToolError, all_tags, backlog_out, check_tags,
-    first_solves_since, get_progress_since, plan_errors, problem_out, profile_out, progress_out,
-    save_plan,
+    effective_constraints, find_problems, first_solves_since, get_progress_since, plan_errors,
+    problem_out, profile_out, progress_out, save_plan, user_constraints, validate_plan,
 )
 from cf_coach.analytics.attempts import SubmissionRow
 from cf_coach.analytics.selection import Candidate, ProblemRow, Profile
@@ -209,7 +210,7 @@ def test_special_marker_is_not_a_practice_tag():
 
 
 def test_save_refuses_an_invalid_plan_without_touching_the_db(monkeypatch):
-    monkeypatch.setattr(tools, "check_plan", lambda ctx, args: ["item 1 (2000C): too easy"])
+    monkeypatch.setattr(tools, "check_plan", lambda ctx, items, c: ["item 1 (2000C): too easy"])
     ctx = ToolContext("me", session=None, now=TODAY)          # session=None: any DB use crashes
     with pytest.raises(ToolError, match="plan not saved.*too easy"):
         save_plan(ctx, SavePlanInput(items=[item(2000, "C")]))
@@ -220,3 +221,90 @@ def test_save_only_once_per_run():
     ctx = ToolContext("me", session=None, now=TODAY, saved_plan_id=7)
     with pytest.raises(ToolError, match="already saved in this run"):
         save_plan(ctx, SavePlanInput(items=[item(2000, "A")]))
+
+
+# ---------- the user's fixed constraints (decision #32) ----------
+
+def fake_plan_data(monkeypatch):
+    """tools' DB loaders return plan_setup() data, so no database is needed."""
+    problems, solved, profile, running = plan_setup()
+    monkeypatch.setattr(tools, "load_problems", lambda session: list(problems.values()))
+    monkeypatch.setattr(tools, "load_solved", lambda session, handle: solved)
+    monkeypatch.setattr(tools, "build_profile", lambda session, handle, now: profile)
+    return running
+
+
+def test_user_hours_win_and_avoided_tags_from_both_count():
+    user = PlanConstraints(hours=4, avoid_tags=["geometry"])
+    model = PlanConstraints(hours=10, avoid_tags=["trees", "geometry"])
+    assert effective_constraints(user, model) == PlanConstraints(
+        hours=4, avoid_tags=["geometry", "trees"])
+
+
+def test_model_constraints_still_apply_when_the_user_set_none():
+    model = PlanConstraints(hours=3, avoid_tags=["trees"])
+    assert effective_constraints(PlanConstraints(), model) == model
+
+
+def test_validate_enforces_user_constraints_the_model_dropped(monkeypatch):
+    running = fake_plan_data(monkeypatch)
+    ctx = ToolContext("me", session=None, now=TODAY, running_contests=running,
+                      user_constraints=PlanConstraints(hours=1, avoid_tags=["trees"]))
+    plan = ValidatePlanInput(items=[item(2000, "A"), item(2000, "B")])   # model sent no constraints
+    assert validate_plan(ctx, plan).errors == [
+        "2 problems is too many for 1 hours: at most 1 (about 60 min each)",
+        "item 2 (2000B): has avoided tag(s) ['trees']",
+    ]
+
+
+class FakeSession:
+    """Just enough of a Session for save_plan: records what was added."""
+    def __init__(self):
+        self.added = []
+
+    def execute(self, statement):
+        pass
+
+    def add(self, obj):
+        self.added.append(obj)
+
+    def flush(self):
+        self.added[-1].id = 42          # Postgres would assign the id here
+
+    def commit(self):
+        pass
+
+    def rollback(self):
+        pass
+
+
+def test_save_stores_the_enforced_constraints_not_the_models(monkeypatch):
+    monkeypatch.setattr(tools, "check_plan", lambda ctx, items, c: [])
+    session = FakeSession()
+    ctx = ToolContext("me", session=session, now=TODAY,
+                      user_constraints=PlanConstraints(hours=4, avoid_tags=["geometry"]))
+    out = save_plan(ctx, SavePlanInput(items=[item(2000, "A")]))   # model: hours=None
+    assert out.plan_id == 42 and ctx.saved_plan_id == 42
+    assert session.added[0].constraints == {"hours": 4, "avoid_tags": ["geometry"]}
+
+
+def test_find_problems_always_skips_the_users_avoided_tags(monkeypatch):
+    running = fake_plan_data(monkeypatch)
+    seen = {}
+
+    def fake_select(*args, excluded_tags, **kwargs):
+        seen["excluded"] = excluded_tags
+        return []
+
+    monkeypatch.setattr(tools, "select_candidates", fake_select)
+    ctx = ToolContext("me", session=None, now=TODAY, running_contests=running,
+                      user_constraints=PlanConstraints(avoid_tags=["trees"]))
+    find_problems(ctx, FindProblemsInput(tag="dp"))          # the model avoided nothing
+    assert seen["excluded"] == frozenset({"trees"})
+
+
+def test_unknown_user_tag_is_rejected_up_front(monkeypatch):
+    fake_plan_data(monkeypatch)
+    with pytest.raises(ToolError, match=r"unknown tag\(s\) \['geomtry'\]"):
+        user_constraints(None, 4, ["geomtry"])
+    assert user_constraints(None, 4, ["trees"]) == PlanConstraints(hours=4, avoid_tags=["trees"])

@@ -20,7 +20,7 @@ run_agent() never raises and never writes to the database. It returns a RunResul
 save_run() writes that to agent_runs. Every run is logged, including failed ones.
 
 Run on real data:  uv run python -m cf_coach.agent.loop TitanCoder1258 "5 hours, no geometry"
-Design reasons: docs/decisions.md #30.
+Design reasons: docs/decisions.md #30, #32 (fixed constraints in the user message).
 """
 
 import json
@@ -33,8 +33,10 @@ from datetime import datetime, timezone
 from sqlalchemy.orm import Session
 
 from cf_coach.agent.llm import LLM, ToolCallRejected
-from cf_coach.agent.schemas import TOOL_SCHEMAS, TOOLS, ToolArgsError, parse_args
-from cf_coach.agent.tools import TOOL_FUNCTIONS, ToolContext, ToolError
+from cf_coach.agent.schemas import (
+    TOOL_SCHEMAS, TOOLS, PlanConstraints, ToolArgsError, parse_args,
+)
+from cf_coach.agent.tools import MINUTES_PER_PROBLEM, TOOL_FUNCTIONS, ToolContext, ToolError
 from cf_coach.db.models import AgentRun
 
 MAX_STEPS = 10     # LLM calls per run. A normal run needs about 5-8.
@@ -48,6 +50,8 @@ Rules:
 - Every problem must be rated 100-300 above the user's skill on the tag you give it.
 - Read the user's constraints (hours, tags to avoid) from their message and pass them in
   `constraints`. If they give no hours, plan 5 problems.
+- "Fixed constraints" after the message come from the user's settings: plan within them.
+  validate_plan always enforces them.
 - Call validate_plan before save_plan. If it returns errors, fix all of them and validate again.
 - Each `reason` is one sentence that cites the user's data (skill, abandon rate, backlog).
 - After save_plan succeeds, reply with a short summary of the plan and call no more tools.
@@ -66,6 +70,19 @@ class RunResult:
     plan_id: int | None = None
     error: str | None = None
     model: str = ""
+
+
+def user_message(request: str, fixed: PlanConstraints) -> str:
+    """The request, plus the user's fixed constraints, so the model plans inside them."""
+    notes = []
+    if fixed.hours is not None:
+        most = fixed.hours * 60 // MINUTES_PER_PROBLEM
+        notes.append(f"hours: {fixed.hours} (at most {most} problems)")
+    if fixed.avoid_tags:
+        notes.append(f"avoid tags: {', '.join(fixed.avoid_tags)}")
+    if not notes:
+        return request
+    return f"{request}\n\nFixed constraints: {'; '.join(notes)}"
 
 
 def run_tool(name: str, raw_args: str, ctx: ToolContext,
@@ -92,7 +109,7 @@ def run_agent(llm: LLM, ctx: ToolContext, request: str, max_steps: int = MAX_STE
     started = time.monotonic()
     messages = [
         {"role": "system", "content": SYSTEM_PROMPT.format(today=ctx.now.date())},
-        {"role": "user", "content": request},
+        {"role": "user", "content": user_message(request, ctx.user_constraints)},
     ]
     result = RunResult(outcome="max_steps", final_text=None, messages=messages, steps=0,
                        model=llm.model)

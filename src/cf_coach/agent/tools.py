@@ -12,12 +12,15 @@ parts are unit-tested; the database parts are checked by running this file.
 All 6: get_tag_profile, get_upsolve_backlog, find_problems, get_progress_since,
 validate_plan, save_plan (the only one that writes).
 
+The user's own constraints (hours, avoided tags; ToolContext.user_constraints) are applied
+by find_problems, validate_plan and save_plan whatever the model passes.
+
 Run on real data:  uv run python -m cf_coach.agent.tools TitanCoder1258 [--save]
-Design reasons: docs/decisions.md #26, #28, #29.
+Design reasons: docs/decisions.md #26, #28, #29, #32.
 """
 
 import sys
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import date, datetime, time, timezone
 
 from sqlalchemy import select, update
@@ -61,6 +64,9 @@ class ToolContext:
     now: datetime
     running_contests: set[int] | None = None   # None = not fetched yet
     saved_plan_id: int | None = None           # set by save_plan; the loop logs it
+    # What the user set outside the chat (CLI flags, a form). Enforced on every plan,
+    # whatever the model passes. See effective_constraints().
+    user_constraints: PlanConstraints = field(default_factory=PlanConstraints)
 
     def get_running_contests(self) -> set[int]:
         """Fetched from CF once per run, on first use, then reused by every tool call."""
@@ -128,7 +134,8 @@ def find_problems(ctx: ToolContext, args: FindProblemsInput) -> FindProblemsOut:
         ctx.get_running_contests(),
         STRATEGIES[args.strategy](),
         tag=args.tag,
-        excluded_tags=frozenset(args.avoid_tags),
+        # the user's avoided tags too, so the model never sees a problem it can't plan
+        excluded_tags=frozenset(args.avoid_tags + ctx.user_constraints.avoid_tags),
         count=args.count,
     )
     return FindProblemsOut(problems=[problem_out(c) for c in candidates])
@@ -201,6 +208,25 @@ def get_progress_since(ctx: ToolContext, args: GetProgressSinceInput) -> Progres
 MINUTES_PER_PROBLEM = 60       # a problem 100-300 above your skill takes about an hour
 
 
+def user_constraints(session: Session, hours: int | None,
+                     avoid_tags: list[str]) -> PlanConstraints:
+    """Constraints the user typed outside the chat. Checked once here, then put in ToolContext."""
+    if avoid_tags:
+        check_tags(avoid_tags, all_tags(load_problems(session)))
+    return PlanConstraints(hours=hours, avoid_tags=avoid_tags)
+
+
+def effective_constraints(user: PlanConstraints, model: PlanConstraints) -> PlanConstraints:
+    """What a plan is checked against: the user's hours win; avoided tags from both count.
+
+    The model's own constraints (read from the chat text) still apply, so a model that
+    copies them correctly loses nothing; one that drops them can't weaken the user's.
+    """
+    hours = user.hours if user.hours is not None else model.hours
+    tags = user.avoid_tags + [t for t in model.avoid_tags if t not in user.avoid_tags]
+    return PlanConstraints(hours=hours, avoid_tags=tags)
+
+
 def plan_errors(items: list[PlanItem], constraints: PlanConstraints,
                 problems: dict[tuple[int, str], ProblemRow], solved: set[tuple[int, str]],
                 profile: Profile, running: set[int]) -> list[str]:
@@ -247,25 +273,31 @@ def plan_errors(items: list[PlanItem], constraints: PlanConstraints,
     return errors
 
 
-def check_plan(ctx: ToolContext, args: ValidatePlanInput) -> list[str]:
+def check_plan(ctx: ToolContext, items: list[PlanItem],
+               constraints: PlanConstraints) -> list[str]:
     """Load what the rules need, then run them. Shared by validate_plan and save_plan."""
     problems = {(p.contest_id, p.idx): p for p in load_problems(ctx.session)}
-    return plan_errors(args.items, args.constraints, problems,
+    return plan_errors(items, constraints, problems,
                        load_solved(ctx.session, ctx.handle),
                        build_profile(ctx.session, ctx.handle, ctx.now),
                        ctx.get_running_contests())
 
 
 def validate_plan(ctx: ToolContext, args: ValidatePlanInput) -> ValidationOut:
-    errors = check_plan(ctx, args)
+    constraints = effective_constraints(ctx.user_constraints, args.constraints)
+    errors = check_plan(ctx, args.items, constraints)
     return ValidationOut(ok=not errors, errors=errors)
 
 
 def save_plan(ctx: ToolContext, args: SavePlanInput) -> SavePlanOut:
-    """Validate again, then save as the user's one active plan (older ones -> replaced)."""
+    """Validate again, then save as the user's one active plan (older ones -> replaced).
+
+    The saved constraints are the ones that were enforced, not just what the model sent.
+    """
     if ctx.saved_plan_id is not None:
         raise ToolError(f"a plan was already saved in this run (plan {ctx.saved_plan_id})")
-    errors = check_plan(ctx, args)
+    constraints = effective_constraints(ctx.user_constraints, args.constraints)
+    errors = check_plan(ctx, args.items, constraints)
     if errors:
         raise ToolError("plan not saved, it breaks these rules: " + "; ".join(errors)
                         + ". Fix them and call validate_plan again.")
@@ -274,7 +306,7 @@ def save_plan(ctx: ToolContext, args: SavePlanInput) -> SavePlanOut:
         session.execute(update(Plan)
                         .where(Plan.handle == ctx.handle, Plan.status == "active")
                         .values(status="replaced"))
-        plan = Plan(handle=ctx.handle, constraints=args.constraints.model_dump(),
+        plan = Plan(handle=ctx.handle, constraints=constraints.model_dump(),
                     items=[item.model_dump() for item in args.items], status="active")
         session.add(plan)
         session.flush()            # sends the INSERT, so Postgres assigns plan.id

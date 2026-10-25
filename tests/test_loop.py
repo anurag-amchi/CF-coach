@@ -2,8 +2,8 @@ import json
 from datetime import datetime, timezone
 
 from cf_coach.agent.llm import LLMReply, ScriptedLLM, ToolCall, ToolCallRejected, scripted_reply
-from cf_coach.agent.loop import run_agent, run_tool
-from cf_coach.agent.schemas import SavePlanOut, TagProfileOut, TOOL_SCHEMAS
+from cf_coach.agent.loop import run_agent, run_tool, user_message
+from cf_coach.agent.schemas import PlanConstraints, SavePlanOut, TagProfileOut, TOOL_SCHEMAS
 from cf_coach.agent.tools import ToolContext, ToolError
 
 NOW = datetime(2026, 10, 25, 12, tzinfo=timezone.utc)
@@ -114,3 +114,17 @@ def test_run_tool_on_real_schema_names():
     assert set(FAKE_TOOLS) <= names
     ctx = ToolContext("me", session=None, now=NOW)
     assert json.loads(run_tool("get_tag_profile", "", ctx, FAKE_TOOLS))["rating"] == 1400
+
+
+def test_no_fixed_constraints_leaves_the_request_alone():
+    assert user_message("plan my week", PlanConstraints()) == "plan my week"
+
+
+def test_fixed_constraints_are_added_to_the_users_message():
+    fixed = PlanConstraints(hours=4, avoid_tags=["geometry", "dfs and similar"])
+    llm = ScriptedLLM([scripted_reply("ok")])
+    ctx = ToolContext("me", session=None, now=NOW, user_constraints=fixed)
+    result = run_agent(llm, ctx, "3 dp problems", tools=FAKE_TOOLS)
+    assert result.messages[1]["content"] == (
+        "3 dp problems\n\nFixed constraints: hours: 4 (at most 4 problems); "
+        "avoid tags: geometry, dfs and similar")
