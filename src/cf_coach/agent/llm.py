@@ -2,6 +2,8 @@
 
 The agent loop only sees:
     llm.chat(messages, tools) -> LLMReply(text, tool_calls, input_tokens, output_tokens, message)
+With response_schema=<JSON schema>, the reply text is JSON of that shape (Groq's strict
+structured output); the request parser uses this.
 
 - GroqLLM:     the real model (Groq's OpenAI-compatible API through the `openai` SDK).
 - ScriptedLLM: a fake that returns pre-written replies, for tests and evals (no network).
@@ -48,7 +50,8 @@ class LLM(ABC):
     model: str
 
     @abstractmethod
-    def chat(self, messages: list[dict], tools: list[dict]) -> LLMReply: ...
+    def chat(self, messages: list[dict], tools: list[dict],
+             response_schema: dict | None = None) -> LLMReply: ...
 
 
 def assistant_message(text: str | None, tool_calls: list[ToolCall]) -> dict:
@@ -86,9 +89,13 @@ class GroqLLM(LLM):
         self._client = OpenAI(api_key=os.environ["GROQ_API_KEY"], base_url=GROQ_BASE_URL,
                               max_retries=3, timeout=60)
 
-    def chat(self, messages, tools):
+    def chat(self, messages, tools, response_schema=None):
         from openai import BadRequestError
         kwargs = {"tools": tools} if tools else {}
+        if response_schema is not None:
+            # strict: the provider only lets the model produce JSON that fits the schema
+            kwargs["response_format"] = {"type": "json_schema", "json_schema": {
+                "name": "reply", "schema": response_schema, "strict": True}}
         try:
             resp = self._client.chat.completions.create(
                 model=self.model, messages=messages, temperature=0, **kwargs)
@@ -109,9 +116,11 @@ class ScriptedLLM(LLM):
     replies: list[LLMReply | Exception]
     model: str = "scripted"
     seen: list[list[dict]] = field(default_factory=list)
+    schemas: list[dict | None] = field(default_factory=list)   # response_schema per call
 
-    def chat(self, messages, tools):
+    def chat(self, messages, tools, response_schema=None):
         self.seen.append(list(messages))
+        self.schemas.append(response_schema)
         if not self.replies:
             raise RuntimeError("ScriptedLLM ran out of replies")
         reply = self.replies.pop(0)
