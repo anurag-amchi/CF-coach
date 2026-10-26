@@ -1,6 +1,6 @@
 from cf_coach.analytics.selection import (
-    ContestPrepStrategy, Profile, ProblemRow, ScoringStrategy, WeaknessFirstStrategy,
-    select_candidates,
+    Candidate, ContestPrepStrategy, Profile, ProblemRow, ScoringStrategy, WeaknessFirstStrategy,
+    band_for, ladder_order, round_skill, select_candidates,
 )
 from cf_coach.analytics.signals import TagSignals
 
@@ -21,10 +21,50 @@ def pick(problems, solved=(), running=(), strategy=None, **kw):
                              strategy or WeaknessFirstStrategy(), **kw)
 
 
-def test_band_is_skill_plus_100_to_300():
-    problems = [prob(1990, "A", 1400), prob(1990, "B", 1500), prob(1990, "C", 1700),
-                prob(1990, "D", 1800)]
-    assert sorted(keys(pick(problems))) == ["1990B", "1990C"]
+def test_skill_rounds_to_the_nearest_100_halves_up():
+    assert [round_skill(s) for s in (1415, 1449.9, 1450, 1351, 1349)] == [1400, 1400, 1500,
+                                                                         1400, 1300]
+
+
+def test_bands_by_difficulty():
+    assert band_for(1415) == (1400, 1600)              # normal: your level to +200
+    assert band_for(1415, "harder") == (1500, 1700)
+    assert band_for(1415, "easier") == (1300, 1500)
+    assert band_for(1450) == (1500, 1700)              # 1450 rounds up to 1500
+
+
+def test_normal_band_is_level_to_plus_200():
+    problems = [prob(1990, "A", 1300), prob(1990, "B", 1400), prob(1990, "C", 1600),
+                prob(1990, "D", 1700)]
+    assert sorted(keys(pick(problems))) == ["1990B", "1990C"]     # dp 1400: 1400-1600
+    assert sorted(keys(pick(problems, difficulty="harder"))) == ["1990C", "1990D"]
+    assert sorted(keys(pick(problems, difficulty="easier"))) == ["1990A", "1990B"]
+
+
+def cand(idx, rating, score):
+    return Candidate(prob(1990, idx, rating), "dp", 1400.0, score)
+
+
+def test_ladder_order_is_round_robin_easiest_level_first():
+    ranked = [cand("A", 1600, 9), cand("B", 1400, 8), cand("C", 1400, 7), cand("D", 1500, 6),
+              cand("E", 1600, 5)]                          # best first
+    assert keys(ladder_order(ranked, 10)) == ["1990B", "1990D", "1990A", "1990C", "1990E"]
+    assert [c.gap for c in ladder_order(ranked, 3)] == [0, 100, 200]
+
+
+def test_results_come_in_ladder_order():
+    problems = [prob(1990, "A", 1600), prob(1990, "B", 1600), prob(1990, "C", 1400),
+                prob(1990, "D", 1500)]
+    assert [c.gap for c in pick(problems)] == [0, 100, 200, 200]
+
+
+def test_weak_other_tags_beat_a_newer_contest():
+    profile = Profile(1400, {"dp": 1400.0, "greedy": 1600.0, "strings": 1300.0},
+                      newest_contest_id=2000)
+    problems = [prob(2000, "A", 1500, ("dp", "greedy")),     # newest, other tag strong
+                prob(1990, "A", 1500, ("dp", "strings"))]    # older, other tag weak
+    out = select_candidates(problems, set(), profile, set(), WeaknessFirstStrategy(), tag="dp")
+    assert keys(out) == ["1990A", "2000A"]
 
 
 def test_solved_unrated_and_running_are_excluded():
@@ -41,7 +81,7 @@ def test_excluded_tag_drops_problem_even_with_other_tags():
 
 
 def test_multi_tag_problem_appears_once_with_its_best_tag():
-    # 1800 is in the greedy band (1700-1900) but not in dp's (1500-1700)
+    # 1800 is in the greedy band (1600-1800) but not in dp's (1400-1600)
     out = pick([prob(1990, "A", 1600, ("dp", "greedy")), prob(1990, "B", 1800, ("dp", "greedy"))])
     assert {keys([c])[0]: c.tag for c in out} == {"1990A": "dp", "1990B": "greedy"}
 
@@ -74,14 +114,15 @@ def test_contest_prep_prefers_recent_and_slow_tags():
 
 
 def test_any_strategy_can_be_plugged_in():
-    class EasiestFirst(ScoringStrategy):
-        name = "easiest_first"
+    class OldestFirst(ScoringStrategy):
+        name = "oldest_first"
 
         def score(self, problem, tag, profile):
-            return -problem.rating
+            return -problem.contest_id
 
-    problems = [prob(1990, "A", 1700), prob(1990, "B", 1500)]
-    assert keys(pick(problems, strategy=EasiestFirst())) == ["1990B", "1990A"]
+    problems = [prob(1990, "A", 1500), prob(1980, "A", 1500)]     # same level
+    assert keys(pick(problems)) == ["1990A", "1980A"]                     # newer first
+    assert keys(pick(problems, strategy=OldestFirst())) == ["1980A", "1990A"]
 
 
 def test_count_limits_results():
