@@ -42,8 +42,8 @@ from cf_coach.agent.schemas import (
 from cf_coach.analytics.attempts import SubmissionRow, build_attempts, load_rows
 from cf_coach.analytics.elo import tag_skills
 from cf_coach.analytics.selection import (
-    BAND, IGNORED_TAGS, Candidate, ContestPrepStrategy, ProblemRow, Profile,
-    WeaknessFirstStrategy, build_profile,
+    IGNORED_TAGS, Candidate, ContestPrepStrategy, Difficulty, ProblemRow, Profile,
+    WeaknessFirstStrategy, band_for, build_profile, round_skill,
     load_problems, load_solved, running_contest_ids, select_candidates,
 )
 from cf_coach.analytics.signals import BacklogItem, upsolve_backlog
@@ -87,14 +87,20 @@ class SavedItem(BaseModel):
     contest_id: int
     idx: str
     tag: str               # the tag it practises (see plan_tag)
+    gap: int               # rating above the rounded tag skill: its ladder level
     reason: str
+
+
+class SavedConstraints(PlanConstraints):
+    """What a saved plan was checked against: the constraints plus the difficulty."""
+    difficulty: Difficulty = "normal"
 
 
 class PlanStore(ABC):
     """Where save_plan writes a validated plan: Postgres normally, memory in the evals."""
 
     @abstractmethod
-    def save(self, handle: str, constraints: PlanConstraints, items: list[SavedItem]) -> int:
+    def save(self, handle: str, constraints: SavedConstraints, items: list[SavedItem]) -> int:
         """Store the plan as the user's active one; return its id."""
 
 
@@ -111,6 +117,9 @@ class ToolContext:
     plan_store: PlanStore | None = None        # None = the database (DbPlanStore)
     # Every problem id a tool returned in this run. A plan may only use these.
     offered: dict[str, Offer] = field(default_factory=dict)
+    # Which band find_problems searches and validate_plan checks. Set by the caller
+    # (--difficulty now, the request parser later); the model can't change it.
+    difficulty: Difficulty = "normal"
 
     def get_running_contests(self) -> set[int]:
         """Fetched from CF once per run, on first use, then reused by every tool call."""
@@ -171,7 +180,7 @@ def problem_out(c: Candidate) -> ProblemOut:
     p = c.problem
     return ProblemOut(id=problem_id(p.contest_id, p.idx), name=p.name, rating=p.rating,
                       tags=topic_tags(p.tags), matched_tag=c.tag, tag_skill=round(c.tag_skill),
-                      score=round(c.score, 2))
+                      gap=c.gap, score=round(c.score, 2))
 
 
 def all_tags(problems: list[ProblemRow]) -> set[str]:
@@ -191,10 +200,12 @@ def find_problems(ctx: ToolContext, args: FindProblemsInput) -> FindProblemsOut:
         # the user's avoided tags too, so the model never sees a problem it can't plan
         excluded_tags=frozenset(args.avoid_tags + ctx.user_constraints.avoid_tags),
         count=args.count,
+        difficulty=ctx.difficulty,
     )
     for c in candidates:
         ctx.offer(c.problem.contest_id, c.problem.idx, c.tag)
-    return FindProblemsOut(problems=[problem_out(c) for c in candidates])
+    return FindProblemsOut(difficulty=ctx.difficulty,
+                           problems=[problem_out(c) for c in candidates])
 
 
 # ---------- get_progress_since ----------
@@ -261,7 +272,7 @@ def get_progress_since(ctx: ToolContext, args: GetProgressSinceInput) -> Progres
 
 # ---------- validate_plan / save_plan ----------
 
-MINUTES_PER_PROBLEM = 60       # a problem 100-300 above your skill takes about an hour
+MINUTES_PER_PROBLEM = 60       # a problem at or a bit above your level takes about an hour
 
 
 def user_constraints(session: Session, hours: int | None,
@@ -292,13 +303,14 @@ def tag_skill(profile: Profile, tag: str) -> float:
     return profile.skills.get(tag, profile.rating)    # an untried tag starts at the CF rating
 
 
-def in_band(profile: Profile, tag: str, rating: int) -> bool:
+def in_band(profile: Profile, tag: str, rating: int, difficulty: Difficulty) -> bool:
     """The same band rule find_problems uses, so anything it returned passes."""
-    skill = tag_skill(profile, tag)
-    return skill + BAND[0] <= rating <= skill + BAND[1]
+    lo, hi = band_for(tag_skill(profile, tag), difficulty)
+    return lo <= rating <= hi
 
 
-def plan_tag(offer: Offer, p: ProblemRow, profile: Profile) -> str | None:
+def plan_tag(offer: Offer, p: ProblemRow, profile: Profile,
+             difficulty: Difficulty) -> str | None:
     """The tag a planned problem practises; None if no tag's band fits its rating.
 
     From find_problems: the tag it was matched to. From the backlog (no matched tag): its
@@ -306,13 +318,15 @@ def plan_tag(offer: Offer, p: ProblemRow, profile: Profile) -> str | None:
     """
     if offer.tag is not None:
         return offer.tag
-    fits = [t for t in topic_tags(p.tags) if p.rating is not None and in_band(profile, t, p.rating)]
+    fits = [t for t in topic_tags(p.tags)
+            if p.rating is not None and in_band(profile, t, p.rating, difficulty)]
     return min(fits, key=lambda t: (tag_skill(profile, t), t)) if fits else None
 
 
 def plan_errors(items: list[PlanItem], constraints: PlanConstraints, offered: dict[str, Offer],
                 problems: dict[tuple[int, str], ProblemRow], solved: set[tuple[int, str]],
-                profile: Profile, running: set[int]) -> list[str]:
+                profile: Profile, running: set[int],
+                difficulty: Difficulty = "normal") -> list[str]:
     """Every rule the plan breaks, one line each. Empty list = the plan is valid.
 
     Deterministic: the same plan and data always give the same answer.
@@ -351,28 +365,35 @@ def plan_errors(items: list[PlanItem], constraints: PlanConstraints, offered: di
         if p.rating is None:
             errors.append(f"{where}: unrated, so it can't be matched to a skill band")
             continue
-        tag = plan_tag(offer, p, profile)
+        tag = plan_tag(offer, p, profile, difficulty)
         if tag is None:
-            errors.append(f"{where}: rating {p.rating} is outside the skill band of every one "
-                          f"of its tags {topic_tags(p.tags)}")
-        elif not in_band(profile, tag, p.rating):
-            skill = tag_skill(profile, tag)
-            errors.append(f"{where}: rating {p.rating} is outside the {tag} band "
-                          f"{round(skill + BAND[0])}-{round(skill + BAND[1])}")
+            errors.append(f"{where}: rating {p.rating} is outside the {difficulty} band of "
+                          f"every one of its tags {topic_tags(p.tags)}")
+        elif not in_band(profile, tag, p.rating, difficulty):
+            lo, hi = band_for(tag_skill(profile, tag), difficulty)
+            errors.append(f"{where}: rating {p.rating} is outside the {difficulty} {tag} "
+                          f"band {lo}-{hi}")
     return errors
 
 
 def saved_items(items: list[PlanItem], offered: dict[str, Offer],
-                problems: dict[tuple[int, str], ProblemRow], profile: Profile) -> list[SavedItem]:
-    """What gets stored. Only call on a plan with no errors (every id offered, every tag found)."""
+                problems: dict[tuple[int, str], ProblemRow], profile: Profile,
+                difficulty: Difficulty = "normal") -> list[SavedItem]:
+    """What gets stored, easiest first. Only call on a plan with no errors.
+
+    Sorted by gap (stable, so the model's order stays within a level): the saved plan is
+    a ladder whatever order the model listed it in.
+    """
     out = []
     for item in items:
         offer = offered[clean_id(item.id)]
         p = problems[(offer.contest_id, offer.idx)]
+        tag = plan_tag(offer, p, profile, difficulty)
         out.append(SavedItem(id=problem_id(offer.contest_id, offer.idx),
-                             contest_id=offer.contest_id, idx=offer.idx,
-                             tag=plan_tag(offer, p, profile), reason=item.reason))
-    return out
+                             contest_id=offer.contest_id, idx=offer.idx, tag=tag,
+                             gap=p.rating - round_skill(tag_skill(profile, tag)),
+                             reason=item.reason))
+    return sorted(out, key=lambda s: s.gap)
 
 
 def check_plan(ctx: ToolContext, items: list[PlanItem],
@@ -385,8 +406,9 @@ def check_plan(ctx: ToolContext, items: list[PlanItem],
     profile = build_profile(ctx.session, ctx.handle, ctx.now)
     errors = plan_errors(items, constraints, ctx.offered, problems,
                          load_solved(ctx.session, ctx.handle), profile,
-                         ctx.get_running_contests())
-    return errors, [] if errors else saved_items(items, ctx.offered, problems, profile)
+                         ctx.get_running_contests(), ctx.difficulty)
+    return errors, [] if errors else saved_items(items, ctx.offered, problems, profile,
+                                                 ctx.difficulty)
 
 
 def validate_plan(ctx: ToolContext, args: ValidatePlanInput) -> ValidationOut:
@@ -408,7 +430,8 @@ def save_plan(ctx: ToolContext, args: SavePlanInput) -> SavePlanOut:
         raise ToolError("plan not saved, it breaks these rules: " + "; ".join(errors)
                         + ". Fix them and call validate_plan again.")
     store = ctx.plan_store if ctx.plan_store is not None else DbPlanStore(ctx.session)
-    plan_id = store.save(ctx.handle, constraints, items)
+    saved = SavedConstraints(**constraints.model_dump(), difficulty=ctx.difficulty)
+    plan_id = store.save(ctx.handle, saved, items)
     ctx.saved_plan_id = plan_id
     return SavePlanOut(plan_id=plan_id, items=len(args.items))
 
@@ -440,7 +463,7 @@ class DbPlanStore(PlanStore):
 @dataclass
 class MemoryPlanStore(PlanStore):
     """Keeps plans in a dict: the evals use it so they never replace the user's real plan."""
-    plans: dict[int, tuple[PlanConstraints, list[SavedItem]]] = field(default_factory=dict)
+    plans: dict[int, tuple[SavedConstraints, list[SavedItem]]] = field(default_factory=dict)
 
     def save(self, handle, constraints, items):
         plan_id = len(self.plans) + 1
@@ -498,6 +521,17 @@ if __name__ == "__main__":
         good_plan = SavePlanInput(items=good, constraints=PlanConstraints(hours=3))
         for title, plan in (("broken plan", bad_plan), ("good plan", good_plan)):
             print(f"\nvalidate_plan, {title}:\n{validate_plan(ctx, plan).model_dump_json(indent=1)}")
+
+        # The ladder: the model lists 3 dp problems hardest first; the saved order is easy first.
+        ladder = find_problems(ctx, FindProblemsInput(tag="dp", count=3)).problems
+        errors, items = check_plan(ctx, [PlanItem(id=p.id, reason="x") for p in reversed(ladder)],
+                                   PlanConstraints())
+        print(f"\nmodel's order: {[(p.id, p.gap) for p in reversed(ladder)]}"
+              f"\nsaved order:   {[(s.id, s.gap) for s in items]}  errors={errors}")
+        ctx.difficulty = "harder"
+        harder = find_problems(ctx, FindProblemsInput(tag="dp", count=3))
+        print(f"harder: {[(p.id, p.rating, p.gap) for p in harder.problems]}")
+        ctx.difficulty = "normal"
 
         if "--save" in sys.argv:
             print("\nsave_plan:", save_plan(ctx, good_plan))

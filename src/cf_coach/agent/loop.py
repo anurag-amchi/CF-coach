@@ -48,8 +48,9 @@ Rules:
 - Start with get_tag_profile. Use get_upsolve_backlog and get_progress_since when they help.
 - A plan item is {{"id": "<problem id exactly as a tool returned it>", "reason": "..."}}.
   Only plan ids that find_problems or get_upsolve_backlog returned. Never invent ids.
-- Every problem must be rated 100-300 above the user's skill on one of its tags
-  (find_problems only returns such problems; validate_plan checks backlog ones).
+- find_problems lists problems in ladder order (one per level, easiest first). For N
+  problems from one tag, take its first N. validate_plan checks the rating band; the
+  saved plan is sorted easiest first by code.
 - Read the user's constraints (hours, tags to avoid) from their message and pass them in
   `constraints`. If they give no hours, plan 5 problems.
 - "Fixed constraints" after the message come from the user's settings: plan within them.
@@ -74,9 +75,11 @@ class RunResult:
     model: str = ""
 
 
-def user_message(request: str, fixed: PlanConstraints) -> str:
+def user_message(request: str, fixed: PlanConstraints, difficulty: str = "normal") -> str:
     """The request, plus the user's fixed constraints, so the model plans inside them."""
     notes = []
+    if difficulty != "normal":
+        notes.append(f"difficulty: {difficulty}")
     if fixed.hours is not None:
         most = fixed.hours * 60 // MINUTES_PER_PROBLEM
         notes.append(f"hours: {fixed.hours} (at most {most} problems)")
@@ -111,7 +114,7 @@ def run_agent(llm: LLM, ctx: ToolContext, request: str, max_steps: int = MAX_STE
     started = time.monotonic()
     messages = [
         {"role": "system", "content": SYSTEM_PROMPT.format(today=ctx.now.date())},
-        {"role": "user", "content": user_message(request, ctx.user_constraints)},
+        {"role": "user", "content": user_message(request, ctx.user_constraints, ctx.difficulty)},
     ]
     result = RunResult(outcome="max_steps", final_text=None, messages=messages, steps=0,
                        model=llm.model)

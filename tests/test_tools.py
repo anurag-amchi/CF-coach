@@ -52,6 +52,7 @@ def test_problem_out_rounds_and_keeps_matched_tag():
     out = problem_out(Candidate(p, "dp", 1415.6, 1.2345))
     assert (out.id, out.matched_tag) == ("2000B", "dp")
     assert (out.tag_skill, out.score) == (1416, 1.23)
+    assert out.gap == 200                 # 1600 - 1415 rounded to 1400
 
 
 def test_unknown_tag_is_an_error_that_lists_valid_tags():
@@ -137,9 +138,11 @@ def test_future_since_is_a_tool_error():
 # ---------- validate_plan / save_plan ----------
 
 def plan_setup():
-    """Skill 1400 on dp: the dp band is 1500-1700."""
+    """Skill 1400 on dp: the normal dp band is 1400-1600 (harder 1500-1700)."""
     problems = {
         (2000, "A"): ProblemRow(2000, "A", "ok", 1600, ("dp",)),
+        (2000, "F"): ProblemRow(2000, "F", "level", 1400, ("dp",)),
+        (2000, "G"): ProblemRow(2000, "G", "level+1", 1500, ("dp",)),
         (2000, "B"): ProblemRow(2000, "B", "trees", 1600, ("dp", "trees")),
         (2000, "C"): ProblemRow(2000, "C", "easy", 1200, ("dp",)),
         (2000, "D"): ProblemRow(2000, "D", "unrated", None, ("dp",)),
@@ -175,9 +178,26 @@ def test_ids_forgive_case_and_spaces():
 
 def test_band_edges_are_inclusive():
     problems, solved, _, running = plan_setup()
-    profile = Profile(1400, {"dp": 1300.0})           # band 1400-1600: 1600 is on the edge
-    assert plan_errors([item("2000A")], PlanConstraints(), offered_as_dp(problems), problems,
-                       solved, profile, running) == []
+    for skill in (1350.0, 1550.0):     # rounds to 1400 (1600 = top edge), 1600 (bottom edge)
+        profile = Profile(1400, {"dp": skill})
+        assert plan_errors([item("2000A")], PlanConstraints(), offered_as_dp(problems),
+                           problems, solved, profile, running) == []
+
+
+def test_difficulty_moves_the_band():
+    errs = errors_for([item("2000F"), item("2000A")])    # normal: 1400 and 1600 both fit
+    assert errs == []
+    problems, solved, profile, running = plan_setup()
+    errs = plan_errors([item("2000F"), item("2000A")], PlanConstraints(),
+                       offered_as_dp(problems), problems, solved, profile, running, "harder")
+    assert errs == ["item 1 (2000F): rating 1400 is outside the harder dp band 1500-1700"]
+
+
+def test_saved_plan_is_a_ladder_whatever_the_models_order():
+    problems, _, profile, _ = plan_setup()
+    out = saved_items([item("2000A"), item("2000G"), item("2000F")],   # hardest first
+                      offered_as_dp(problems), problems, profile)
+    assert [(s.id, s.gap) for s in out] == [("2000F", 0), ("2000G", 100), ("2000A", 200)]
 
 
 def test_each_rule_reports_its_own_line():
@@ -191,7 +211,7 @@ def test_each_rule_reports_its_own_line():
         item("2000D"),       # unrated
     ], offered=offered)
     assert errs == [
-        "item 1 (2000C): rating 1200 is outside the dp band 1500-1700",
+        "item 1 (2000C): rating 1200 is outside the normal dp band 1400-1600",
         "item 2 (2000E): already solved",
         "item 3 (2100A): contest 2100 is still running",
         "item 4 (9999Z): no such problem in the problemset",
@@ -224,26 +244,27 @@ BACKLOG = {
     (2200, "A"): ProblemRow(2200, "A", "two tags", 1600, ("greedy", "dp", "*special")),
     (2200, "B"): ProblemRow(2200, "B", "too easy", 1200, ("greedy", "dp")),
 }
-BACKLOG_PROFILE = Profile(1400, {"dp": 1400.0, "greedy": 1450.0})   # bands 1500-1700, 1550-1750
+# greedy 1450 rounds to 1500: normal bands dp 1400-1600, greedy 1500-1700
+BACKLOG_PROFILE = Profile(1400, {"dp": 1400.0, "greedy": 1450.0})
 FROM_BACKLOG = {problem_id(c, i): Offer(c, i, None) for (c, i) in BACKLOG}
 
 
 def test_backlog_problem_practises_its_weakest_tag_that_fits():
     p = BACKLOG[(2200, "A")]
-    assert plan_tag(FROM_BACKLOG["2200A"], p, BACKLOG_PROFILE) == "dp"   # never '*special'
+    assert plan_tag(FROM_BACKLOG["2200A"], p, BACKLOG_PROFILE, "normal") == "dp"   # not *special
     assert saved_items([item("2200A")], FROM_BACKLOG, BACKLOG, BACKLOG_PROFILE) == [
-        SavedItem(id="2200A", contest_id=2200, idx="A", tag="dp", reason="r")]
+        SavedItem(id="2200A", contest_id=2200, idx="A", tag="dp", gap=200, reason="r")]
 
 
 def test_weakest_tag_must_still_fit_the_band():
-    p = ProblemRow(2200, "C", "x", 1720, ("dp", "greedy"))    # above dp's 1700, inside greedy's
-    assert plan_tag(Offer(2200, "C", None), p, BACKLOG_PROFILE) == "greedy"
+    p = ProblemRow(2200, "C", "x", 1700, ("dp", "greedy"))    # above dp's 1600, inside greedy's
+    assert plan_tag(Offer(2200, "C", None), p, BACKLOG_PROFILE, "normal") == "greedy"
 
 
 def test_backlog_problem_outside_every_band_is_an_error():
     errs = plan_errors([item("2200B")], PlanConstraints(), FROM_BACKLOG, BACKLOG, set(),
                        BACKLOG_PROFILE, set())
-    assert errs == ["item 1 (2200B): rating 1200 is outside the skill band of every one "
+    assert errs == ["item 1 (2200B): rating 1200 is outside the normal band of every one "
                     "of its tags ['greedy', 'dp']"]
 
 
@@ -361,25 +382,27 @@ def test_save_stores_the_enforced_constraints_and_the_worked_out_items(monkeypat
                       offered=offered_as_dp(plan_setup()[0]))
     out = save_plan(ctx, SavePlanInput(items=[item("2000a")]))   # model: hours=None
     assert out.plan_id == 42 and ctx.saved_plan_id == 42
-    assert session.added[0].constraints == {"hours": 4, "avoid_tags": ["geometry"]}
-    # the JSON the plans row gets: the code's id spelling and tag, the model's reason
+    assert session.added[0].constraints == {"hours": 4, "avoid_tags": ["geometry"],
+                                            "difficulty": "normal"}
+    # the JSON the plans row gets: the code's id spelling, tag and gap, the model's reason
     assert session.added[0].items == [
-        {"id": "2000A", "contest_id": 2000, "idx": "A", "tag": "dp", "reason": "r"}]
+        {"id": "2000A", "contest_id": 2000, "idx": "A", "tag": "dp", "gap": 200, "reason": "r"}]
 
 
 def test_find_problems_always_skips_the_users_avoided_tags(monkeypatch):
     running = fake_plan_data(monkeypatch)
     seen = {}
 
-    def fake_select(*args, excluded_tags, **kwargs):
-        seen["excluded"] = excluded_tags
+    def fake_select(*args, excluded_tags, difficulty, **kwargs):
+        seen["excluded"], seen["difficulty"] = excluded_tags, difficulty
         return []
 
     monkeypatch.setattr(tools, "select_candidates", fake_select)
     ctx = ToolContext("me", session=None, now=TODAY, running_contests=running,
-                      user_constraints=PlanConstraints(avoid_tags=["trees"]))
-    find_problems(ctx, FindProblemsInput(tag="dp"))          # the model avoided nothing
+                      user_constraints=PlanConstraints(avoid_tags=["trees"]), difficulty="harder")
+    out = find_problems(ctx, FindProblemsInput(tag="dp"))    # the model avoided nothing
     assert seen["excluded"] == frozenset({"trees"})
+    assert seen["difficulty"] == "harder" == out.difficulty  # from ctx, not from the model
 
 
 def test_unknown_user_tag_is_rejected_up_front(monkeypatch):

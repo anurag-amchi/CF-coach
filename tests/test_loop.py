@@ -118,6 +118,8 @@ def test_run_tool_on_real_schema_names():
 
 def test_no_fixed_constraints_leaves_the_request_alone():
     assert user_message("plan my week", PlanConstraints()) == "plan my week"
+    assert user_message("plan my week", PlanConstraints(), "harder") == (
+        "plan my week\n\nFixed constraints: difficulty: harder")
 
 
 def test_fixed_constraints_are_added_to_the_users_message():

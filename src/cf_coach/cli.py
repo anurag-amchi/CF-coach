@@ -8,13 +8,15 @@ run to agent_runs -> print the saved plan (read back from the plans table).
 Options:  --hours N   practice hours this week (1-40); always enforced on the plan
           --avoid TAG a tag to keep out of the plan, e.g. --avoid geometry; repeat it for
                       more ("--avoid 'dfs and similar'" for tags with spaces)
+          --difficulty easier|normal|harder   the rating band (default normal = level
+                      to +200); always enforced
           --no-sync   skip the CF sync (the user must have been synced before)
           --max-steps N, --model NAME
           -v          also show every HTTP request and SDK retry (to see where time goes)
 Exit code: 0 if the run ended normally (saved / no_plan), 1 otherwise.
 
 Run as `python -m cf_coach`: Windows Smart App Control blocks the cf-coach.exe launcher.
-Design reasons: docs/decisions.md #31, #32.
+Design reasons: docs/decisions.md #31, #32, #36.
 """
 
 import argparse
@@ -68,7 +70,8 @@ def print_plan(session, plan_id: int) -> None:
     for n, item in enumerate(plan.items, start=1):
         c, i = item["contest_id"], item["idx"]
         p = session.get(Problem, (c, i))
-        print(f"{n}. {c}{i}  {p.name}  ({p.rating})  [{item['tag']}]")
+        gap = f" {item['gap']:+d}" if "gap" in item else ""     # plans before #36 have none
+        print(f"{n}. {c}{i}  {p.name}  ({p.rating})  [{item['tag']}{gap}]")
         print(f"   {item['reason']}")
         print(f"   https://codeforces.com/problemset/problem/{c}/{i}")
 
@@ -80,6 +83,7 @@ def cmd_plan(args) -> int:
     from cf_coach.agent.llm import GroqLLM
     from cf_coach.agent.loop import run_agent, save_run
     from cf_coach.agent.tools import ToolContext, user_constraints
+    from cf_coach.analytics.selection import DIFFICULTY_GAPS
     from cf_coach.analytics.tag_profile import refresh_tag_skills
     from cf_coach.db.models import Problem
     from cf_coach.db.session import get_engine
@@ -101,12 +105,15 @@ def cmd_plan(args) -> int:
         fixed = user_constraints(session, args.hours, args.avoid)   # unknown tag -> ToolError
     if fixed.hours is not None or fixed.avoid_tags:
         print(f"fixed constraints: {fixed.model_dump()}")
+    lo, hi = DIFFICULTY_GAPS[args.difficulty]
+    print(f"difficulty: {args.difficulty} ({lo:+d} to {hi:+d} around each tag's level)")
     print(f"tag profile: {refresh_tag_skills(handle, now)} tags")
 
     with Session(get_engine()) as session:
         llm = GroqLLM(model=args.model)
         print(f"agent: {llm.model}, max {args.max_steps} steps\n")
-        ctx = ToolContext(handle, session, now, user_constraints=fixed)
+        ctx = ToolContext(handle, session, now, user_constraints=fixed,
+                          difficulty=args.difficulty)
         result = run_agent(llm, ctx, args.request, max_steps=args.max_steps,
                            on_message=printer(started))
         run_id = save_run(session, handle, result)
@@ -126,6 +133,7 @@ def cmd_plan(args) -> int:
 
 def build_parser() -> argparse.ArgumentParser:
     from cf_coach.agent.loop import MAX_STEPS
+    from cf_coach.analytics.selection import DIFFICULTY_GAPS
     parser = argparse.ArgumentParser(prog="cf_coach", description="Codeforces practice coach")
     sub = parser.add_subparsers(dest="command", required=True)
     plan = sub.add_parser("plan", help="sync, then build and save a plan for this week")
@@ -135,6 +143,9 @@ def build_parser() -> argparse.ArgumentParser:
                       help="practice hours this week (1-40), always enforced")
     plan.add_argument("--avoid", action="append", default=[], metavar="TAG",
                       help="a tag to keep out of the plan; repeat for more")
+    plan.add_argument("--difficulty", choices=list(DIFFICULTY_GAPS), default="normal",
+                      help="easier = -100..+100, normal = +0..+200, harder = +100..+300 "
+                           "around each tag's level (skill rounded to 100)")
     plan.add_argument("--no-sync", action="store_true")
     plan.add_argument("--max-steps", type=int, default=MAX_STEPS)
     plan.add_argument("--model", default=None, help="default: LLM_MODEL from .env")

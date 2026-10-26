@@ -112,11 +112,13 @@ class ProblemOut(BaseModel):
     tags: list[str]
     matched_tag: str               # the tag whose band it fell in
     tag_skill: int
+    gap: int                       # rating above the rounded tag skill: its ladder level
     score: float
 
 
 class FindProblemsOut(BaseModel):
-    problems: list[ProblemOut]
+    difficulty: str                # the band used: easier / normal / harder
+    problems: list[ProblemOut]     # in ladder order: +0, +100, +200, +0, ...
 
 
 class SolvedOut(BaseModel):
@@ -160,8 +162,10 @@ TOOLS: dict[str, tuple[str, type[ToolInput]]] = {
         "Contest problems the user submitted to and never solved, newest first.",
         GetUpsolveBacklogInput),
     "find_problems": (
-        "Unsolved problems rated 100-300 above the user's skill on their tag, ranked by "
-        "a strategy. Never returns problems from contests that are still running.",
+        "Unsolved problems at the user's level on a tag (skill rounded to 100; the band "
+        "comes from the requested difficulty), in ladder order: one per level, easiest "
+        "first, then repeating. Taking the first N gives a plan that climbs evenly. Never "
+        "returns problems from contests that are still running.",
         FindProblemsInput),
     "get_progress_since": (
         "Problems the user solved since a date, and how their tag skills changed.",
