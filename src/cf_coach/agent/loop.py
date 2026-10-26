@@ -32,7 +32,7 @@ from datetime import datetime, timezone
 
 from sqlalchemy.orm import Session
 
-from cf_coach.agent.llm import LLM, ToolCallRejected
+from cf_coach.agent.llm import LLM, ToolCall, ToolCallRejected, assistant_message
 from cf_coach.agent.schemas import (
     TOOL_SCHEMAS, TOOLS, PlanConstraints, ToolArgsError, parse_args,
 )
@@ -47,7 +47,8 @@ SYSTEM_PROMPT = """You are a Codeforces practice coach. Today is {today}.
 Build a practice plan for this week from the user's own data, using only the tools.
 
 Rules:
-- Start with get_tag_profile. Use get_upsolve_backlog and get_progress_since when they help.
+- The first tool result is the user's tag profile, already loaded for you. Use
+  get_upsolve_backlog and get_progress_since when they help.
 - A plan item is {{"id": "<problem id exactly as a tool returned it>", "reason": "..."}}.
   Only plan ids that find_problems or get_upsolve_backlog returned. Never invent ids.
 - find_problems lists problems in ladder order (one per level, easiest first). For N
@@ -60,7 +61,19 @@ Rules:
 - Call validate_plan before save_plan. If it returns errors, fix all of them and validate again.
 - Each `reason` is one sentence that cites the user's data (skill, abandon rate, backlog).
 - After save_plan succeeds, reply with a short summary of the plan and call no more tools.
-- If the message is not about practice planning, answer briefly without tools."""
+- If the message is a question (the note says so), answer it briefly from the tools'
+  data; you have only the read-only tools then."""
+
+READ_ONLY_TOOLS = ("get_tag_profile", "get_upsolve_backlog", "find_problems",
+                   "get_progress_since")
+PROFILE_CALL_ID = "code-get_tag_profile"     # the call code makes before the first step
+
+
+def allowed_tools(intent: str, tools: dict[str, Callable]) -> dict[str, Callable]:
+    """A question gets only the read-only tools: it can't validate or save a plan."""
+    if intent == "plan":
+        return tools
+    return {name: fn for name, fn in tools.items() if name in READ_ONLY_TOOLS}
 
 
 @dataclass
@@ -78,9 +91,12 @@ class RunResult:
 
 
 def user_message(request: str, fixed: PlanConstraints, difficulty: str = "normal",
-                 count: int | None = None, focus_tags: list[str] = ()) -> str:
+                 count: int | None = None, focus_tags: list[str] = (),
+                 intent: str = "plan") -> str:
     """The request, plus the user's fixed constraints, so the model plans inside them."""
     notes = []
+    if intent == "question":
+        notes.append("this is a question: answer it, don't build a plan")
     if (want := wanted_count(count, fixed.hours)) is not None:
         notes.append(f"problems: exactly {want}")
     if focus_tags:
@@ -116,13 +132,21 @@ def run_tool(name: str, raw_args: str, ctx: ToolContext,
 
 def run_agent(llm: LLM, ctx: ToolContext, request: str, max_steps: int = MAX_STEPS,
               tools: dict[str, Callable] = TOOL_FUNCTIONS,
-              on_message: Callable[[dict], None] = lambda m: None) -> RunResult:
-    """Run the loop for one user request. `on_message` sees every new message (CLI, SSE)."""
+              on_message: Callable[[dict], None] = lambda m: None,
+              start_with_profile: bool = True) -> RunResult:
+    """Run the loop for one user request. `on_message` sees every new message (CLI, SSE).
+
+    start_with_profile: code calls get_tag_profile before the first model step and adds
+    the call + result to the messages, so every run starts from the user's data (this was
+    a prompt rule) and saves one LLM step.
+    """
     started = time.monotonic()
+    tools = allowed_tools(ctx.intent, tools)
+    schemas = [s for s in TOOL_SCHEMAS if s["function"]["name"] in tools]
     messages = [
         {"role": "system", "content": SYSTEM_PROMPT.format(today=ctx.now.date())},
         {"role": "user", "content": user_message(request, ctx.user_constraints, ctx.difficulty,
-                                                 ctx.count, ctx.focus_tags)},
+                                                 ctx.count, ctx.focus_tags, ctx.intent)},
     ]
     result = RunResult(outcome="max_steps", final_text=None, messages=messages, steps=0,
                        model=llm.model)
@@ -132,9 +156,14 @@ def run_agent(llm: LLM, ctx: ToolContext, request: str, max_steps: int = MAX_STE
         on_message(msg)
 
     try:
+        if start_with_profile:
+            call = ToolCall(PROFILE_CALL_ID, "get_tag_profile", "{}")
+            add(assistant_message(None, [call]))
+            add({"role": "tool", "tool_call_id": call.id,
+                 "content": run_tool(call.name, call.arguments, ctx, tools)})
         while result.steps < max_steps:
             try:
-                reply = llm.chat(messages, TOOL_SCHEMAS)
+                reply = llm.chat(messages, schemas)
             except ToolCallRejected as e:            # the model can fix it: tell it, go on
                 result.steps += 1
                 add({"role": "user", "content": f"Your last tool call was rejected and not "

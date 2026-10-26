@@ -2,7 +2,9 @@ import json
 from datetime import datetime, timezone
 
 from cf_coach.agent.llm import LLMReply, ScriptedLLM, ToolCall, ToolCallRejected, scripted_reply
-from cf_coach.agent.loop import run_agent, run_tool, user_message
+from cf_coach.agent.loop import (
+    PROFILE_CALL_ID, READ_ONLY_TOOLS, allowed_tools, run_agent, run_tool, user_message,
+)
 from cf_coach.agent.schemas import PlanConstraints, SavePlanOut, TagProfileOut, TOOL_SCHEMAS
 from cf_coach.agent.tools import ToolContext, ToolError
 
@@ -35,10 +37,12 @@ def call(name, args="{}", id="c1"):
     return ToolCall(id, name, args)
 
 
-def run(replies, max_steps=10):
+def run(replies, max_steps=10, start_with_profile=False, intent="plan"):
+    """Most tests switch the code-side profile call off, so the messages are only the model's."""
     llm = ScriptedLLM(replies)
-    ctx = ToolContext("me", session=None, now=NOW)
-    return run_agent(llm, ctx, "plan my week", max_steps=max_steps, tools=FAKE_TOOLS), llm
+    ctx = ToolContext("me", session=None, now=NOW, intent=intent)
+    return run_agent(llm, ctx, "plan my week", max_steps=max_steps, tools=FAKE_TOOLS,
+                     start_with_profile=start_with_profile), llm
 
 
 def test_tool_result_goes_back_paired_with_its_call():
@@ -133,3 +137,37 @@ def test_fixed_constraints_are_added_to_the_users_message():
     assert result.messages[1]["content"] == (
         "3 dp problems\n\nFixed constraints: hours: 4 (at most 4 problems); "
         "avoid tags: geometry, dfs and similar")
+
+
+# ---------- profile first in code, read-only tools for questions (decision #39) ----------
+
+def test_code_loads_the_profile_before_the_first_step():
+    result, llm = run([scripted_reply("done")], start_with_profile=True)
+    roles = [m["role"] for m in result.messages]
+    assert roles == ["system", "user", "assistant", "tool", "assistant"]
+    call = result.messages[2]["tool_calls"][0]
+    assert call["function"]["name"] == "get_tag_profile" and call["id"] == PROFILE_CALL_ID
+    assert result.messages[3]["tool_call_id"] == PROFILE_CALL_ID
+    assert json.loads(result.messages[3]["content"]) == {"rating": 1400, "tags": []}
+    assert result.steps == 1                       # no LLM step was spent on it
+    assert llm.seen[0][-1] == result.messages[3]   # the model's first call already sees it
+
+
+def test_a_question_gets_only_read_only_tools():
+    result, llm = run([scripted_reply(calls=[call("save_plan", PLAN)]), scripted_reply("ok")],
+                      intent="question")
+    assert "save_plan" not in llm.tool_names[0] and "get_tag_profile" in llm.tool_names[0]
+    error = json.loads(result.messages[3]["content"])["error"]
+    assert error.startswith("unknown tool 'save_plan'")       # and nothing was saved
+    assert result.outcome == "no_plan" and result.plan_id is None
+    assert "this is a question" in result.messages[1]["content"]
+
+
+def test_allowed_tools():
+    assert allowed_tools("plan", FAKE_TOOLS) == FAKE_TOOLS
+    assert set(allowed_tools("question", FAKE_TOOLS)) == {
+        "get_tag_profile", "find_problems", "get_upsolve_backlog"}
+    assert set(READ_ONLY_TOOLS) < set(TOOL_SCHEMAS_NAMES)
+
+
+TOOL_SCHEMAS_NAMES = [s["function"]["name"] for s in TOOL_SCHEMAS]

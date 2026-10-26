@@ -147,7 +147,8 @@ def plan_limits(request: PlanRequest) -> dict:
     count = request.count
     if count is None and request.hours is None and request.intent == "plan":
         count = DEFAULT_COUNT
-    return {"user_constraints": PlanConstraints(hours=request.hours,
+    return {"intent": request.intent,
+            "user_constraints": PlanConstraints(hours=request.hours,
                                                 avoid_tags=list(request.avoid_tags)),
             "difficulty": request.difficulty or "normal",
             "count": count,

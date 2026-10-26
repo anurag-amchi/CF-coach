@@ -120,6 +120,7 @@ class ToolContext:
     # Which band find_problems searches and validate_plan checks. Set by the caller
     # (request.plan_limits: the parsed request + flags); the model can't change it.
     difficulty: Difficulty = "normal"
+    intent: str = "plan"                       # "question" -> read-only tools (loop.py)
     count: int | None = None                   # exact number of problems; None = no rule
     focus_tags: list[str] = field(default_factory=list)   # every item must practise one
 

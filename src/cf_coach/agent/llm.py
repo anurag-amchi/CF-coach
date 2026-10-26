@@ -117,10 +117,12 @@ class ScriptedLLM(LLM):
     model: str = "scripted"
     seen: list[list[dict]] = field(default_factory=list)
     schemas: list[dict | None] = field(default_factory=list)   # response_schema per call
+    tool_names: list[list[str]] = field(default_factory=list)  # tools offered per call
 
     def chat(self, messages, tools, response_schema=None):
         self.seen.append(list(messages))
         self.schemas.append(response_schema)
+        self.tool_names.append([t["function"]["name"] for t in tools or []])
         if not self.replies:
             raise RuntimeError("ScriptedLLM ran out of replies")
         reply = self.replies.pop(0)
