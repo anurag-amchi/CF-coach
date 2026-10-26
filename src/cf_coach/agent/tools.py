@@ -17,8 +17,11 @@ by find_problems, validate_plan and save_plan whatever the model passes.
 save_plan writes through ToolContext.plan_store: Postgres (DbPlanStore) unless the caller
 passes another store (the evals use MemoryPlanStore).
 
+Plans name problems by id ("2242D"). find_problems and get_upsolve_backlog remember every
+id they return (ToolContext.offered), and validate_plan / save_plan accept only those.
+
 Run on real data:  uv run python -m cf_coach.agent.tools TitanCoder1258 [--save]
-Design reasons: docs/decisions.md #26, #28, #29, #32, #34.
+Design reasons: docs/decisions.md #26, #28, #29, #32, #34, #35.
 """
 
 import sys
@@ -26,6 +29,7 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from datetime import date, datetime, time, timezone
 
+from pydantic import BaseModel
 from sqlalchemy import select, update
 from sqlalchemy.orm import Session
 
@@ -60,11 +64,37 @@ class ToolError(Exception):
     """The request can't be done. The message is written for the model to read."""
 
 
+def problem_id(contest_id: int, idx: str) -> str:
+    """(2242, "D") -> "2242D", the id the model sees and plans with.
+
+    Only ever built, never parsed back: contest 921 has indices "01".."14", so "92101"
+    can't be split by a pattern. The split is kept in ToolContext.offered instead.
+    """
+    return f"{contest_id}{idx}"
+
+
+@dataclass(frozen=True)
+class Offer:
+    """A problem a tool returned in this run, so a plan may use it."""
+    contest_id: int
+    idx: str
+    tag: str | None        # the tag find_problems matched it to; None = from the backlog
+
+
+class SavedItem(BaseModel):
+    """A plan item as stored: the model's id and reason, plus what the code worked out."""
+    id: str
+    contest_id: int
+    idx: str
+    tag: str               # the tag it practises (see plan_tag)
+    reason: str
+
+
 class PlanStore(ABC):
     """Where save_plan writes a validated plan: Postgres normally, memory in the evals."""
 
     @abstractmethod
-    def save(self, handle: str, constraints: PlanConstraints, items: list[PlanItem]) -> int:
+    def save(self, handle: str, constraints: PlanConstraints, items: list[SavedItem]) -> int:
         """Store the plan as the user's active one; return its id."""
 
 
@@ -79,12 +109,21 @@ class ToolContext:
     # whatever the model passes. See effective_constraints().
     user_constraints: PlanConstraints = field(default_factory=PlanConstraints)
     plan_store: PlanStore | None = None        # None = the database (DbPlanStore)
+    # Every problem id a tool returned in this run. A plan may only use these.
+    offered: dict[str, Offer] = field(default_factory=dict)
 
     def get_running_contests(self) -> set[int]:
         """Fetched from CF once per run, on first use, then reused by every tool call."""
         if self.running_contests is None:
             self.running_contests = running_contest_ids()
         return self.running_contests
+
+    def offer(self, contest_id: int, idx: str, tag: str | None) -> None:
+        """Remember a returned problem. A find_problems tag is never replaced by None:
+        the same problem can come back from the backlog later."""
+        pid = problem_id(contest_id, idx)
+        if tag is not None or pid not in self.offered:
+            self.offered[pid] = Offer(contest_id, idx, tag)
 
 
 # ---------- get_tag_profile ----------
@@ -107,13 +146,16 @@ def get_tag_profile(ctx: ToolContext, args: GetTagProfileInput) -> TagProfileOut
 
 def backlog_out(items: list[BacklogItem], limit: int) -> BacklogOut:
     return BacklogOut(total=len(items), items=[
-        BacklogItemOut(contest_id=b.contest_id, idx=b.idx, rating=b.rating,
+        BacklogItemOut(id=problem_id(b.contest_id, b.idx), rating=b.rating,
                        tags=topic_tags(b.tags), last_tried=b.last_tried_at.date())
         for b in items[:limit]])
 
 
 def get_upsolve_backlog(ctx: ToolContext, args: GetUpsolveBacklogInput) -> BacklogOut:
-    return backlog_out(upsolve_backlog(load_rows(ctx.session, ctx.handle)), args.limit)
+    items = upsolve_backlog(load_rows(ctx.session, ctx.handle))
+    for b in items[:args.limit]:           # only the ones the model is shown
+        ctx.offer(b.contest_id, b.idx, None)
+    return backlog_out(items, args.limit)
 
 
 # ---------- find_problems ----------
@@ -127,7 +169,7 @@ def check_tags(asked: list[str], known: set[str]) -> None:
 
 def problem_out(c: Candidate) -> ProblemOut:
     p = c.problem
-    return ProblemOut(contest_id=p.contest_id, idx=p.idx, name=p.name, rating=p.rating,
+    return ProblemOut(id=problem_id(p.contest_id, p.idx), name=p.name, rating=p.rating,
                       tags=topic_tags(p.tags), matched_tag=c.tag, tag_skill=round(c.tag_skill),
                       score=round(c.score, 2))
 
@@ -150,6 +192,8 @@ def find_problems(ctx: ToolContext, args: FindProblemsInput) -> FindProblemsOut:
         excluded_tags=frozenset(args.avoid_tags + ctx.user_constraints.avoid_tags),
         count=args.count,
     )
+    for c in candidates:
+        ctx.offer(c.problem.contest_id, c.problem.idx, c.tag)
     return FindProblemsOut(problems=[problem_out(c) for c in candidates])
 
 
@@ -200,7 +244,7 @@ def progress_out(rows: list[SubmissionRow], since: date, now: datetime,
     return ProgressOut(
         since=since,
         solved_total=len(solves),
-        solved=[SolvedOut(contest_id=r.contest_id, idx=r.idx, rating=r.rating,
+        solved=[SolvedOut(id=problem_id(r.contest_id, r.idx), rating=r.rating,
                           tags=topic_tags(r.tags), solved_on=r.created_at.date())
                 for r in solves[:MAX_SOLVED_LISTED]],
         skill_changes=skill_changes(rows, since_dt, now, start),
@@ -239,13 +283,39 @@ def effective_constraints(user: PlanConstraints, model: PlanConstraints) -> Plan
     return PlanConstraints(hours=hours, avoid_tags=tags)
 
 
-def plan_errors(items: list[PlanItem], constraints: PlanConstraints,
+def clean_id(raw: str) -> str:
+    """' 2242d ' -> '2242D': forgive spacing and case, nothing else."""
+    return raw.strip().upper()
+
+
+def tag_skill(profile: Profile, tag: str) -> float:
+    return profile.skills.get(tag, profile.rating)    # an untried tag starts at the CF rating
+
+
+def in_band(profile: Profile, tag: str, rating: int) -> bool:
+    """The same band rule find_problems uses, so anything it returned passes."""
+    skill = tag_skill(profile, tag)
+    return skill + BAND[0] <= rating <= skill + BAND[1]
+
+
+def plan_tag(offer: Offer, p: ProblemRow, profile: Profile) -> str | None:
+    """The tag a planned problem practises; None if no tag's band fits its rating.
+
+    From find_problems: the tag it was matched to. From the backlog (no matched tag): its
+    weakest tag whose band holds the rating.
+    """
+    if offer.tag is not None:
+        return offer.tag
+    fits = [t for t in topic_tags(p.tags) if p.rating is not None and in_band(profile, t, p.rating)]
+    return min(fits, key=lambda t: (tag_skill(profile, t), t)) if fits else None
+
+
+def plan_errors(items: list[PlanItem], constraints: PlanConstraints, offered: dict[str, Offer],
                 problems: dict[tuple[int, str], ProblemRow], solved: set[tuple[int, str]],
                 profile: Profile, running: set[int]) -> list[str]:
     """Every rule the plan breaks, one line each. Empty list = the plan is valid.
 
-    Deterministic: the same plan and data always give the same answer. The band rule is
-    the same one find_problems uses, so anything find_problems returned passes it.
+    Deterministic: the same plan and data always give the same answer.
     """
     errors = []
     if constraints.hours is not None:
@@ -256,14 +326,20 @@ def plan_errors(items: list[PlanItem], constraints: PlanConstraints,
     avoid = set(constraints.avoid_tags)
     seen = set()
     for n, item in enumerate(items, start=1):
-        key = (item.contest_id, item.idx)
-        where = f"item {n} ({item.contest_id}{item.idx})"
-        if key in seen:
+        pid = clean_id(item.id)
+        where = f"item {n} ({pid})"
+        if pid in seen:
             errors.append(f"{where}: listed twice")
             continue
-        seen.add(key)
+        seen.add(pid)
+        offer = offered.get(pid)
+        if offer is None:
+            errors.append(f"{where}: no tool returned this id in this conversation; "
+                          "plan only ids from find_problems or get_upsolve_backlog")
+            continue
+        key = (offer.contest_id, offer.idx)
         p = problems.get(key)
-        if p is None:
+        if p is None:                      # a backlog problem CF left out of the problemset
             errors.append(f"{where}: no such problem in the problemset")
             continue
         if key in solved:
@@ -272,32 +348,50 @@ def plan_errors(items: list[PlanItem], constraints: PlanConstraints,
             errors.append(f"{where}: contest {p.contest_id} is still running")
         if hit := avoid & set(p.tags):
             errors.append(f"{where}: has avoided tag(s) {sorted(hit)}")
-        if item.tag in IGNORED_TAGS or item.tag not in p.tags:
-            errors.append(f"{where}: '{item.tag}' is not one of its tags {topic_tags(p.tags)}")
-            continue
         if p.rating is None:
             errors.append(f"{where}: unrated, so it can't be matched to a skill band")
             continue
-        skill = profile.skills.get(item.tag, profile.rating)
-        if not (skill + BAND[0] <= p.rating <= skill + BAND[1]):
-            errors.append(f"{where}: rating {p.rating} is outside the {item.tag} band "
+        tag = plan_tag(offer, p, profile)
+        if tag is None:
+            errors.append(f"{where}: rating {p.rating} is outside the skill band of every one "
+                          f"of its tags {topic_tags(p.tags)}")
+        elif not in_band(profile, tag, p.rating):
+            skill = tag_skill(profile, tag)
+            errors.append(f"{where}: rating {p.rating} is outside the {tag} band "
                           f"{round(skill + BAND[0])}-{round(skill + BAND[1])}")
     return errors
 
 
+def saved_items(items: list[PlanItem], offered: dict[str, Offer],
+                problems: dict[tuple[int, str], ProblemRow], profile: Profile) -> list[SavedItem]:
+    """What gets stored. Only call on a plan with no errors (every id offered, every tag found)."""
+    out = []
+    for item in items:
+        offer = offered[clean_id(item.id)]
+        p = problems[(offer.contest_id, offer.idx)]
+        out.append(SavedItem(id=problem_id(offer.contest_id, offer.idx),
+                             contest_id=offer.contest_id, idx=offer.idx,
+                             tag=plan_tag(offer, p, profile), reason=item.reason))
+    return out
+
+
 def check_plan(ctx: ToolContext, items: list[PlanItem],
-               constraints: PlanConstraints) -> list[str]:
-    """Load what the rules need, then run them. Shared by validate_plan and save_plan."""
+               constraints: PlanConstraints) -> tuple[list[str], list[SavedItem]]:
+    """Load what the rules need, then run them. Shared by validate_plan and save_plan.
+
+    Returns (errors, the items as they would be saved); the items are [] when there are errors.
+    """
     problems = {(p.contest_id, p.idx): p for p in load_problems(ctx.session)}
-    return plan_errors(items, constraints, problems,
-                       load_solved(ctx.session, ctx.handle),
-                       build_profile(ctx.session, ctx.handle, ctx.now),
-                       ctx.get_running_contests())
+    profile = build_profile(ctx.session, ctx.handle, ctx.now)
+    errors = plan_errors(items, constraints, ctx.offered, problems,
+                         load_solved(ctx.session, ctx.handle), profile,
+                         ctx.get_running_contests())
+    return errors, [] if errors else saved_items(items, ctx.offered, problems, profile)
 
 
 def validate_plan(ctx: ToolContext, args: ValidatePlanInput) -> ValidationOut:
     constraints = effective_constraints(ctx.user_constraints, args.constraints)
-    errors = check_plan(ctx, args.items, constraints)
+    errors, _ = check_plan(ctx, args.items, constraints)
     return ValidationOut(ok=not errors, errors=errors)
 
 
@@ -309,12 +403,12 @@ def save_plan(ctx: ToolContext, args: SavePlanInput) -> SavePlanOut:
     if ctx.saved_plan_id is not None:
         raise ToolError(f"a plan was already saved in this run (plan {ctx.saved_plan_id})")
     constraints = effective_constraints(ctx.user_constraints, args.constraints)
-    errors = check_plan(ctx, args.items, constraints)
+    errors, items = check_plan(ctx, args.items, constraints)
     if errors:
         raise ToolError("plan not saved, it breaks these rules: " + "; ".join(errors)
                         + ". Fix them and call validate_plan again.")
     store = ctx.plan_store if ctx.plan_store is not None else DbPlanStore(ctx.session)
-    plan_id = store.save(ctx.handle, constraints, args.items)
+    plan_id = store.save(ctx.handle, constraints, items)
     ctx.saved_plan_id = plan_id
     return SavePlanOut(plan_id=plan_id, items=len(args.items))
 
@@ -346,7 +440,7 @@ class DbPlanStore(PlanStore):
 @dataclass
 class MemoryPlanStore(PlanStore):
     """Keeps plans in a dict: the evals use it so they never replace the user's real plan."""
-    plans: dict[int, tuple[PlanConstraints, list[PlanItem]]] = field(default_factory=dict)
+    plans: dict[int, tuple[PlanConstraints, list[SavedItem]]] = field(default_factory=dict)
 
     def save(self, handle, constraints, items):
         plan_id = len(self.plans) + 1
@@ -389,15 +483,15 @@ if __name__ == "__main__":
             except ToolError as e:
                 print(f"\n{name}({args!r})  ToolError: {e}")
 
-        # A plan built from find_problems' own output, and a broken copy of it.
+        # A plan built from the tools' own output, and a broken copy of it.
         found = find_problems(ctx, FindProblemsInput(tag="dp", count=2)).problems
-        good = [PlanItem(contest_id=p.contest_id, idx=p.idx, tag=p.matched_tag,
-                         reason="dp is below your other tags") for p in found]
-        bad = good + [
-            PlanItem(contest_id=1797, idx="B", tag="greedy", reason="backlog"),  # too easy
-            PlanItem(contest_id=2051, idx="A", tag="greedy", reason="x"),        # solved
-            PlanItem(contest_id=1, idx="Z", tag="dp", reason="x"),               # doesn't exist
-            good[0],                                                             # duplicate
+        backlog = get_upsolve_backlog(ctx, GetUpsolveBacklogInput(limit=3)).items
+        print(f"\noffered so far: {sorted(ctx.offered)}")
+        good = [PlanItem(id=p.id, reason="dp is below your other tags") for p in found]
+        bad = good + [PlanItem(id=b.id, reason="backlog") for b in backlog] + [
+            PlanItem(id="2051A", reason="x"),             # real and solved, but never offered
+            PlanItem(id="1Z", reason="x"),                # made up
+            PlanItem(id=good[0].id.lower(), reason="x"),  # duplicate, in lower case
         ]
         bad_plan = ValidatePlanInput(items=bad, constraints=PlanConstraints(
             hours=3, avoid_tags=["trees"]))

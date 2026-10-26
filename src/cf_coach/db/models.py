@@ -88,7 +88,8 @@ class Plan(Base):
     handle: Mapped[str] = mapped_column(ForeignKey("users.handle", ondelete="CASCADE"))
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     constraints: Mapped[dict] = mapped_column(JSONB)   # e.g. {"hours": 5, "avoid_tags": ["geometry"]}
-    items: Mapped[list] = mapped_column(JSONB)         # e.g. [{"problem": "2000B", "reason": "..."}]
+    # e.g. [{"id": "2000B", "contest_id": 2000, "idx": "B", "tag": "dp", "reason": "..."}]
+    items: Mapped[list] = mapped_column(JSONB)
     status: Mapped[str] = mapped_column(String(16), default="active")  # active / done / replaced
 
 

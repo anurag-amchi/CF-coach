@@ -46,8 +46,10 @@ Build a practice plan for this week from the user's own data, using only the too
 
 Rules:
 - Start with get_tag_profile. Use get_upsolve_backlog and get_progress_since when they help.
-- Only plan problems that a tool returned. Never invent problem ids.
-- Every problem must be rated 100-300 above the user's skill on the tag you give it.
+- A plan item is {{"id": "<problem id exactly as a tool returned it>", "reason": "..."}}.
+  Only plan ids that find_problems or get_upsolve_backlog returned. Never invent ids.
+- Every problem must be rated 100-300 above the user's skill on one of its tags
+  (find_problems only returns such problems; validate_plan checks backlog ones).
 - Read the user's constraints (hours, tags to avoid) from their message and pass them in
   `constraints`. If they give no hours, plan 5 problems.
 - "Fixed constraints" after the message come from the user's settings: plan within them.

@@ -28,7 +28,7 @@ def fake_crash(ctx, args):
 
 FAKE_TOOLS = {"get_tag_profile": fake_profile, "save_plan": fake_save,
               "find_problems": fake_impossible, "get_upsolve_backlog": fake_crash}
-PLAN = json.dumps({"items": [{"contest_id": 2000, "idx": "B", "tag": "dp", "reason": "r"}]})
+PLAN = json.dumps({"items": [{"id": "2000B", "reason": "r"}]})
 
 
 def call(name, args="{}", id="c1"):

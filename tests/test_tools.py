@@ -5,14 +5,14 @@ import pytest
 
 import cf_coach.agent.tools as tools
 from cf_coach.agent.schemas import (
-    TOOLS, FindProblemsInput, GetProgressSinceInput, PlanConstraints, PlanItem, SavePlanInput,
-    ValidatePlanInput,
+    TOOLS, FindProblemsInput, GetProgressSinceInput, GetUpsolveBacklogInput, PlanConstraints,
+    PlanItem, SavePlanInput, ValidatePlanInput,
 )
 from cf_coach.agent.tools import (
-    STRATEGIES, TOOL_FUNCTIONS, MemoryPlanStore, ToolContext, ToolError, all_tags, backlog_out,
-    check_tags, effective_constraints, find_problems, first_solves_since, get_progress_since,
-    plan_errors, problem_out, profile_out, progress_out, save_plan, user_constraints,
-    validate_plan,
+    STRATEGIES, TOOL_FUNCTIONS, MemoryPlanStore, Offer, SavedItem, ToolContext, ToolError,
+    all_tags, backlog_out, check_tags, effective_constraints, find_problems, first_solves_since,
+    get_progress_since, get_upsolve_backlog, plan_errors, plan_tag, problem_id, problem_out,
+    profile_out, progress_out, save_plan, saved_items, user_constraints, validate_plan,
 )
 from cf_coach.analytics.attempts import SubmissionRow
 from cf_coach.analytics.selection import Candidate, ProblemRow, Profile
@@ -42,7 +42,7 @@ def test_backlog_total_counts_everything_but_items_are_cut_to_limit():
     items = [BacklogItem(2000, i, 1500, ("dp", "*special"), NOW) for i in "ABC"]
     out = backlog_out(items, limit=2)
     assert out.total == 3
-    assert [b.idx for b in out.items] == ["A", "B"]
+    assert [b.id for b in out.items] == ["2000A", "2000B"]
     assert out.items[0].tags == ["dp"]
     assert out.items[0].last_tried.isoformat() == "2026-10-25"   # a date, not a datetime
 
@@ -50,7 +50,7 @@ def test_backlog_total_counts_everything_but_items_are_cut_to_limit():
 def test_problem_out_rounds_and_keeps_matched_tag():
     p = ProblemRow(2000, "B", "Name", 1600, ("dp", "greedy"))
     out = problem_out(Candidate(p, "dp", 1415.6, 1.2345))
-    assert (out.contest_id, out.idx, out.matched_tag) == (2000, "B", "dp")
+    assert (out.id, out.matched_tag) == ("2000B", "dp")
     assert (out.tag_skill, out.score) == (1416, 1.23)
 
 
@@ -112,7 +112,7 @@ def test_progress_counts_all_but_lists_at_most_the_cap(monkeypatch):
     rows = [at(d, 2000 + d, "A") for d in (2, 3, 4)]
     out = progress_out(rows, SINCE, TODAY, start=1400)
     assert out.solved_total == 3
-    assert [s.contest_id for s in out.solved] == [2004, 2003]
+    assert [s.id for s in out.solved] == ["2004A", "2003A"]
     assert out.solved[0].solved_on == date(2026, 10, 4)
 
 
@@ -149,46 +149,60 @@ def plan_setup():
     return problems, {(2000, "E")}, Profile(1400, {"dp": 1400.0}), {2100}
 
 
-def item(contest, idx, tag="dp"):
-    return PlanItem(contest_id=contest, idx=idx, tag=tag, reason="r")
+def offered_as_dp(problems):
+    """As if find_problems had returned every one of them, matched to dp."""
+    return {problem_id(c, i): Offer(c, i, "dp") for (c, i) in problems}
 
 
-def errors_for(items, constraints=None):
+def item(pid):
+    return PlanItem(id=pid, reason="r")
+
+
+def errors_for(items, constraints=None, offered=None):
     problems, solved, profile, running = plan_setup()
-    return plan_errors(items, constraints or PlanConstraints(), problems, solved, profile, running)
+    offered = offered_as_dp(problems) if offered is None else offered
+    return plan_errors(items, constraints or PlanConstraints(), offered, problems, solved,
+                       profile, running)
 
 
 def test_valid_plan_has_no_errors():
-    assert errors_for([item(2000, "A")]) == []
+    assert errors_for([item("2000A")]) == []
+
+
+def test_ids_forgive_case_and_spaces():
+    assert errors_for([item(" 2000a ")]) == []
 
 
 def test_band_edges_are_inclusive():
     problems, solved, _, running = plan_setup()
     profile = Profile(1400, {"dp": 1300.0})           # band 1400-1600: 1600 is on the edge
-    assert plan_errors([item(2000, "A")], PlanConstraints(), problems, solved, profile, running) == []
+    assert plan_errors([item("2000A")], PlanConstraints(), offered_as_dp(problems), problems,
+                       solved, profile, running) == []
 
 
 def test_each_rule_reports_its_own_line():
+    offered = offered_as_dp(plan_setup()[0]) | {"9999Z": Offer(9999, "Z", None)}
     errs = errors_for([
-        item(2000, "C"),                 # 1200: below the band
-        item(2000, "E"),                 # solved
-        item(2100, "A"),                 # contest still running
-        item(9999, "Z"),                 # doesn't exist
-        item(2000, "A", tag="greedy"),   # tag not on the problem
-        item(2000, "D"),                 # unrated
-    ])
+        item("2000C"),       # 1200: below the band
+        item("2000E"),       # solved
+        item("2100A"),       # contest still running
+        item("9999Z"),       # the backlog returned it, but CF's problemset doesn't have it
+        item("1234A"),       # no tool returned it
+        item("2000D"),       # unrated
+    ], offered=offered)
     assert errs == [
         "item 1 (2000C): rating 1200 is outside the dp band 1500-1700",
         "item 2 (2000E): already solved",
         "item 3 (2100A): contest 2100 is still running",
         "item 4 (9999Z): no such problem in the problemset",
-        "item 5 (2000A): 'greedy' is not one of its tags ['dp']",
+        "item 5 (1234A): no tool returned this id in this conversation; "
+        "plan only ids from find_problems or get_upsolve_backlog",
         "item 6 (2000D): unrated, so it can't be matched to a skill band",
     ]
 
 
 def test_avoided_tags_duplicates_and_hours():
-    errs = errors_for([item(2000, "A"), item(2000, "B"), item(2000, "A")],
+    errs = errors_for([item("2000A"), item("2000B"), item("2000a")],   # same id, other case
                       PlanConstraints(hours=2, avoid_tags=["trees"]))
     assert errs == [
         "3 problems is too many for 2 hours: at most 2 (about 60 min each)",
@@ -200,28 +214,87 @@ def test_avoided_tags_duplicates_and_hours():
 def test_untried_tag_uses_the_cf_rating():
     problems, solved, _, running = plan_setup()
     profile = Profile(1400, {})                       # never tried dp -> skill = rating 1400
-    assert plan_errors([item(2000, "A")], PlanConstraints(), problems, solved, profile, running) == []
+    assert plan_errors([item("2000A")], PlanConstraints(), offered_as_dp(problems), problems,
+                       solved, profile, running) == []
 
 
-def test_special_marker_is_not_a_practice_tag():
-    problems = {(1952, "F"): ProblemRow(1952, "F", "fools", 1600, ("*special", "dp"))}
-    errs = plan_errors([item(1952, "F", tag="*special")], PlanConstraints(), problems,
-                       set(), Profile(1400, {}), set())
-    assert errs == ["item 1 (1952F): '*special' is not one of its tags ['dp']"]
+# ---------- backlog problems: no matched tag, so the code picks one ----------
+
+BACKLOG = {
+    (2200, "A"): ProblemRow(2200, "A", "two tags", 1600, ("greedy", "dp", "*special")),
+    (2200, "B"): ProblemRow(2200, "B", "too easy", 1200, ("greedy", "dp")),
+}
+BACKLOG_PROFILE = Profile(1400, {"dp": 1400.0, "greedy": 1450.0})   # bands 1500-1700, 1550-1750
+FROM_BACKLOG = {problem_id(c, i): Offer(c, i, None) for (c, i) in BACKLOG}
+
+
+def test_backlog_problem_practises_its_weakest_tag_that_fits():
+    p = BACKLOG[(2200, "A")]
+    assert plan_tag(FROM_BACKLOG["2200A"], p, BACKLOG_PROFILE) == "dp"   # never '*special'
+    assert saved_items([item("2200A")], FROM_BACKLOG, BACKLOG, BACKLOG_PROFILE) == [
+        SavedItem(id="2200A", contest_id=2200, idx="A", tag="dp", reason="r")]
+
+
+def test_weakest_tag_must_still_fit_the_band():
+    p = ProblemRow(2200, "C", "x", 1720, ("dp", "greedy"))    # above dp's 1700, inside greedy's
+    assert plan_tag(Offer(2200, "C", None), p, BACKLOG_PROFILE) == "greedy"
+
+
+def test_backlog_problem_outside_every_band_is_an_error():
+    errs = plan_errors([item("2200B")], PlanConstraints(), FROM_BACKLOG, BACKLOG, set(),
+                       BACKLOG_PROFILE, set())
+    assert errs == ["item 1 (2200B): rating 1200 is outside the skill band of every one "
+                    "of its tags ['greedy', 'dp']"]
+
+
+def test_find_problems_tag_is_never_replaced_by_the_backlog():
+    ctx = ToolContext("me", session=None, now=TODAY)
+    ctx.offer(2000, "A", "dp")
+    ctx.offer(2000, "A", None)            # the backlog returns it too, later
+    ctx.offer(2000, "B", None)
+    ctx.offer(2000, "B", "greedy")        # find_problems returns it later: its tag is used
+    assert ctx.offered == {"2000A": Offer(2000, "A", "dp"), "2000B": Offer(2000, "B", "greedy")}
+
+
+def test_ids_are_never_parsed_back():
+    """Contest 921 has index '01': '92101' only works because the tool kept the split."""
+    problems = {(921, "01"): ProblemRow(921, "01", "Labyrinth-1", 3200, ("dp",))}
+    offered = {problem_id(921, "01"): Offer(921, "01", "dp")}
+    profile = Profile(1400, {"dp": 3000.0})
+    assert plan_errors([item("92101")], PlanConstraints(), offered, problems, set(),
+                       profile, set()) == []
+    [saved] = saved_items([item("92101")], offered, problems, profile)
+    assert (saved.contest_id, saved.idx) == (921, "01")
+
+
+def test_tools_remember_only_what_they_returned(monkeypatch):
+    running = fake_plan_data(monkeypatch)
+    problems, *_ = plan_setup()
+    monkeypatch.setattr(tools, "select_candidates", lambda *a, **k: [
+        Candidate(problems[(2000, "A")], "dp", 1400.0, 1.0)])
+    monkeypatch.setattr(tools, "load_rows", lambda session, handle: [])
+    monkeypatch.setattr(tools, "upsolve_backlog", lambda rows: [
+        BacklogItem(2000, i, 1600, ("dp",), NOW) for i in "BCD"])
+    ctx = ToolContext("me", session=None, now=TODAY, running_contests=running)
+    find_problems(ctx, FindProblemsInput(tag="dp"))
+    get_upsolve_backlog(ctx, GetUpsolveBacklogInput(limit=2))       # 2000D is not shown
+    assert ctx.offered == {"2000A": Offer(2000, "A", "dp"),
+                           "2000B": Offer(2000, "B", None), "2000C": Offer(2000, "C", None)}
 
 
 def test_save_refuses_an_invalid_plan_without_touching_the_db(monkeypatch):
-    monkeypatch.setattr(tools, "check_plan", lambda ctx, items, c: ["item 1 (2000C): too easy"])
+    monkeypatch.setattr(tools, "check_plan",
+                        lambda ctx, items, c: (["item 1 (2000C): too easy"], []))
     ctx = ToolContext("me", session=None, now=TODAY)          # session=None: any DB use crashes
     with pytest.raises(ToolError, match="plan not saved.*too easy"):
-        save_plan(ctx, SavePlanInput(items=[item(2000, "C")]))
+        save_plan(ctx, SavePlanInput(items=[item("2000C")]))
     assert ctx.saved_plan_id is None
 
 
 def test_save_only_once_per_run():
     ctx = ToolContext("me", session=None, now=TODAY, saved_plan_id=7)
     with pytest.raises(ToolError, match="already saved in this run"):
-        save_plan(ctx, SavePlanInput(items=[item(2000, "A")]))
+        save_plan(ctx, SavePlanInput(items=[item("2000A")]))
 
 
 # ---------- the user's fixed constraints (decision #32) ----------
@@ -250,8 +323,9 @@ def test_model_constraints_still_apply_when_the_user_set_none():
 def test_validate_enforces_user_constraints_the_model_dropped(monkeypatch):
     running = fake_plan_data(monkeypatch)
     ctx = ToolContext("me", session=None, now=TODAY, running_contests=running,
-                      user_constraints=PlanConstraints(hours=1, avoid_tags=["trees"]))
-    plan = ValidatePlanInput(items=[item(2000, "A"), item(2000, "B")])   # model sent no constraints
+                      user_constraints=PlanConstraints(hours=1, avoid_tags=["trees"]),
+                      offered=offered_as_dp(plan_setup()[0]))
+    plan = ValidatePlanInput(items=[item("2000A"), item("2000B")])   # model sent no constraints
     assert validate_plan(ctx, plan).errors == [
         "2 problems is too many for 1 hours: at most 1 (about 60 min each)",
         "item 2 (2000B): has avoided tag(s) ['trees']",
@@ -279,14 +353,18 @@ class FakeSession:
         pass
 
 
-def test_save_stores_the_enforced_constraints_not_the_models(monkeypatch):
-    monkeypatch.setattr(tools, "check_plan", lambda ctx, items, c: [])
+def test_save_stores_the_enforced_constraints_and_the_worked_out_items(monkeypatch):
+    running = fake_plan_data(monkeypatch)
     session = FakeSession()
-    ctx = ToolContext("me", session=session, now=TODAY,
-                      user_constraints=PlanConstraints(hours=4, avoid_tags=["geometry"]))
-    out = save_plan(ctx, SavePlanInput(items=[item(2000, "A")]))   # model: hours=None
+    ctx = ToolContext("me", session=session, now=TODAY, running_contests=running,
+                      user_constraints=PlanConstraints(hours=4, avoid_tags=["geometry"]),
+                      offered=offered_as_dp(plan_setup()[0]))
+    out = save_plan(ctx, SavePlanInput(items=[item("2000a")]))   # model: hours=None
     assert out.plan_id == 42 and ctx.saved_plan_id == 42
     assert session.added[0].constraints == {"hours": 4, "avoid_tags": ["geometry"]}
+    # the JSON the plans row gets: the code's id spelling and tag, the model's reason
+    assert session.added[0].items == [
+        {"id": "2000A", "contest_id": 2000, "idx": "A", "tag": "dp", "reason": "r"}]
 
 
 def test_find_problems_always_skips_the_users_avoided_tags(monkeypatch):
@@ -312,10 +390,11 @@ def test_unknown_user_tag_is_rejected_up_front(monkeypatch):
 
 
 def test_memory_store_keeps_the_plan_out_of_the_database(monkeypatch):
-    monkeypatch.setattr(tools, "check_plan", lambda ctx, items, c: [])
+    running = fake_plan_data(monkeypatch)
     store = MemoryPlanStore()
-    ctx = ToolContext("me", session=None, now=TODAY, plan_store=store)   # session=None: no DB
-    out = save_plan(ctx, SavePlanInput(items=[item(2000, "A")],
+    ctx = ToolContext("me", session=None, now=TODAY, running_contests=running,   # no DB
+                      plan_store=store, offered=offered_as_dp(plan_setup()[0]))
+    out = save_plan(ctx, SavePlanInput(items=[item("2000A")],
                                        constraints=PlanConstraints(hours=2)))
     assert out.plan_id == 1 and ctx.saved_plan_id == 1
     constraints, items = store.plans[1]
