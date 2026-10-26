@@ -118,8 +118,10 @@ class ToolContext:
     # Every problem id a tool returned in this run. A plan may only use these.
     offered: dict[str, Offer] = field(default_factory=dict)
     # Which band find_problems searches and validate_plan checks. Set by the caller
-    # (--difficulty now, the request parser later); the model can't change it.
+    # (request.plan_limits: the parsed request + flags); the model can't change it.
     difficulty: Difficulty = "normal"
+    count: int | None = None                   # exact number of problems; None = no rule
+    focus_tags: list[str] = field(default_factory=list)   # every item must practise one
 
     def get_running_contests(self) -> set[int]:
         """Fetched from CF once per run, on first use, then reused by every tool call."""
@@ -309,33 +311,52 @@ def in_band(profile: Profile, tag: str, rating: int, difficulty: Difficulty) -> 
     return lo <= rating <= hi
 
 
-def plan_tag(offer: Offer, p: ProblemRow, profile: Profile,
-             difficulty: Difficulty) -> str | None:
+def plan_tag(offer: Offer, p: ProblemRow, profile: Profile, difficulty: Difficulty,
+             focus: list[str] = ()) -> str | None:
     """The tag a planned problem practises; None if no tag's band fits its rating.
 
-    From find_problems: the tag it was matched to. From the backlog (no matched tag): its
-    weakest tag whose band holds the rating.
+    From find_problems: the tag it was matched to. From the backlog (no matched tag), or
+    when that tag isn't one the user asked for: its weakest (focus) tag whose band holds
+    the rating.
     """
-    if offer.tag is not None:
+    if offer.tag is not None and (not focus or offer.tag in focus):
         return offer.tag
     fits = [t for t in topic_tags(p.tags)
-            if p.rating is not None and in_band(profile, t, p.rating, difficulty)]
+            if (not focus or t in focus)
+            and p.rating is not None and in_band(profile, t, p.rating, difficulty)]
     return min(fits, key=lambda t: (tag_skill(profile, t), t)) if fits else None
+
+
+def wanted_count(count: int | None, hours: int | None) -> int | None:
+    """The exact plan size: the asked count, capped by what the hours allow."""
+    if count is None:
+        return None
+    return count if hours is None else min(count, hours * 60 // MINUTES_PER_PROBLEM)
 
 
 def plan_errors(items: list[PlanItem], constraints: PlanConstraints, offered: dict[str, Offer],
                 problems: dict[tuple[int, str], ProblemRow], solved: set[tuple[int, str]],
                 profile: Profile, running: set[int],
-                difficulty: Difficulty = "normal") -> list[str]:
+                difficulty: Difficulty = "normal", count: int | None = None,
+                focus: list[str] = ()) -> list[str]:
     """Every rule the plan breaks, one line each. Empty list = the plan is valid.
 
     Deterministic: the same plan and data always give the same answer.
     """
     errors = []
-    if constraints.hours is not None:
-        most = constraints.hours * 60 // MINUTES_PER_PROBLEM
+    hours = constraints.hours
+    want = wanted_count(count, hours)
+    if want is not None:
+        if len(items) != want:
+            why = f"the user asked for {count}"
+            if want < count:
+                why += f", and {hours} hours allow at most {want}"
+            errors.append(f"the plan has {len(items)} problems; it must have exactly {want} "
+                          f"({why})")
+    elif hours is not None:
+        most = hours * 60 // MINUTES_PER_PROBLEM
         if len(items) > most:
-            errors.append(f"{len(items)} problems is too many for {constraints.hours} hours: "
+            errors.append(f"{len(items)} problems is too many for {hours} hours: "
                           f"at most {most} (about {MINUTES_PER_PROBLEM} min each)")
     avoid = set(constraints.avoid_tags)
     seen = set()
@@ -365,10 +386,13 @@ def plan_errors(items: list[PlanItem], constraints: PlanConstraints, offered: di
         if p.rating is None:
             errors.append(f"{where}: unrated, so it can't be matched to a skill band")
             continue
-        tag = plan_tag(offer, p, profile, difficulty)
-        if tag is None:
+        tag = plan_tag(offer, p, profile, difficulty, focus)
+        if tag is None and focus and not set(focus) & set(p.tags):
+            errors.append(f"{where}: has none of the tags the user asked for {list(focus)}")
+        elif tag is None:
             errors.append(f"{where}: rating {p.rating} is outside the {difficulty} band of "
-                          f"every one of its tags {topic_tags(p.tags)}")
+                          f"every one of its {'asked ' if focus else ''}tags "
+                          f"{[t for t in topic_tags(p.tags) if not focus or t in focus]}")
         elif not in_band(profile, tag, p.rating, difficulty):
             lo, hi = band_for(tag_skill(profile, tag), difficulty)
             errors.append(f"{where}: rating {p.rating} is outside the {difficulty} {tag} "
@@ -378,7 +402,7 @@ def plan_errors(items: list[PlanItem], constraints: PlanConstraints, offered: di
 
 def saved_items(items: list[PlanItem], offered: dict[str, Offer],
                 problems: dict[tuple[int, str], ProblemRow], profile: Profile,
-                difficulty: Difficulty = "normal") -> list[SavedItem]:
+                difficulty: Difficulty = "normal", focus: list[str] = ()) -> list[SavedItem]:
     """What gets stored, easiest first. Only call on a plan with no errors.
 
     Sorted by gap (stable, so the model's order stays within a level): the saved plan is
@@ -388,7 +412,7 @@ def saved_items(items: list[PlanItem], offered: dict[str, Offer],
     for item in items:
         offer = offered[clean_id(item.id)]
         p = problems[(offer.contest_id, offer.idx)]
-        tag = plan_tag(offer, p, profile, difficulty)
+        tag = plan_tag(offer, p, profile, difficulty, focus)
         out.append(SavedItem(id=problem_id(offer.contest_id, offer.idx),
                              contest_id=offer.contest_id, idx=offer.idx, tag=tag,
                              gap=p.rating - round_skill(tag_skill(profile, tag)),
@@ -406,9 +430,9 @@ def check_plan(ctx: ToolContext, items: list[PlanItem],
     profile = build_profile(ctx.session, ctx.handle, ctx.now)
     errors = plan_errors(items, constraints, ctx.offered, problems,
                          load_solved(ctx.session, ctx.handle), profile,
-                         ctx.get_running_contests(), ctx.difficulty)
+                         ctx.get_running_contests(), ctx.difficulty, ctx.count, ctx.focus_tags)
     return errors, [] if errors else saved_items(items, ctx.offered, problems, profile,
-                                                 ctx.difficulty)
+                                                 ctx.difficulty, ctx.focus_tags)
 
 
 def validate_plan(ctx: ToolContext, args: ValidatePlanInput) -> ValidationOut:

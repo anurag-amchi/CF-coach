@@ -36,7 +36,9 @@ from cf_coach.agent.llm import LLM, ToolCallRejected
 from cf_coach.agent.schemas import (
     TOOL_SCHEMAS, TOOLS, PlanConstraints, ToolArgsError, parse_args,
 )
-from cf_coach.agent.tools import MINUTES_PER_PROBLEM, TOOL_FUNCTIONS, ToolContext, ToolError
+from cf_coach.agent.tools import (
+    MINUTES_PER_PROBLEM, TOOL_FUNCTIONS, ToolContext, ToolError, wanted_count,
+)
 from cf_coach.db.models import AgentRun
 
 MAX_STEPS = 10     # LLM calls per run. A normal run needs about 5-8.
@@ -51,10 +53,10 @@ Rules:
 - find_problems lists problems in ladder order (one per level, easiest first). For N
   problems from one tag, take its first N. validate_plan checks the rating band; the
   saved plan is sorted easiest first by code.
-- Read the user's constraints (hours, tags to avoid) from their message and pass them in
-  `constraints`. If they give no hours, plan 5 problems.
-- "Fixed constraints" after the message come from the user's settings: plan within them.
-  validate_plan always enforces them.
+- "Fixed constraints" after the message were read from the request and the user's
+  settings (number of problems, hours, focus tags, avoided tags, difficulty). Plan exactly
+  within them; validate_plan always enforces them. For focus tags, call find_problems
+  with each one.
 - Call validate_plan before save_plan. If it returns errors, fix all of them and validate again.
 - Each `reason` is one sentence that cites the user's data (skill, abandon rate, backlog).
 - After save_plan succeeds, reply with a short summary of the plan and call no more tools.
@@ -75,9 +77,14 @@ class RunResult:
     model: str = ""
 
 
-def user_message(request: str, fixed: PlanConstraints, difficulty: str = "normal") -> str:
+def user_message(request: str, fixed: PlanConstraints, difficulty: str = "normal",
+                 count: int | None = None, focus_tags: list[str] = ()) -> str:
     """The request, plus the user's fixed constraints, so the model plans inside them."""
     notes = []
+    if (want := wanted_count(count, fixed.hours)) is not None:
+        notes.append(f"problems: exactly {want}")
+    if focus_tags:
+        notes.append(f"focus tags: {', '.join(focus_tags)}")
     if difficulty != "normal":
         notes.append(f"difficulty: {difficulty}")
     if fixed.hours is not None:
@@ -114,7 +121,8 @@ def run_agent(llm: LLM, ctx: ToolContext, request: str, max_steps: int = MAX_STE
     started = time.monotonic()
     messages = [
         {"role": "system", "content": SYSTEM_PROMPT.format(today=ctx.now.date())},
-        {"role": "user", "content": user_message(request, ctx.user_constraints, ctx.difficulty)},
+        {"role": "user", "content": user_message(request, ctx.user_constraints, ctx.difficulty,
+                                                 ctx.count, ctx.focus_tags)},
     ]
     result = RunResult(outcome="max_steps", final_text=None, messages=messages, steps=0,
                        model=llm.model)

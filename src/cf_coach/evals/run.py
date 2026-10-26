@@ -26,7 +26,8 @@ from sqlalchemy.orm import Session
 
 from cf_coach.agent.llm import LLM, GroqLLM
 from cf_coach.agent.loop import MAX_STEPS, run_agent
-from cf_coach.agent.tools import MemoryPlanStore, ToolContext, user_constraints
+from cf_coach.agent.request import plan_limits, read_request
+from cf_coach.agent.tools import MemoryPlanStore, ToolContext
 from cf_coach.analytics.selection import (
     IGNORED_TAGS, build_profile, load_problems, load_solved, running_contest_ids,
 )
@@ -84,17 +85,21 @@ def build_view(result, ctx: ToolContext, data: EvalData) -> RunView:
 
 def run_case(case: Case, llm: LLM, session: Session, handle: str, now: datetime,
              data: EvalData, max_steps: int) -> dict:
+    request, parsed = read_request(llm, session, case.request, case.hours, case.avoid, None)
     ctx = ToolContext(handle, session, now,
                       running_contests=set(data.running),
-                      user_constraints=user_constraints(session, case.hours, case.avoid),
-                      plan_store=MemoryPlanStore())
+                      plan_store=MemoryPlanStore(), **plan_limits(request))
     result = run_agent(llm, ctx, case.request, max_steps=max_steps)
+    result.input_tokens += parsed.input_tokens          # the parse is part of the run's cost
+    result.output_tokens += parsed.output_tokens
     view = build_view(result, ctx, data)
     checks = [{"check": c.name, "ok": (msg := c(view)) is None, "detail": msg}
               for c in case.checks + UNIVERSAL]
     return {
         "case": case.name, "request": case.request,
         "hours": case.hours, "avoid": case.avoid,
+        "parsed": request.model_dump(), "parse_warnings": parsed.warnings,
+        "parse_tokens": parsed.input_tokens + parsed.output_tokens,
         "outcome": result.outcome, "error": result.error,
         "steps": result.steps, "input_tokens": result.input_tokens,
         "output_tokens": result.output_tokens, "latency_ms": result.latency_ms,

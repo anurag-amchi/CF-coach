@@ -120,6 +120,9 @@ def test_no_fixed_constraints_leaves_the_request_alone():
     assert user_message("plan my week", PlanConstraints()) == "plan my week"
     assert user_message("plan my week", PlanConstraints(), "harder") == (
         "plan my week\n\nFixed constraints: difficulty: harder")
+    assert user_message("5 dp", PlanConstraints(hours=3), count=5, focus_tags=["dp"]) == (
+        "5 dp\n\nFixed constraints: problems: exactly 3; focus tags: dp; "
+        "hours: 3 (at most 3 problems)")
 
 
 def test_fixed_constraints_are_added_to_the_users_message():

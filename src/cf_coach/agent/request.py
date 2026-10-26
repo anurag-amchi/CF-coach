@@ -5,8 +5,10 @@
                    difficulty="harder")
 
 Why a separate step: limits that exist only in the text ("4 hours", "3 problems", "hard")
-were prompt rules the model could ignore (#33). Once they are fields, code can enforce
-them. (Wiring them into the loop and validate_plan is the next piece.)
+were prompt rules the model could ignore (#33). Once they are fields, code enforces them:
+read_request() parses and merges the flags, plan_limits() turns the result into
+ToolContext fields (count, focus_tags, difficulty, hours, avoided tags), and
+validate_plan / find_problems apply those.
 
 The call uses strict structured output: the provider only lets the model produce JSON
 that fits the schema, and the two tag lists may only contain CF's real tags (an enum
@@ -17,7 +19,7 @@ A bad reply gets one retry with the error. If it still fails, or the call itself
 parse_request returns EMPTY plus a warning, so a run is never blocked by the parser.
 
 Run (parses the eval requests live):  uv run python -m cf_coach.agent.request
-Design reasons: docs/decisions.md #37.
+Design reasons: docs/decisions.md #37, #38.
 """
 
 import time
@@ -123,6 +125,33 @@ def merge_flags(request: PlanRequest, hours: int | None, avoid_tags: list[str],
         "avoid_tags": avoid_tags + [t for t in request.avoid_tags if t not in avoid_tags],
         "difficulty": difficulty if difficulty is not None else request.difficulty,
     })
+
+
+DEFAULT_COUNT = 5      # a week's plan when the user gives neither a count nor hours
+
+
+def read_request(llm: LLM, session, text: str, hours: int | None, avoid_tags: list[str],
+                 difficulty: Difficulty | None) -> tuple[PlanRequest, ParseResult]:
+    """Parse the text, check the flags' tags, merge the flags in. Used by the CLI and evals."""
+    from cf_coach.agent.tools import all_tags, check_tags
+    from cf_coach.analytics.selection import load_problems
+    known = all_tags(load_problems(session))
+    check_tags(avoid_tags, known)                  # a typo in --avoid -> ToolError up front
+    parsed = parse_request(llm, text, known)
+    return merge_flags(parsed.request, hours, avoid_tags, difficulty), parsed
+
+
+def plan_limits(request: PlanRequest) -> dict:
+    """PlanRequest -> the ToolContext fields that enforce it:  ToolContext(..., **plan_limits(r))."""
+    from cf_coach.agent.schemas import PlanConstraints
+    count = request.count
+    if count is None and request.hours is None and request.intent == "plan":
+        count = DEFAULT_COUNT
+    return {"user_constraints": PlanConstraints(hours=request.hours,
+                                                avoid_tags=list(request.avoid_tags)),
+            "difficulty": request.difficulty or "normal",
+            "count": count,
+            "focus_tags": list(request.focus_tags)}
 
 
 # ---------- Manual check: the eval requests, parsed by the real model ----------

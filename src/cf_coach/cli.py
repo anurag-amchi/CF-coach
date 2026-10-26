@@ -2,8 +2,9 @@
 
     uv run python -m cf_coach plan TitanCoder1258 "4 hours this week, no geometry"
 
-Steps: sync the user's new submissions -> refresh tag_skills -> run the agent -> log the
-run to agent_runs -> print the saved plan (read back from the plans table).
+Steps: sync the user's new submissions -> refresh tag_skills -> parse the request
+(count, hours, tags, difficulty; flags win) -> run the agent -> log the run to agent_runs
+-> print the saved plan (read back from the plans table).
 
 Options:  --hours N   practice hours this week (1-40); always enforced on the plan
           --avoid TAG a tag to keep out of the plan, e.g. --avoid geometry; repeat it for
@@ -16,7 +17,7 @@ Options:  --hours N   practice hours this week (1-40); always enforced on the pl
 Exit code: 0 if the run ended normally (saved / no_plan), 1 otherwise.
 
 Run as `python -m cf_coach`: Windows Smart App Control blocks the cf-coach.exe launcher.
-Design reasons: docs/decisions.md #31, #32, #36.
+Design reasons: docs/decisions.md #31, #32, #36, #38.
 """
 
 import argparse
@@ -82,7 +83,8 @@ def cmd_plan(args) -> int:
 
     from cf_coach.agent.llm import GroqLLM
     from cf_coach.agent.loop import run_agent, save_run
-    from cf_coach.agent.tools import ToolContext, user_constraints
+    from cf_coach.agent.request import plan_limits, read_request
+    from cf_coach.agent.tools import ToolContext
     from cf_coach.analytics.selection import DIFFICULTY_GAPS
     from cf_coach.analytics.tag_profile import refresh_tag_skills
     from cf_coach.db.models import Problem
@@ -101,21 +103,27 @@ def cmd_plan(args) -> int:
         summary = sync_user(handle)
         handle = summary["handle"]                  # CF's spelling of the handle
         print(f"synced {handle}: {summary['fetched']} new submissions, {summary['total']} total")
-    with Session(get_engine()) as session:
-        fixed = user_constraints(session, args.hours, args.avoid)   # unknown tag -> ToolError
-    if fixed.hours is not None or fixed.avoid_tags:
-        print(f"fixed constraints: {fixed.model_dump()}")
-    lo, hi = DIFFICULTY_GAPS[args.difficulty]
-    print(f"difficulty: {args.difficulty} ({lo:+d} to {hi:+d} around each tag's level)")
     print(f"tag profile: {refresh_tag_skills(handle, now)} tags")
 
     with Session(get_engine()) as session:
         llm = GroqLLM(model=args.model)
+        # unknown --avoid tag -> ToolError here, before any agent step
+        request, parsed = read_request(llm, session, args.request, args.hours, args.avoid,
+                                       args.difficulty)
+        for warning in parsed.warnings:
+            print(f"warning: {warning}")
+        limits = plan_limits(request)
+        lo, hi = DIFFICULTY_GAPS[limits["difficulty"]]
+        print(f"request: {request.intent}, count={limits['count']}, hours={request.hours}, "
+              f"focus={request.focus_tags}, avoid={request.avoid_tags}, "
+              f"difficulty={limits['difficulty']} ({lo:+d} to {hi:+d} around each tag's level)"
+              f"  [{parsed.input_tokens} tokens]")
         print(f"agent: {llm.model}, max {args.max_steps} steps\n")
-        ctx = ToolContext(handle, session, now, user_constraints=fixed,
-                          difficulty=args.difficulty)
+        ctx = ToolContext(handle, session, now, **limits)
         result = run_agent(llm, ctx, args.request, max_steps=args.max_steps,
                            on_message=printer(started))
+        result.input_tokens += parsed.input_tokens      # the run's cost includes the parse
+        result.output_tokens += parsed.output_tokens
         run_id = save_run(session, handle, result)
         if result.final_text:
             print(f"\n{result.final_text}")
@@ -143,9 +151,10 @@ def build_parser() -> argparse.ArgumentParser:
                       help="practice hours this week (1-40), always enforced")
     plan.add_argument("--avoid", action="append", default=[], metavar="TAG",
                       help="a tag to keep out of the plan; repeat for more")
-    plan.add_argument("--difficulty", choices=list(DIFFICULTY_GAPS), default="normal",
+    plan.add_argument("--difficulty", choices=list(DIFFICULTY_GAPS), default=None,
                       help="easier = -100..+100, normal = +0..+200, harder = +100..+300 "
-                           "around each tag's level (skill rounded to 100)")
+                           "around each tag's level (skill rounded to 100). Default: from "
+                           "the request text, else normal")
     plan.add_argument("--no-sync", action="store_true")
     plan.add_argument("--max-steps", type=int, default=MAX_STEPS)
     plan.add_argument("--model", default=None, help="default: LLM_MODEL from .env")

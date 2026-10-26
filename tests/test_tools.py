@@ -13,6 +13,7 @@ from cf_coach.agent.tools import (
     all_tags, backlog_out, check_tags, effective_constraints, find_problems, first_solves_since,
     get_progress_since, get_upsolve_backlog, plan_errors, plan_tag, problem_id, problem_out,
     profile_out, progress_out, save_plan, saved_items, user_constraints, validate_plan,
+    wanted_count,
 )
 from cf_coach.analytics.attempts import SubmissionRow
 from cf_coach.analytics.selection import Candidate, ProblemRow, Profile
@@ -422,3 +423,43 @@ def test_memory_store_keeps_the_plan_out_of_the_database(monkeypatch):
     assert out.plan_id == 1 and ctx.saved_plan_id == 1
     constraints, items = store.plans[1]
     assert constraints.hours == 2 and [(i.contest_id, i.idx) for i in items] == [(2000, "A")]
+
+
+# ---------- count and focus tags from the request (decision #38) ----------
+
+def test_count_is_exact():
+    problems, solved, profile, running = plan_setup()
+    errs = plan_errors([item("2000A"), item("2000F")], PlanConstraints(), offered_as_dp(problems),
+                       problems, solved, profile, running, count=3)
+    assert errs == ["the plan has 2 problems; it must have exactly 3 (the user asked for 3)"]
+
+
+def test_hours_cap_the_count_with_one_error_not_two():
+    problems, solved, profile, running = plan_setup()
+    five = [item(i) for i in ("2000A", "2000F", "2000G", "2000B", "2100A")]
+    errs = plan_errors(five, PlanConstraints(hours=3), offered_as_dp(problems), problems,
+                       solved, profile, running, count=5)
+    assert errs[0] == ("the plan has 5 problems; it must have exactly 3 "
+                       "(the user asked for 5, and 3 hours allow at most 3)")
+    assert not any("too many" in e for e in errs)
+
+
+def test_wanted_count():
+    assert wanted_count(None, 4) is None
+    assert wanted_count(3, None) == 3
+    assert wanted_count(5, 3) == 3 and wanted_count(2, 3) == 2
+
+
+def test_items_must_practise_a_focus_tag():
+    problems, solved, profile, running = plan_setup()
+    errs = plan_errors([item("2000A")], PlanConstraints(), offered_as_dp(problems), problems,
+                       solved, profile, running, focus=["greedy"])
+    assert errs == ["item 1 (2000A): has none of the tags the user asked for ['greedy']"]
+
+
+def test_focus_re_matches_a_problem_to_the_asked_tag():
+    """find_problems matched it to dfs; the user asked for dp, which also fits its band."""
+    p = ProblemRow(2300, "A", "x", 1500, ("dfs and similar", "dp"))
+    profile = Profile(1400, {"dp": 1400.0, "dfs and similar": 1400.0})
+    assert plan_tag(Offer(2300, "A", "dfs and similar"), p, profile, "normal", ["dp"]) == "dp"
+    assert plan_tag(Offer(2300, "A", "dfs and similar"), p, profile, "normal") == "dfs and similar"

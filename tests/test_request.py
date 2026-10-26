@@ -1,9 +1,13 @@
 import json
 
+import pytest
+
 from cf_coach.agent.llm import ScriptedLLM, scripted_reply
 from cf_coach.agent.request import (
-    EMPTY, PlanRequest, check_reply, merge_flags, parse_request, request_schema,
+    DEFAULT_COUNT, EMPTY, PlanRequest, check_reply, merge_flags, parse_request, plan_limits,
+    read_request, request_schema,
 )
+from cf_coach.agent.tools import ToolError
 
 TAGS = {"dp", "greedy", "geometry", "graphs"}
 
@@ -89,3 +93,48 @@ def test_no_flags_keep_the_text():
     text = PlanRequest(intent="plan", count=None, hours=6, focus_tags=[], avoid_tags=["dp"],
                        difficulty="harder")
     assert merge_flags(text, hours=None, avoid_tags=[], difficulty=None) == text
+
+
+# ---------- read_request / plan_limits (decision #38) ----------
+
+def plan(**fields):
+    return EMPTY.model_copy(update=fields)
+
+
+def test_no_count_and_no_hours_means_the_default_week():
+    assert plan_limits(plan())["count"] == DEFAULT_COUNT
+    assert plan_limits(plan(hours=4))["count"] is None          # the hours cap still applies
+    assert plan_limits(plan(intent="question"))["count"] is None
+    assert plan_limits(plan(count=3, hours=2))["count"] == 3    # capped later by the hours
+
+
+def test_limits_become_context_fields():
+    limits = plan_limits(plan(count=3, focus_tags=["dp"], avoid_tags=["geometry"], hours=6,
+                              difficulty="harder"))
+    assert limits["user_constraints"].model_dump() == {"hours": 6, "avoid_tags": ["geometry"]}
+    assert (limits["difficulty"], limits["focus_tags"]) == ("harder", ["dp"])
+    assert plan_limits(plan())["difficulty"] == "normal"
+
+
+def fake_problems(monkeypatch):
+    import cf_coach.analytics.selection as selection
+    from cf_coach.analytics.selection import ProblemRow
+    monkeypatch.setattr(selection, "load_problems", lambda session: [
+        ProblemRow(1, "A", "x", 1500, tuple(TAGS))])
+
+
+def test_read_request_merges_the_flags(monkeypatch):
+    fake_problems(monkeypatch)
+    llm = ScriptedLLM([reply_json(count=3, hours=10, difficulty="easier")])
+    request, parsed = read_request(llm, None, "3 easy ones, 10 hours", hours=4,
+                                   avoid_tags=["geometry"], difficulty=None)
+    assert (request.count, request.hours, request.difficulty) == (3, 4, "easier")
+    assert request.avoid_tags == ["geometry"] and parsed.warnings == []
+
+
+def test_a_typo_in_a_flag_fails_before_any_llm_call(monkeypatch):
+    fake_problems(monkeypatch)
+    llm = ScriptedLLM([])                          # any call would raise "ran out of replies"
+    with pytest.raises(ToolError, match=r"unknown tag\(s\) \['geomtry'\]"):
+        read_request(llm, None, "plan", None, ["geomtry"], None)
+    assert llm.seen == []
