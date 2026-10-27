@@ -2,7 +2,7 @@ from cf_coach.evals.cases import CASES
 from cf_coach.evals.checks import (
     UNIVERSAL, PlannedProblem, RunView, at_most, avoids, band, count, distinct_reasons, ladder,
     mentions_weakest_tag, no_plan, no_rejected_calls, no_table, not_running, round_skill, saved,
-    saved_hours, starts_with_profile, tags_in, trace, unsolved,
+    saved_hours, starts_with_profile, step_log, tags_in, trace, unsolved,
 )
 
 
@@ -78,6 +78,13 @@ def test_trace_counts_tool_calls_and_rejections():
         {"role": "assistant", "content": "done"},
     ]
     assert trace(messages) == (["get_tag_profile"], 1)
+    assert step_log(messages) == [
+        {"user": "plan"},
+        {"call": "get_tag_profile", "args": "{}"},
+        {"result": "{}"},
+        {"user": "Your last tool call was rejected and not run: ..."},
+        {"text": "done"},
+    ]
 
 
 def test_tool_use_and_question_checks():

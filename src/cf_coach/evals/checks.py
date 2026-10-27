@@ -69,6 +69,27 @@ def trace(messages: list[dict]) -> tuple[list[str], int]:
     return tools, rejected
 
 
+def step_log(messages: list[dict]) -> list[dict]:
+    """The run after the system prompt, one entry per call / result / text, for the report.
+
+    {"call": name, "args": "..."} · {"result": "..."} · {"text": "..."} (the model's words)
+    · {"user": "..."} (the request, a rejection note or a nudge). Lets a report show *why*
+    a run took many steps, e.g. what a failed validate_plan said.
+    """
+    log = []
+    for m in messages[1:]:
+        if m["role"] == "assistant":
+            if m.get("content"):
+                log.append({"text": m["content"]})
+            log += [{"call": c["function"]["name"], "args": c["function"]["arguments"]}
+                    for c in m.get("tool_calls") or []]
+        elif m["role"] == "tool":
+            log.append({"result": m["content"]})
+        elif m["role"] == "user":
+            log.append({"user": m["content"]})
+    return log
+
+
 @dataclass(frozen=True)
 class Check:
     name: str

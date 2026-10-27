@@ -3,11 +3,12 @@ from datetime import datetime, timezone
 
 from cf_coach.agent.llm import LLMReply, ScriptedLLM, ToolCall, ToolCallRejected, scripted_reply
 from cf_coach.agent.loop import (
-    PROFILE_CALL_ID, READ_ONLY_TOOLS, SAVE_NUDGE, allowed_tools, run_agent, run_tool,
-    user_message,
+    PROFILE_CALL_ID, READ_ONLY_TOOLS, SAVE_NUDGE, SEARCH_CALL_ID, allowed_tools, run_agent,
+    run_tool, user_message,
 )
 from cf_coach.agent.schemas import (
-    PlanConstraints, SavePlanOut, TagProfileOut, TOOL_SCHEMAS, ValidationOut,
+    FindProblemsOut, PlanConstraints, ProblemOut, SavePlanOut, TagProfileOut, TagSkillOut,
+    TOOL_SCHEMAS, ValidationOut,
 )
 from cf_coach.agent.tools import (
     SavedConstraints, SavedItem, ToolContext, ToolError, plan_summary,
@@ -114,6 +115,57 @@ def test_the_nudge_is_sent_only_once():
 def test_a_refusal_without_an_ok_validation_is_not_nudged():
     result, _ = run_with_validate([scripted_reply("No problems are rated that high for you.")])
     assert (result.outcome, result.nudges, result.steps) == ("no_plan", 0, 1)
+
+
+# ---------- code picks the week's tags and searches them first (decision #43) ----------
+
+def week_profile(ctx, args):
+    rows = [("dfs and similar", 3), ("geometry", 7), ("strings", 32), ("trees", 5), ("dp", 26)]
+    return TagProfileOut(rating=1400, tags=[
+        TagSkillOut(tag=t, skill=1400, attempts=a, abandon_rate=0.0) for t, a in rows])
+
+
+def search_returning(per_tag):
+    """A fake find_problems that returns `per_tag` problems for any tag."""
+    def search(ctx, args):
+        return FindProblemsOut(difficulty="normal", problems=[
+            ProblemOut(id=f"{n}{args.tag[0].upper()}", name="x", rating=1400 + 100 * n,
+                       tags=[args.tag], matched_tag=args.tag, tag_skill=1400, gap=100 * n,
+                       score=1.0)
+            for n in range(min(per_tag, args.count))])
+    return search
+
+
+def run_week(per_tag, count=4, focus=()):
+    llm = ScriptedLLM([scripted_reply("ok")])
+    ctx = ToolContext("me", session=None, now=NOW, count=count, focus_tags=list(focus))
+    tools = {**FAKE_TOOLS, "get_tag_profile": week_profile, "find_problems": search_returning(per_tag)}
+    return run_agent(llm, ctx, "plan my week", tools=tools), ctx, llm
+
+
+def test_a_week_with_no_tags_gets_its_tags_and_searches_from_code():
+    result, ctx, llm = run_week(per_tag=3, count=4)
+    assert ctx.tag_quota == {"geometry": 2, "strings": 1, "trees": 1}   # dfs: only 3 attempts
+    assert "this week's tags (your weakest with 5+ attempts; their problems are loaded): " \
+           "geometry x2, strings x1, trees x1" in result.messages[1]["content"]
+    searches = result.messages[4]["tool_calls"]
+    assert [(c["id"], json.loads(c["function"]["arguments"])) for c in searches] == [
+        (f"{SEARCH_CALL_ID}-1", {"tag": "geometry", "count": 3}),
+        (f"{SEARCH_CALL_ID}-2", {"tag": "strings", "count": 2}),
+        (f"{SEARCH_CALL_ID}-3", {"tag": "trees", "count": 2})]
+    assert [m["role"] for m in result.messages[5:8]] == ["tool"] * 3
+    assert result.steps == 1 and llm.seen[0][-1] == result.messages[7]   # no LLM step spent
+
+
+def test_a_tag_with_too_few_problems_drops_the_quota():
+    result, ctx, _ = run_week(per_tag=1, count=4)       # geometry needs 2, only 1 exists
+    assert ctx.tag_quota == {}
+    assert "this week's tags" not in result.messages[1]["content"]
+
+
+def test_focus_tags_or_questions_get_no_week_tags():
+    _, ctx, _ = run_week(per_tag=3, focus=["dp"])
+    assert ctx.tag_quota == {}
 
 
 def test_a_failed_save_does_not_end_the_run():

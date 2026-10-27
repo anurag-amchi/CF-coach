@@ -133,6 +133,13 @@ class ToolContext:
     # did the latest validate_plan return ok? The loop nudges a model that stops after an
     # ok validation without calling save_plan (decision #41)
     validated_ok: bool = False
+    # tag -> exact number of problems, when code picked the week's tags (no focus tags in
+    # the request; see week_quota). Empty = no rule. Set by the loop. Decision #43.
+    tag_quota: dict[str, int] = field(default_factory=dict)
+
+    def plan_focus(self) -> list[str]:
+        """The tags a plan item must practise: the asked ones, else the week's picked ones."""
+        return self.focus_tags or list(self.tag_quota)
 
     def get_running_contests(self) -> set[int]:
         """Fetched from CF once per run, on first use, then reused by every tool call."""
@@ -338,6 +345,35 @@ def plan_tag(offer: Offer, p: ProblemRow, profile: Profile, difficulty: Difficul
     return min(fits, key=lambda t: (tag_skill(profile, t), t)) if fits else None
 
 
+MIN_ATTEMPTS = 5     # a tag with fewer attempts is not "measured": its skill is mostly the start value
+
+
+def week_quota(tags: list[TagSkillOut], n: int, avoid: list[str] = ()) -> dict[str, int]:
+    """The week's tags when the request names none: 2 problems from the weakest measured
+    tag, 1 from each of the next ones, n in total. {} if there aren't enough measured tags.
+
+    `tags` is get_tag_profile's list (weakest first). Tags with fewer than MIN_ATTEMPTS
+    attempts are skipped: 3 tries on dfs say little about dfs (#21). They can still be
+    planned when the user asks for them by name (focus tags).
+    """
+    measured = [t.tag for t in tags if t.attempts >= MIN_ATTEMPTS and t.tag not in avoid]
+    if n < 1:
+        return {}
+    if n == 1:
+        return {measured[0]: 1} if measured else {}
+    if len(measured) < n - 1:                  # 2 + (n - 2) x 1 needs n - 1 tags
+        return {}
+    return {measured[0]: 2} | {t: 1 for t in measured[1:n - 1]}
+
+
+def plan_size(count: int | None, hours: int | None) -> int | None:
+    """How many problems the plan will have: the exact count, else what the hours allow."""
+    want = wanted_count(count, hours)
+    if want is None and hours is not None:
+        want = hours * 60 // MINUTES_PER_PROBLEM
+    return want
+
+
 def wanted_count(count: int | None, hours: int | None) -> int | None:
     """The exact plan size: the asked count, capped by what the hours allow."""
     if count is None:
@@ -349,11 +385,16 @@ def plan_errors(items: list[PlanItem], constraints: PlanConstraints, offered: di
                 problems: dict[tuple[int, str], ProblemRow], solved: set[tuple[int, str]],
                 profile: Profile, running: set[int],
                 difficulty: Difficulty = "normal", count: int | None = None,
-                focus: list[str] = ()) -> list[str]:
+                focus: list[str] = (), quota: dict[str, int] | None = None) -> list[str]:
     """Every rule the plan breaks, one line each. Empty list = the plan is valid.
 
     Deterministic: the same plan and data always give the same answer.
+    quota (tag -> exact count) is the week's tags code picked (#43); it also acts as the
+    focus for re-matching an item's tag.
     """
+    quota = quota or {}
+    match_focus = list(focus) or list(quota)
+    used: dict[str, int] = {}                  # quota tag -> items that practise it
     errors = []
     hours = constraints.hours
     want = wanted_count(count, hours)
@@ -404,17 +445,25 @@ def plan_errors(items: list[PlanItem], constraints: PlanConstraints, offered: di
         if p.rating is None:
             errors.append(f"{where}: unrated, so it can't be matched to a skill band")
             continue
-        tag = plan_tag(offer, p, profile, difficulty, focus)
+        tag = plan_tag(offer, p, profile, difficulty, match_focus)
         if tag is None and focus and not set(focus) & set(p.tags):
             errors.append(f"{where}: has none of the tags the user asked for {list(focus)}")
+        elif tag is None and quota and not set(quota) & set(p.tags):
+            errors.append(f"{where}: has none of this week's tags {list(quota)}")
         elif tag is None:
             errors.append(f"{where}: rating {p.rating} is outside the {difficulty} band of "
-                          f"every one of its {'asked ' if focus else ''}tags "
-                          f"{[t for t in topic_tags(p.tags) if not focus or t in focus]}")
+                          f"every one of its {'asked ' if match_focus else ''}tags "
+                          f"{[t for t in topic_tags(p.tags) if not match_focus or t in match_focus]}")
         elif not in_band(profile, tag, p.rating, difficulty):
             lo, hi = band_for(tag_skill(profile, tag), difficulty)
             errors.append(f"{where}: rating {p.rating} is outside the {difficulty} {tag} "
                           f"band {lo}-{hi}")
+        elif tag in quota:
+            used[tag] = used.get(tag, 0) + 1
+    for tag, want in quota.items():
+        if used.get(tag, 0) != want:
+            errors.append(f"this week needs exactly {want} {tag} problem(s); "
+                          f"the plan has {used.get(tag, 0)}")
     return errors
 
 
@@ -489,9 +538,10 @@ def check_plan(ctx: ToolContext, items: list[PlanItem],
     profile = build_profile(ctx.session, ctx.handle, ctx.now)
     errors = plan_errors(items, constraints, ctx.offered, problems,
                          load_solved(ctx.session, ctx.handle), profile,
-                         ctx.get_running_contests(), ctx.difficulty, ctx.count, ctx.focus_tags)
+                         ctx.get_running_contests(), ctx.difficulty, ctx.count, ctx.focus_tags,
+                         ctx.tag_quota)
     return errors, [] if errors else saved_items(items, ctx.offered, problems, profile,
-                                                 ctx.difficulty, ctx.focus_tags)
+                                                 ctx.difficulty, ctx.plan_focus())
 
 
 def validate_plan(ctx: ToolContext, args: ValidatePlanInput) -> ValidationOut:

@@ -6,14 +6,14 @@ import pytest
 import cf_coach.agent.tools as tools
 from cf_coach.agent.schemas import (
     TOOLS, FindProblemsInput, GetProgressSinceInput, GetUpsolveBacklogInput, PlanConstraints,
-    PlanItem, SavePlanInput, ValidatePlanInput,
+    PlanItem, SavePlanInput, TagSkillOut, ValidatePlanInput,
 )
 from cf_coach.agent.tools import (
     STRATEGIES, TOOL_FUNCTIONS, MemoryPlanStore, Offer, SavedConstraints, SavedItem, ToolContext,
     ToolError, all_tags, backlog_out, check_tags, effective_constraints, find_problems,
     first_solves_since, get_progress_since, get_upsolve_backlog, item_facts, plan_errors,
-    plan_summary, plan_tag, problem_id, problem_out, profile_out, progress_out, save_plan,
-    saved_items, user_constraints, validate_plan, wanted_count,
+    plan_size, plan_summary, plan_tag, problem_id, problem_out, profile_out, progress_out,
+    save_plan, saved_items, user_constraints, validate_plan, wanted_count, week_quota,
 )
 from cf_coach.analytics.attempts import SubmissionRow
 from cf_coach.analytics.selection import Candidate, ProblemRow, Profile
@@ -510,6 +510,63 @@ def test_plan_summary_is_short_plain_text():
     one = plan_summary(SavedConstraints(difficulty="harder"), [saved("1A", "dp", 1500, 100)])
     assert one == ("Saved 1 problem, easiest first, rated 1500-1500. Tags: dp x1. "
                    "Difficulty: harder (+100 to +300 around each tag's level).")
+
+
+# ---------- the week's tags when the request names none (decision #43) ----------
+
+def tags_out(*rows):
+    """(tag, attempts) pairs, already weakest first like get_tag_profile."""
+    return [TagSkillOut(tag=t, skill=1400 + i, attempts=a, abandon_rate=0.0)
+            for i, (t, a) in enumerate(rows)]
+
+
+PROFILE_TAGS = tags_out(("dfs and similar", 3), ("geometry", 7), ("flows", 1), ("strings", 32),
+                        ("trees", 5), ("combinatorics", 17), ("dp", 26))
+
+
+def test_week_quota_takes_two_from_the_weakest_measured_tag_and_one_from_the_next():
+    assert week_quota(PROFILE_TAGS, 5) == {"geometry": 2, "strings": 1, "trees": 1,
+                                           "combinatorics": 1}       # dfs (3), flows (1) skipped
+
+
+def test_week_quota_small_sizes_avoided_tags_and_too_few_tags():
+    assert week_quota(PROFILE_TAGS, 1) == {"geometry": 1}
+    assert week_quota(PROFILE_TAGS, 2) == {"geometry": 2}
+    assert week_quota(PROFILE_TAGS, 3, avoid=["geometry"]) == {"strings": 2, "trees": 1}
+    assert week_quota(tags_out(("dp", 9), ("greedy", 6)), 4) == {}   # needs 3 measured tags
+    assert week_quota(PROFILE_TAGS, 0) == {}
+
+
+def test_plan_size():
+    assert plan_size(5, None) == 5 and plan_size(5, 3) == 3
+    assert plan_size(None, 4) == 4 and plan_size(None, None) is None
+
+
+QUOTA_PROBLEMS = {
+    (2400, "A"): ProblemRow(2400, "A", "g1", 1400, ("geometry",)),
+    (2400, "B"): ProblemRow(2400, "B", "g2", 1500, ("geometry",)),
+    (2400, "C"): ProblemRow(2400, "C", "s1", 1500, ("strings",)),
+    (2400, "D"): ProblemRow(2400, "D", "d1", 1500, ("dp",)),
+}
+QUOTA_OFFERS = {"2400A": Offer(2400, "A", "geometry"), "2400B": Offer(2400, "B", "geometry"),
+                "2400C": Offer(2400, "C", "strings"), "2400D": Offer(2400, "D", "dp")}
+QUOTA_PROFILE = Profile(1400, {"geometry": 1400.0, "strings": 1400.0, "dp": 1400.0})
+
+
+def quota_errors(ids):
+    return plan_errors([item(i) for i in ids], PlanConstraints(), QUOTA_OFFERS, QUOTA_PROBLEMS,
+                       set(), QUOTA_PROFILE, set(), quota={"geometry": 2, "strings": 1})
+
+
+def test_a_plan_that_meets_the_quota_is_valid():
+    assert quota_errors(["2400A", "2400B", "2400C"]) == []
+
+
+def test_quota_errors_name_the_tag_and_the_counts():
+    assert quota_errors(["2400A", "2400C", "2400D"]) == [
+        "item 3 (2400D): has none of this week's tags ['geometry', 'strings']",
+        "this week needs exactly 2 geometry problem(s); the plan has 1",
+    ]
 
 
 def test_focus_re_matches_a_problem_to_the_asked_tag():

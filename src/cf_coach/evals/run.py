@@ -34,7 +34,7 @@ from cf_coach.analytics.selection import (
 from cf_coach.db.models import TagSkill
 from cf_coach.db.session import get_engine
 from cf_coach.evals.cases import CASES, Case
-from cf_coach.evals.checks import UNIVERSAL, PlannedProblem, RunView, trace
+from cf_coach.evals.checks import UNIVERSAL, PlannedProblem, RunView, step_log, trace
 
 RESULTS_DIR = Path(__file__).resolve().parents[3] / "evals" / "results"
 
@@ -110,6 +110,7 @@ def run_case(case: Case, llm: LLM, session: Session, handle: str, now: datetime,
             {**asdict(x), "id": x.id, "gap": x.gap} for x in view.plan],
         "final_text": result.final_text,
         "checks": checks,
+        "steps_log": step_log(result.messages),      # every call and result, to see why
     }
 
 
