@@ -6,7 +6,9 @@ from cf_coach.agent.loop import (
     PROFILE_CALL_ID, READ_ONLY_TOOLS, allowed_tools, run_agent, run_tool, user_message,
 )
 from cf_coach.agent.schemas import PlanConstraints, SavePlanOut, TagProfileOut, TOOL_SCHEMAS
-from cf_coach.agent.tools import ToolContext, ToolError
+from cf_coach.agent.tools import (
+    SavedConstraints, SavedItem, ToolContext, ToolError, plan_summary,
+)
 
 NOW = datetime(2026, 10, 25, 12, tzinfo=timezone.utc)
 
@@ -15,8 +17,13 @@ def fake_profile(ctx, args):
     return TagProfileOut(rating=1400, tags=[])
 
 
+SAVED_ITEM = SavedItem(id="2000B", contest_id=2000, idx="B", tag="dp", rating=1500, gap=100,
+                       facts="f", reason="r")
+
+
 def fake_save(ctx, args):
     ctx.saved_plan_id = 42
+    ctx.saved_plan = (SavedConstraints(), [SAVED_ITEM])
     return SavePlanOut(plan_id=42, items=len(args.items))
 
 
@@ -61,9 +68,22 @@ def test_system_prompt_has_todays_date():
     assert "Today is 2026-10-25" in result.messages[0]["content"]
 
 
-def test_saving_a_plan_sets_outcome_and_plan_id():
-    result, _ = run([scripted_reply(calls=[call("save_plan", PLAN)]), scripted_reply("saved!")])
+def test_saving_a_plan_ends_the_run_with_a_code_written_summary():
+    result, llm = run([scripted_reply(calls=[call("save_plan", PLAN)]), scripted_reply("| a table |")])
     assert (result.outcome, result.plan_id) == ("saved", 42)
+    assert result.steps == 1 and len(llm.seen) == 1          # no LLM call after the save
+    assert result.final_text == plan_summary(SavedConstraints(), [SAVED_ITEM])
+    assert result.messages[-1]["role"] == "tool"              # the save result is the last message
+
+
+def test_a_failed_save_does_not_end_the_run():
+    def refuse(ctx, args):
+        raise ToolError("plan not saved, it breaks these rules: ...")
+    llm = ScriptedLLM([scripted_reply(calls=[call("save_plan", PLAN)]), scripted_reply("sorry")])
+    ctx = ToolContext("me", session=None, now=NOW)
+    result = run_agent(llm, ctx, "plan my week", tools={**FAKE_TOOLS, "save_plan": refuse},
+                       start_with_profile=False)
+    assert (result.outcome, result.steps, result.final_text) == ("no_plan", 2, "sorry")
 
 
 def test_fixable_errors_go_back_to_the_model_and_the_run_continues():

@@ -77,7 +77,8 @@ def build_view(result, ctx: ToolContext, data: EvalData) -> RunView:
                 tag=it.tag, reason=it.reason,
                 skill=data.skills.get(it.tag, data.rating),
                 solved=(it.contest_id, it.idx) in data.solved,
-                running=it.contest_id in data.running))
+                running=it.contest_id in data.running,
+                facts=it.facts))
     return RunView(outcome=result.outcome, final_text=result.final_text, plan=plan,
                    saved_hours=hours, tools_called=tools_called, rejected_calls=rejected,
                    weakest_tag=data.weakest_tag)

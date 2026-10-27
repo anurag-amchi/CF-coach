@@ -34,6 +34,7 @@ class PlannedProblem:
     skill: float                   # the user's skill on `tag` when the run started
     solved: bool
     running: bool                  # from a contest that is still running
+    facts: str = ""                # the code-written numbers line (#40), for reading the report
 
     @property
     def id(self) -> str:

@@ -6,6 +6,7 @@
         append reply.message
         no tool calls?  -> done (final answer)
         else run each tool, append one {"role": "tool"} message per call
+        a plan was saved?  -> done; code writes the summary (plan_summary), no LLM call
 
 What goes back to the model as a tool result:
 - the tool's output, as JSON
@@ -20,7 +21,8 @@ run_agent() never raises and never writes to the database. It returns a RunResul
 save_run() writes that to agent_runs. Every run is logged, including failed ones.
 
 Run on real data:  uv run python -m cf_coach.agent.loop TitanCoder1258 "5 hours, no geometry"
-Design reasons: docs/decisions.md #30, #32 (fixed constraints in the user message).
+Design reasons: docs/decisions.md #30, #32 (fixed constraints in the user message),
+#40 (the run ends at save_plan).
 """
 
 import json
@@ -37,7 +39,7 @@ from cf_coach.agent.schemas import (
     TOOL_SCHEMAS, TOOLS, PlanConstraints, ToolArgsError, parse_args,
 )
 from cf_coach.agent.tools import (
-    MINUTES_PER_PROBLEM, TOOL_FUNCTIONS, ToolContext, ToolError, wanted_count,
+    MINUTES_PER_PROBLEM, TOOL_FUNCTIONS, ToolContext, ToolError, plan_summary, wanted_count,
 )
 from cf_coach.db.models import AgentRun
 
@@ -59,10 +61,12 @@ Rules:
   within them; validate_plan always enforces them. For focus tags, call find_problems
   with each one.
 - Call validate_plan before save_plan. If it returns errors, fix all of them and validate again.
-- Each `reason` is one sentence that cites the user's data (skill, abandon rate, backlog).
-- After save_plan succeeds, reply with a short summary of the plan and call no more tools.
-- If the message is a question (the note says so), answer it briefly from the tools'
-  data; you have only the read-only tools then."""
+- Each `reason` is one short sentence on why this problem suits this user and request
+  (what it trains, how it fits the week). No numbers: code shows the skill, tries,
+  abandon rate and rating next to it. Every reason must be different.
+- save_plan ends the run: code shows the saved plan to the user, so write no summary.
+- If the message is a question (the note says so), answer it briefly in plain sentences
+  (no tables) from the tools' data; you have only the read-only tools then."""
 
 READ_ONLY_TOOLS = ("get_tag_profile", "get_upsolve_backlog", "find_problems",
                    "get_progress_since")
@@ -180,6 +184,10 @@ def run_agent(llm: LLM, ctx: ToolContext, request: str, max_steps: int = MAX_STE
             for call in reply.tool_calls:
                 content = run_tool(call.name, call.arguments, ctx, tools)
                 add({"role": "tool", "tool_call_id": call.id, "content": content})
+            if ctx.saved_plan_id is not None:    # saved: code writes the summary, no more steps
+                result.outcome = "saved"
+                result.final_text = plan_summary(*ctx.saved_plan) if ctx.saved_plan else None
+                break
     except Exception as e:                       # a bug or an outage: stop, but still log
         result.outcome = "error"
         result.error = f"{type(e).__name__}: {e}"

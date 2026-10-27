@@ -17,7 +17,7 @@ Options:  --hours N   practice hours this week (1-40); always enforced on the pl
 Exit code: 0 if the run ended normally (saved / no_plan), 1 otherwise.
 
 Run as `python -m cf_coach`: Windows Smart App Control blocks the cf-coach.exe launcher.
-Design reasons: docs/decisions.md #31, #32, #36, #38.
+Design reasons: docs/decisions.md #31, #32, #36, #38, #40.
 """
 
 import argparse
@@ -71,9 +71,14 @@ def print_plan(session, plan_id: int) -> None:
     for n, item in enumerate(plan.items, start=1):
         c, i = item["contest_id"], item["idx"]
         p = session.get(Problem, (c, i))
-        gap = f" {item['gap']:+d}" if "gap" in item else ""     # plans before #36 have none
-        print(f"{n}. {c}{i}  {p.name}  ({p.rating})  [{item['tag']}{gap}]")
-        print(f"   {item['reason']}")
+        if "facts" in item:                                     # plans since #40
+            print(f"{n}. {c}{i}  {p.name}")
+            print(f"   {item['facts']}")
+            print(f"   why: {item['reason']}")
+        else:
+            gap = f" {item['gap']:+d}" if "gap" in item else ""  # plans before #36 have none
+            print(f"{n}. {c}{i}  {p.name}  ({p.rating})  [{item['tag']}{gap}]")
+            print(f"   {item['reason']}")
         print(f"   https://codeforces.com/problemset/problem/{c}/{i}")
 
 

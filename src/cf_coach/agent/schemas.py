@@ -60,8 +60,10 @@ class PlanItem(ToolInput):
     # the id (ToolContext.offered), so the model can't get them wrong. Decision #35.
     id: str = Field(min_length=2, max_length=12,
                     description="The problem id exactly as a tool returned it, e.g. '2242D'.")
+    # The numbers (skill, tries, abandon rate, gap) are written by code next to it (#40).
     reason: str = Field(min_length=1, max_length=300,
-                        description="One sentence, shown to the user.")
+                        description="One sentence, shown to the user: why this problem. No "
+                                    "numbers (code adds them). Different for every item.")
 
 
 class PlanConstraints(ToolInput):

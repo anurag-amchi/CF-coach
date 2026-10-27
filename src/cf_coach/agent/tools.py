@@ -21,7 +21,10 @@ Plans name problems by id ("2242D"). find_problems and get_upsolve_backlog remem
 id they return (ToolContext.offered), and validate_plan / save_plan accept only those.
 
 Run on real data:  uv run python -m cf_coach.agent.tools TitanCoder1258 [--save]
-Design reasons: docs/decisions.md #26, #28, #29, #32, #34, #35.
+Plan items: the model writes only the id and a one-sentence reason (no two alike);
+code adds the tag, rating, gap and a facts line with the numbers (item_facts).
+
+Design reasons: docs/decisions.md #26, #28, #29, #32, #34, #35, #40.
 """
 
 import sys
@@ -42,7 +45,7 @@ from cf_coach.agent.schemas import (
 from cf_coach.analytics.attempts import SubmissionRow, build_attempts, load_rows
 from cf_coach.analytics.elo import tag_skills
 from cf_coach.analytics.selection import (
-    IGNORED_TAGS, Candidate, ContestPrepStrategy, Difficulty, ProblemRow, Profile,
+    DIFFICULTY_GAPS, IGNORED_TAGS, Candidate, ContestPrepStrategy, Difficulty, ProblemRow, Profile,
     WeaknessFirstStrategy, band_for, build_profile, round_skill,
     load_problems, load_solved, running_contest_ids, select_candidates,
 )
@@ -87,8 +90,10 @@ class SavedItem(BaseModel):
     contest_id: int
     idx: str
     tag: str               # the tag it practises (see plan_tag)
+    rating: int
     gap: int               # rating above the rounded tag skill: its ladder level
-    reason: str
+    facts: str             # the numbers behind it, written by code (item_facts)
+    reason: str            # the model's one sentence: why this problem
 
 
 class SavedConstraints(PlanConstraints):
@@ -123,6 +128,8 @@ class ToolContext:
     intent: str = "plan"                       # "question" -> read-only tools (loop.py)
     count: int | None = None                   # exact number of problems; None = no rule
     focus_tags: list[str] = field(default_factory=list)   # every item must practise one
+    # set by save_plan with saved_plan_id; the loop builds the closing summary from it
+    saved_plan: tuple[SavedConstraints, list[SavedItem]] | None = None
 
     def get_running_contests(self) -> set[int]:
         """Fetched from CF once per run, on first use, then reused by every tool call."""
@@ -361,6 +368,7 @@ def plan_errors(items: list[PlanItem], constraints: PlanConstraints, offered: di
                           f"at most {most} (about {MINUTES_PER_PROBLEM} min each)")
     avoid = set(constraints.avoid_tags)
     seen = set()
+    reasons: dict[str, int] = {}               # normalised reason -> the item that used it first
     for n, item in enumerate(items, start=1):
         pid = clean_id(item.id)
         where = f"item {n} ({pid})"
@@ -368,6 +376,12 @@ def plan_errors(items: list[PlanItem], constraints: PlanConstraints, offered: di
             errors.append(f"{where}: listed twice")
             continue
         seen.add(pid)
+        said = " ".join(item.reason.lower().split())
+        if said in reasons:
+            errors.append(f"{where}: same reason as item {reasons[said]}; "
+                          "give each problem its own reason")
+        else:
+            reasons[said] = n
         offer = offered.get(pid)
         if offer is None:
             errors.append(f"{where}: no tool returned this id in this conversation; "
@@ -401,6 +415,23 @@ def plan_errors(items: list[PlanItem], constraints: PlanConstraints, offered: di
     return errors
 
 
+def item_facts(tag: str, rating: int, profile: Profile, from_backlog: bool) -> str:
+    """The numbers behind one plan item, written by code so they are always right:
+
+        dp skill 1415 (level 1400) · 26 tries · 12% abandoned · 1500 = level +100
+    """
+    level = round_skill(tag_skill(profile, tag))
+    if tag in profile.skills:
+        head = f"{tag} skill {round(profile.skills[tag])} (level {level})"
+        s = profile.signals.get(tag)
+        if s is not None and s.attempts:
+            head += f" · {s.attempts} tries · {round(s.abandon_rate * 100)}% abandoned"
+    else:
+        head = f"{tag} untried (level {level}, from your rating)"
+    facts = f"{head} · {rating} = level {rating - level:+d}"
+    return facts + " · in your upsolve backlog" if from_backlog else facts
+
+
 def saved_items(items: list[PlanItem], offered: dict[str, Offer],
                 problems: dict[tuple[int, str], ProblemRow], profile: Profile,
                 difficulty: Difficulty = "normal", focus: list[str] = ()) -> list[SavedItem]:
@@ -416,9 +447,33 @@ def saved_items(items: list[PlanItem], offered: dict[str, Offer],
         tag = plan_tag(offer, p, profile, difficulty, focus)
         out.append(SavedItem(id=problem_id(offer.contest_id, offer.idx),
                              contest_id=offer.contest_id, idx=offer.idx, tag=tag,
+                             rating=p.rating,
                              gap=p.rating - round_skill(tag_skill(profile, tag)),
-                             reason=item.reason))
+                             facts=item_facts(tag, p.rating, profile, offer.tag is None),
+                             reason=item.reason.strip()))
     return sorted(out, key=lambda s: s.gap)
+
+
+def plan_summary(constraints: SavedConstraints, items: list[SavedItem]) -> str:
+    """The run's closing text, built from the saved plan: no table, no extra LLM call.
+
+    "Saved 3 problems, easiest first, rated 1400-1600. Tags: dp x3. Difficulty: normal
+    (+0 to +200 around each tag's level)."
+    """
+    tags: dict[str, int] = {}
+    for i in items:                            # first-seen order, i.e. easiest first
+        tags[i.tag] = tags.get(i.tag, 0) + 1
+    ratings = [i.rating for i in items]
+    lo, hi = DIFFICULTY_GAPS[constraints.difficulty]
+    parts = [f"Saved {len(items)} problem{'' if len(items) == 1 else 's'}, easiest first, "
+             f"rated {min(ratings)}-{max(ratings)}.",
+             "Tags: " + ", ".join(f"{t} x{n}" for t, n in tags.items()) + ".",
+             f"Difficulty: {constraints.difficulty} ({lo:+d} to {hi:+d} around each tag's level)."]
+    if constraints.hours is not None:
+        parts.append(f"Hours: {constraints.hours}.")
+    if constraints.avoid_tags:
+        parts.append(f"Avoiding: {', '.join(constraints.avoid_tags)}.")
+    return " ".join(parts)
 
 
 def check_plan(ctx: ToolContext, items: list[PlanItem],
@@ -458,6 +513,7 @@ def save_plan(ctx: ToolContext, args: SavePlanInput) -> SavePlanOut:
     saved = SavedConstraints(**constraints.model_dump(), difficulty=ctx.difficulty)
     plan_id = store.save(ctx.handle, saved, items)
     ctx.saved_plan_id = plan_id
+    ctx.saved_plan = (saved, items)
     return SavePlanOut(plan_id=plan_id, items=len(args.items))
 
 
@@ -535,7 +591,8 @@ if __name__ == "__main__":
         found = find_problems(ctx, FindProblemsInput(tag="dp", count=2)).problems
         backlog = get_upsolve_backlog(ctx, GetUpsolveBacklogInput(limit=3)).items
         print(f"\noffered so far: {sorted(ctx.offered)}")
-        good = [PlanItem(id=p.id, reason="dp is below your other tags") for p in found]
+        good = [PlanItem(id=p.id, reason=f"dp step {n}: below your other tags")
+                for n, p in enumerate(found, start=1)]
         bad = good + [PlanItem(id=b.id, reason="backlog") for b in backlog] + [
             PlanItem(id="2051A", reason="x"),             # real and solved, but never offered
             PlanItem(id="1Z", reason="x"),                # made up
@@ -549,10 +606,13 @@ if __name__ == "__main__":
 
         # The ladder: the model lists 3 dp problems hardest first; the saved order is easy first.
         ladder = find_problems(ctx, FindProblemsInput(tag="dp", count=3)).problems
-        errors, items = check_plan(ctx, [PlanItem(id=p.id, reason="x") for p in reversed(ladder)],
-                                   PlanConstraints())
+        errors, items = check_plan(ctx, [PlanItem(id=p.id, reason=f"why {p.id}")
+                                         for p in reversed(ladder)], PlanConstraints())
         print(f"\nmodel's order: {[(p.id, p.gap) for p in reversed(ladder)]}"
               f"\nsaved order:   {[(s.id, s.gap) for s in items]}  errors={errors}")
+        for s in items:
+            print(f"  {s.id}: {s.facts}")
+        print(plan_summary(SavedConstraints(hours=3), items))
         ctx.difficulty = "harder"
         harder = find_problems(ctx, FindProblemsInput(tag="dp", count=3))
         print(f"harder: {[(p.id, p.rating, p.gap) for p in harder.problems]}")

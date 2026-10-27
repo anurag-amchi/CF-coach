@@ -9,15 +9,15 @@ from cf_coach.agent.schemas import (
     PlanItem, SavePlanInput, ValidatePlanInput,
 )
 from cf_coach.agent.tools import (
-    STRATEGIES, TOOL_FUNCTIONS, MemoryPlanStore, Offer, SavedItem, ToolContext, ToolError,
-    all_tags, backlog_out, check_tags, effective_constraints, find_problems, first_solves_since,
-    get_progress_since, get_upsolve_backlog, plan_errors, plan_tag, problem_id, problem_out,
-    profile_out, progress_out, save_plan, saved_items, user_constraints, validate_plan,
-    wanted_count,
+    STRATEGIES, TOOL_FUNCTIONS, MemoryPlanStore, Offer, SavedConstraints, SavedItem, ToolContext,
+    ToolError, all_tags, backlog_out, check_tags, effective_constraints, find_problems,
+    first_solves_since, get_progress_since, get_upsolve_backlog, item_facts, plan_errors,
+    plan_summary, plan_tag, problem_id, problem_out, profile_out, progress_out, save_plan,
+    saved_items, user_constraints, validate_plan, wanted_count,
 )
 from cf_coach.analytics.attempts import SubmissionRow
 from cf_coach.analytics.selection import Candidate, ProblemRow, Profile
-from cf_coach.analytics.signals import BacklogItem
+from cf_coach.analytics.signals import BacklogItem, TagSignals
 from cf_coach.db.models import TagSkill
 
 NOW = datetime(2026, 10, 25, 12, 0)
@@ -158,8 +158,9 @@ def offered_as_dp(problems):
     return {problem_id(c, i): Offer(c, i, "dp") for (c, i) in problems}
 
 
-def item(pid):
-    return PlanItem(id=pid, reason="r")
+def item(pid, reason=None):
+    """Each id gets its own reason by default: equal reasons are a plan error (#40)."""
+    return PlanItem(id=pid, reason=reason or f"why {pid}")
 
 
 def errors_for(items, constraints=None, offered=None):
@@ -254,7 +255,9 @@ def test_backlog_problem_practises_its_weakest_tag_that_fits():
     p = BACKLOG[(2200, "A")]
     assert plan_tag(FROM_BACKLOG["2200A"], p, BACKLOG_PROFILE, "normal") == "dp"   # not *special
     assert saved_items([item("2200A")], FROM_BACKLOG, BACKLOG, BACKLOG_PROFILE) == [
-        SavedItem(id="2200A", contest_id=2200, idx="A", tag="dp", gap=200, reason="r")]
+        SavedItem(id="2200A", contest_id=2200, idx="A", tag="dp", rating=1600, gap=200,
+                  facts="dp skill 1400 (level 1400) · 1600 = level +200 · in your upsolve backlog",
+                  reason="why 2200A")]
 
 
 def test_weakest_tag_must_still_fit_the_band():
@@ -385,9 +388,13 @@ def test_save_stores_the_enforced_constraints_and_the_worked_out_items(monkeypat
     assert out.plan_id == 42 and ctx.saved_plan_id == 42
     assert session.added[0].constraints == {"hours": 4, "avoid_tags": ["geometry"],
                                             "difficulty": "normal"}
-    # the JSON the plans row gets: the code's id spelling, tag and gap, the model's reason
+    # the JSON the plans row gets: the code's id spelling, tag, rating, gap and facts;
+    # the model's reason
     assert session.added[0].items == [
-        {"id": "2000A", "contest_id": 2000, "idx": "A", "tag": "dp", "gap": 200, "reason": "r"}]
+        {"id": "2000A", "contest_id": 2000, "idx": "A", "tag": "dp", "rating": 1600, "gap": 200,
+         "facts": "dp skill 1400 (level 1400) · 1600 = level +200", "reason": "why 2000a"}]
+    constraints, items = ctx.saved_plan               # kept for the loop's summary
+    assert constraints.hours == 4 and [i.id for i in items] == ["2000A"]
 
 
 def test_find_problems_always_skips_the_users_avoided_tags(monkeypatch):
@@ -455,6 +462,43 @@ def test_items_must_practise_a_focus_tag():
     errs = plan_errors([item("2000A")], PlanConstraints(), offered_as_dp(problems), problems,
                        solved, profile, running, focus=["greedy"])
     assert errs == ["item 1 (2000A): has none of the tags the user asked for ['greedy']"]
+
+
+def test_equal_reasons_are_an_error():
+    errs = errors_for([item("2000A", "Good DP practice."), item("2000F", "fine"),
+                       item("2000G", "  good dp   PRACTICE. ")])     # same, apart from case/spaces
+    assert errs == ["item 3 (2000G): same reason as item 1; give each problem its own reason"]
+
+
+# ---------- facts written by code, summary written by code (decision #40) ----------
+
+def test_facts_for_a_tried_tag():
+    profile = Profile(1400, {"dp": 1415.4}, {"dp": TagSignals(attempts=26, given_up=3)})
+    assert item_facts("dp", 1500, profile, from_backlog=False) == (
+        "dp skill 1415 (level 1400) · 26 tries · 12% abandoned · 1500 = level +100")
+
+
+def test_facts_for_an_untried_tag_and_a_backlog_problem():
+    profile = Profile(1450, {})                      # rating 1450 rounds to level 1500
+    assert item_facts("geometry", 1500, profile, from_backlog=True) == (
+        "geometry untried (level 1500, from your rating) · 1500 = level +0 · in your upsolve backlog")
+
+
+def saved(pid, tag, rating, gap):
+    return SavedItem(id=pid, contest_id=1, idx="A", tag=tag, rating=rating, gap=gap,
+                     facts="f", reason="r")
+
+
+def test_plan_summary_is_short_plain_text():
+    items = [saved("1A", "dp", 1400, 0), saved("2A", "greedy", 1600, 0), saved("3A", "dp", 1500, 100)]
+    text = plan_summary(SavedConstraints(hours=4, avoid_tags=["geometry"]), items)
+    assert text == ("Saved 3 problems, easiest first, rated 1400-1600. Tags: dp x2, greedy x1. "
+                    "Difficulty: normal (+0 to +200 around each tag's level). Hours: 4. "
+                    "Avoiding: geometry.")
+    assert "|" not in text and "\n" not in text
+    one = plan_summary(SavedConstraints(difficulty="harder"), [saved("1A", "dp", 1500, 100)])
+    assert one == ("Saved 1 problem, easiest first, rated 1500-1500. Tags: dp x1. "
+                   "Difficulty: harder (+100 to +300 around each tag's level).")
 
 
 def test_focus_re_matches_a_problem_to_the_asked_tag():
