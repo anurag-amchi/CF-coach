@@ -1,7 +1,7 @@
 from cf_coach.evals.cases import CASES
 from cf_coach.evals.checks import (
     UNIVERSAL, PlannedProblem, RunView, at_most, avoids, band, count, distinct_reasons, ladder,
-    mentions_weakest_tag, no_plan, no_rejected_calls, no_table, not_running, round_skill, saved,
+    mentions_weakest_tag, no_numbers_in_reasons, no_plan, no_rejected_calls, no_table, not_running, round_skill, saved,
     saved_hours, starts_with_profile, step_log, tags_in, trace, unsolved,
 )
 
@@ -65,6 +65,15 @@ def test_reasons_summary_and_hours():
     assert no_table()(view(text="| a | b |\n|---|---|")) == "summary has a table"
     assert no_table()(view(text="Three dp problems, easy to hard.")) is None
     assert saved_hours(4)(view([problem()], saved_hours=None)) == "saved hours = None"
+
+
+def test_numbers_in_reasons_fail_but_digits_in_tag_names_dont():
+    plan = [problem("A", reason="Fits the +0 gap requirement."),
+            problem("B", reason="A 2-sat warm-up for your graph work.", tags=("2-sat", "graphs")),
+            problem("C", reason="Trains counting on small cases.")]
+    assert no_numbers_in_reasons()(view(plan)) == \
+        'numbers in: 2000A "Fits the +0 gap requirement."'
+    assert no_numbers_in_reasons()(view(plan[1:])) is None
 
 
 def test_trace_counts_tool_calls_and_rejections():

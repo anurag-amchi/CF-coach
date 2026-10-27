@@ -180,6 +180,21 @@ def distinct_reasons() -> Check:
     return _on_plan("distinct reasons", fn)
 
 
+def no_numbers_in_reasons() -> Check:
+    """The prompt says reasons have no numbers: code shows them in the facts line (#40).
+    Digits inside the problem's own tag names ("2-sat") don't count."""
+    def fn(plan):
+        bad = []
+        for x in plan:
+            text = x.reason.lower()
+            for t in x.tags:
+                text = text.replace(t, "")
+            if any(ch.isdigit() for ch in text):
+                bad.append(f"{x.id} \"{x.reason}\"")
+        return f"numbers in: {'; '.join(bad)}" if bad else None
+    return _on_plan("no numbers in reasons", fn)
+
+
 def no_table() -> Check:
     def fn(v):
         lines = (v.final_text or "").splitlines()
@@ -205,4 +220,4 @@ def mentions_weakest_tag() -> Check:
 
 
 UNIVERSAL = [starts_with_profile(), no_rejected_calls(), unsolved(), not_running(),
-             distinct_reasons(), no_table()]
+             distinct_reasons(), no_numbers_in_reasons(), no_table()]

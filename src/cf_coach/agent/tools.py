@@ -136,6 +136,9 @@ class ToolContext:
     # tag -> exact number of problems, when code picked the week's tags (no focus tags in
     # the request; see week_quota). Empty = no rule. Set by the loop. Decision #43.
     tag_quota: dict[str, int] = field(default_factory=dict)
+    # tag -> the levels (gaps) its problems must sit at, so the week climbs (week_ladder).
+    # Empty = no level rule. Set by the loop with tag_quota. Decision #44.
+    tag_gaps: dict[str, list[int]] = field(default_factory=dict)
 
     def plan_focus(self) -> list[str]:
         """The tags a plan item must practise: the asked ones, else the week's picked ones."""
@@ -366,6 +369,34 @@ def week_quota(tags: list[TagSkillOut], n: int, avoid: list[str] = ()) -> dict[s
     return {measured[0]: 2} | {t: 1 for t in measured[1:n - 1]}
 
 
+def week_ladder(quota: dict[str, int], difficulty: Difficulty = "normal") -> dict[str, list[int]]:
+    """The level (gap) of every problem in the week, spread evenly over the band, easiest first.
+
+    normal, {geometry: 2, strings: 1, trees: 1, combinatorics: 1}:
+        gaps   +0, +0, +100, +100, +200
+        tags   geometry, strings, trees, combinatorics, geometry (one of each, then the extras)
+        -> geometry [0, 200], strings [0], trees [100], combinatorics [100]
+    The weakest tag climbs inside itself; weaker tags start lower than stronger ones.
+    """
+    n = sum(quota.values())
+    if n == 0:
+        return {}
+    lo, hi = DIFFICULTY_GAPS[difficulty]
+    levels = list(range(lo, hi + 1, 100))
+    gaps = [levels[i * len(levels) // n] for i in range(n)]
+    order = list(quota) + [t for t, k in quota.items() for _ in range(k - 1)]
+    ladder: dict[str, list[int]] = {}
+    for tag, gap in zip(order, gaps):
+        ladder.setdefault(tag, []).append(gap)
+    return ladder
+
+
+def levels_text(gaps: list[int]) -> str:
+    """[0, 200] -> '+0 and +200'"""
+    shown = [f"{g:+d}" for g in sorted(gaps)]
+    return shown[0] if len(shown) == 1 else ", ".join(shown[:-1]) + " and " + shown[-1]
+
+
 def plan_size(count: int | None, hours: int | None) -> int | None:
     """How many problems the plan will have: the exact count, else what the hours allow."""
     want = wanted_count(count, hours)
@@ -385,16 +416,18 @@ def plan_errors(items: list[PlanItem], constraints: PlanConstraints, offered: di
                 problems: dict[tuple[int, str], ProblemRow], solved: set[tuple[int, str]],
                 profile: Profile, running: set[int],
                 difficulty: Difficulty = "normal", count: int | None = None,
-                focus: list[str] = (), quota: dict[str, int] | None = None) -> list[str]:
+                focus: list[str] = (), quota: dict[str, int] | None = None,
+                gaps: dict[str, list[int]] | None = None) -> list[str]:
     """Every rule the plan breaks, one line each. Empty list = the plan is valid.
 
     Deterministic: the same plan and data always give the same answer.
     quota (tag -> exact count) is the week's tags code picked (#43); it also acts as the
-    focus for re-matching an item's tag.
+    focus for re-matching an item's tag. gaps (tag -> levels) is the week's ladder (#44).
     """
     quota = quota or {}
+    gaps = gaps or {}
     match_focus = list(focus) or list(quota)
-    used: dict[str, int] = {}                  # quota tag -> items that practise it
+    used: dict[str, list[int]] = {}            # quota tag -> the levels of its items
     errors = []
     hours = constraints.hours
     want = wanted_count(count, hours)
@@ -459,11 +492,18 @@ def plan_errors(items: list[PlanItem], constraints: PlanConstraints, offered: di
             errors.append(f"{where}: rating {p.rating} is outside the {difficulty} {tag} "
                           f"band {lo}-{hi}")
         elif tag in quota:
-            used[tag] = used.get(tag, 0) + 1
+            used.setdefault(tag, []).append(p.rating - round_skill(tag_skill(profile, tag)))
     for tag, want in quota.items():
-        if used.get(tag, 0) != want:
+        have = used.get(tag, [])
+        if len(have) != want:
             errors.append(f"this week needs exactly {want} {tag} problem(s); "
-                          f"the plan has {used.get(tag, 0)}")
+                          f"the plan has {len(have)}")
+        elif tag in gaps and sorted(have) != sorted(gaps[tag]):
+            level = round_skill(tag_skill(profile, tag))
+            ratings = ", ".join(str(level + g) for g in sorted(gaps[tag]))
+            errors.append(f"this week's {tag} problem(s) must be at level "
+                          f"{levels_text(gaps[tag])} (rated {ratings}); "
+                          f"the plan has {levels_text(have)}")
     return errors
 
 
@@ -539,7 +579,7 @@ def check_plan(ctx: ToolContext, items: list[PlanItem],
     errors = plan_errors(items, constraints, ctx.offered, problems,
                          load_solved(ctx.session, ctx.handle), profile,
                          ctx.get_running_contests(), ctx.difficulty, ctx.count, ctx.focus_tags,
-                         ctx.tag_quota)
+                         ctx.tag_quota, ctx.tag_gaps)
     return errors, [] if errors else saved_items(items, ctx.offered, problems, profile,
                                                  ctx.difficulty, ctx.plan_focus())
 

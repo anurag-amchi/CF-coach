@@ -40,9 +40,10 @@ from cf_coach.agent.schemas import (
     TOOL_SCHEMAS, TOOLS, PlanConstraints, TagProfileOut, ToolArgsError, parse_args,
 )
 from cf_coach.agent.tools import (
-    MIN_ATTEMPTS, MINUTES_PER_PROBLEM, TOOL_FUNCTIONS, ToolContext, ToolError, plan_size,
-    plan_summary, wanted_count, week_quota,
+    MIN_ATTEMPTS, MINUTES_PER_PROBLEM, TOOL_FUNCTIONS, ToolContext, ToolError, levels_text,
+    plan_size, plan_summary, wanted_count, week_ladder, week_quota,
 )
+from cf_coach.analytics.selection import DIFFICULTY_GAPS
 from cf_coach.db.models import AgentRun
 
 MAX_STEPS = 10     # LLM calls per run. A normal run needs about 5-8.
@@ -61,9 +62,9 @@ Rules:
 - "Fixed constraints" after the message were read from the request and the user's
   settings (number of problems, hours, focus tags, avoided tags, difficulty). Plan exactly
   within them; validate_plan always enforces them. For focus tags, call find_problems
-  with each one. If the note lists this week's tags, their problems are already loaded:
-  take exactly that many from each tag, at different levels so the week climbs, and
-  don't search again.
+  with each one. If the note lists this week's tags and levels, their problems are
+  already loaded: from each tag take one problem per listed level (a problem's level is
+  its gap field), and don't search again.
 - Call validate_plan before save_plan. If it returns errors, fix all of them and validate again.
 - Each `reason` is one short sentence on why this problem suits this user and request
   (what it trains, how it fits the week). No numbers: code shows the skill, tries,
@@ -81,6 +82,7 @@ SAVE_NUDGE = ("validate_plan returned ok, but no plan was saved. Call the save_p
               "now with the same items: a tool call, not text.")
 PROFILE_CALL_ID = "code-get_tag_profile"     # the call code makes before the first step
 SEARCH_CALL_ID = "code-find_problems"        # + "-1", "-2"...: the week's searches (#43)
+SEARCH_PER_LEVEL = 2                         # problems per level in each week search (#44)
 
 
 def allowed_tools(intent: str, tools: dict[str, Callable]) -> dict[str, Callable]:
@@ -107,7 +109,8 @@ class RunResult:
 
 def user_message(request: str, fixed: PlanConstraints, difficulty: str = "normal",
                  count: int | None = None, focus_tags: list[str] = (),
-                 intent: str = "plan", week_tags: dict[str, int] | None = None) -> str:
+                 intent: str = "plan", week_tags: dict[str, int] | None = None,
+                 week_gaps: dict[str, list[int]] | None = None) -> str:
     """The request, plus the user's fixed constraints, so the model plans inside them."""
     notes = []
     if intent == "question":
@@ -116,7 +119,11 @@ def user_message(request: str, fixed: PlanConstraints, difficulty: str = "normal
         notes.append(f"problems: exactly {want}")
     if focus_tags:
         notes.append(f"focus tags: {', '.join(focus_tags)}")
-    if week_tags:
+    if week_tags and week_gaps:
+        notes.append(f"this week's tags and levels (your weakest with {MIN_ATTEMPTS}+ "
+                     "attempts; their problems are loaded; level = a problem's gap): "
+                     + ", ".join(f"{t} {levels_text(week_gaps[t])}" for t in week_tags))
+    elif week_tags:
         notes.append(f"this week's tags (your weakest with {MIN_ATTEMPTS}+ attempts; their "
                      "problems are loaded): "
                      + ", ".join(f"{t} x{n}" for t, n in week_tags.items()))
@@ -151,12 +158,14 @@ def run_tool(name: str, raw_args: str, ctx: ToolContext,
 
 def pick_week(ctx: ToolContext, profile_json: str,
               tools: dict[str, Callable]) -> tuple[list[ToolCall], list[str]]:
-    """For a plan request with no focus tags: choose the week's tags (week_quota) and run
-    one find_problems per tag (quota + 1 problems, so the model has a choice of level).
+    """For a plan request with no focus tags: choose the week's tags (week_quota) and the
+    level of each problem (week_ladder), then run one find_problems per tag
+    (SEARCH_PER_LEVEL per level of the band, so the model has a choice at every level).
 
-    Sets ctx.tag_quota. Returns the code's calls and their results, for the messages.
-    If the profile can't be read or a tag has too few problems, the quota is dropped and
-    the model plans as before (the searches' results are still shown).
+    Sets ctx.tag_quota and ctx.tag_gaps. Returns the code's calls and their results, for
+    the messages. If the profile can't be read or a tag has too few problems, both rules
+    are dropped and the model plans as before (the searches' results are still shown).
+    If only a level is missing (no problem at that gap), just the level rule is dropped.
     """
     try:
         tags = TagProfileOut.model_validate_json(profile_json).tags
@@ -164,16 +173,21 @@ def pick_week(ctx: ToolContext, profile_json: str,
         return [], []
     size = plan_size(ctx.count, ctx.user_constraints.hours)
     quota = week_quota(tags, size or 0, ctx.user_constraints.avoid_tags)
-    calls, results, short = [], [], False
+    ladder = week_ladder(quota, ctx.difficulty)
+    lo, hi = DIFFICULTY_GAPS[ctx.difficulty]
+    per_tag = SEARCH_PER_LEVEL * ((hi - lo) // 100 + 1)
+    calls, results, short, missing_level = [], [], False, False
     for n, (tag, k) in enumerate(quota.items(), start=1):
         call = ToolCall(f"{SEARCH_CALL_ID}-{n}", "find_problems",
-                        json.dumps({"tag": tag, "count": k + 1}))
+                        json.dumps({"tag": tag, "count": per_tag}))
         content = run_tool(call.name, call.arguments, ctx, tools)
         found = json.loads(content).get("problems", [])
         short = short or len(found) < k
+        missing_level = missing_level or not set(ladder[tag]) <= {p["gap"] for p in found}
         calls.append(call)
         results.append(content)
     ctx.tag_quota = {} if short else quota
+    ctx.tag_gaps = {} if short or missing_level else ladder
     return calls, results
 
 
@@ -212,7 +226,7 @@ def run_agent(llm: LLM, ctx: ToolContext, request: str, max_steps: int = MAX_STE
                 if ctx.tag_quota:
                     messages[1]["content"] = user_message(
                         request, ctx.user_constraints, ctx.difficulty, ctx.count,
-                        ctx.focus_tags, ctx.intent, ctx.tag_quota)
+                        ctx.focus_tags, ctx.intent, ctx.tag_quota, ctx.tag_gaps)
             add(assistant_message(None, [call]))
             add({"role": "tool", "tool_call_id": call.id, "content": profile_json})
             if searches:

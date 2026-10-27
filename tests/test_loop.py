@@ -146,20 +146,30 @@ def run_week(per_tag, count=4, focus=()):
 def test_a_week_with_no_tags_gets_its_tags_and_searches_from_code():
     result, ctx, llm = run_week(per_tag=3, count=4)
     assert ctx.tag_quota == {"geometry": 2, "strings": 1, "trees": 1}   # dfs: only 3 attempts
-    assert "this week's tags (your weakest with 5+ attempts; their problems are loaded): " \
-           "geometry x2, strings x1, trees x1" in result.messages[1]["content"]
+    assert ctx.tag_gaps == {"geometry": [0, 200], "strings": [0], "trees": [100]}
+    assert "this week's tags and levels (your weakest with 5+ attempts; their problems are " \
+           "loaded; level = a problem's gap): geometry +0 and +200, strings +0, trees +100" \
+           in result.messages[1]["content"]
     searches = result.messages[4]["tool_calls"]
     assert [(c["id"], json.loads(c["function"]["arguments"])) for c in searches] == [
-        (f"{SEARCH_CALL_ID}-1", {"tag": "geometry", "count": 3}),
-        (f"{SEARCH_CALL_ID}-2", {"tag": "strings", "count": 2}),
-        (f"{SEARCH_CALL_ID}-3", {"tag": "trees", "count": 2})]
+        (f"{SEARCH_CALL_ID}-1", {"tag": "geometry", "count": 6}),   # 2 per level x 3 levels
+        (f"{SEARCH_CALL_ID}-2", {"tag": "strings", "count": 6}),
+        (f"{SEARCH_CALL_ID}-3", {"tag": "trees", "count": 6})]
     assert [m["role"] for m in result.messages[5:8]] == ["tool"] * 3
     assert result.steps == 1 and llm.seen[0][-1] == result.messages[7]   # no LLM step spent
 
 
+def test_a_missing_level_drops_only_the_level_rule():
+    result, ctx, _ = run_week(per_tag=2, count=4)       # gaps +0, +100 only; geometry needs +200
+    assert ctx.tag_quota == {"geometry": 2, "strings": 1, "trees": 1}
+    assert ctx.tag_gaps == {}
+    assert "this week's tags (your weakest with 5+ attempts; their problems are loaded): " \
+           "geometry x2, strings x1, trees x1" in result.messages[1]["content"]
+
+
 def test_a_tag_with_too_few_problems_drops_the_quota():
     result, ctx, _ = run_week(per_tag=1, count=4)       # geometry needs 2, only 1 exists
-    assert ctx.tag_quota == {}
+    assert ctx.tag_quota == {} and ctx.tag_gaps == {}
     assert "this week's tags" not in result.messages[1]["content"]
 
 

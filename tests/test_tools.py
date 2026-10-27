@@ -13,7 +13,7 @@ from cf_coach.agent.tools import (
     ToolError, all_tags, backlog_out, check_tags, effective_constraints, find_problems,
     first_solves_since, get_progress_since, get_upsolve_backlog, item_facts, plan_errors,
     plan_size, plan_summary, plan_tag, problem_id, problem_out, profile_out, progress_out,
-    save_plan, saved_items, user_constraints, validate_plan, wanted_count, week_quota,
+    save_plan, saved_items, user_constraints, validate_plan, wanted_count, week_ladder, week_quota, levels_text,
 )
 from cf_coach.analytics.attempts import SubmissionRow
 from cf_coach.analytics.selection import Candidate, ProblemRow, Profile
@@ -567,6 +567,56 @@ def test_quota_errors_name_the_tag_and_the_counts():
         "item 3 (2400D): has none of this week's tags ['geometry', 'strings']",
         "this week needs exactly 2 geometry problem(s); the plan has 1",
     ]
+
+
+# ---------- the week's levels: a ladder from easy to hard (decision #44) ----------
+
+def test_week_ladder_spreads_the_levels_and_the_weakest_tag_climbs():
+    quota = {"geometry": 2, "strings": 1, "trees": 1, "combinatorics": 1}
+    assert week_ladder(quota) == {"geometry": [0, 200], "strings": [0], "trees": [100],
+                                  "combinatorics": [100]}
+    assert week_ladder({"geometry": 2, "strings": 1, "trees": 1}) == {
+        "geometry": [0, 200], "strings": [0], "trees": [100]}
+    assert week_ladder({"geometry": 2, "strings": 1}) == {"geometry": [0, 200], "strings": [100]}
+
+
+def test_week_ladder_small_weeks_other_difficulties_and_empty():
+    assert week_ladder({"geometry": 2}) == {"geometry": [0, 100]}
+    assert week_ladder({"geometry": 1}) == {"geometry": [0]}
+    assert week_ladder({"geometry": 2, "strings": 1}, "harder") == {"geometry": [100, 300],
+                                                                    "strings": [200]}
+    assert week_ladder({"geometry": 2, "strings": 1}, "easier") == {"geometry": [-100, 100],
+                                                                    "strings": [0]}
+    assert week_ladder({}) == {}
+
+
+def test_levels_text():
+    assert levels_text([0]) == "+0"
+    assert levels_text([200, 0]) == "+0 and +200"
+    assert levels_text([0, 100, 200]) == "+0, +100 and +200"
+
+
+def ladder_errors(ids, gaps):
+    return plan_errors([item(i) for i in ids], PlanConstraints(), QUOTA_OFFERS, QUOTA_PROBLEMS,
+                       set(), QUOTA_PROFILE, set(), quota={"geometry": 2, "strings": 1},
+                       gaps=gaps)
+
+
+def test_a_plan_at_the_week_levels_is_valid():
+    assert ladder_errors(["2400A", "2400B", "2400C"],
+                         {"geometry": [0, 100], "strings": [100]}) == []
+
+
+def test_level_errors_name_the_levels_and_the_ratings():
+    assert ladder_errors(["2400A", "2400B", "2400C"],
+                         {"geometry": [0, 200], "strings": [100]}) == [
+        "this week's geometry problem(s) must be at level +0 and +200 (rated 1400, 1600); "
+        "the plan has +0 and +100"]
+
+
+def test_a_wrong_count_reports_only_the_count_not_the_levels():
+    assert ladder_errors(["2400A", "2400C"], {"geometry": [0, 200], "strings": [100]}) == [
+        "this week needs exactly 2 geometry problem(s); the plan has 1"]
 
 
 def test_focus_re_matches_a_problem_to_the_asked_tag():
