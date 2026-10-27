@@ -130,6 +130,9 @@ class ToolContext:
     focus_tags: list[str] = field(default_factory=list)   # every item must practise one
     # set by save_plan with saved_plan_id; the loop builds the closing summary from it
     saved_plan: tuple[SavedConstraints, list[SavedItem]] | None = None
+    # did the latest validate_plan return ok? The loop nudges a model that stops after an
+    # ok validation without calling save_plan (decision #41)
+    validated_ok: bool = False
 
     def get_running_contests(self) -> set[int]:
         """Fetched from CF once per run, on first use, then reused by every tool call."""
@@ -494,6 +497,7 @@ def check_plan(ctx: ToolContext, items: list[PlanItem],
 def validate_plan(ctx: ToolContext, args: ValidatePlanInput) -> ValidationOut:
     constraints = effective_constraints(ctx.user_constraints, args.constraints)
     errors, _ = check_plan(ctx, args.items, constraints)
+    ctx.validated_ok = not errors
     return ValidationOut(ok=not errors, errors=errors)
 
 

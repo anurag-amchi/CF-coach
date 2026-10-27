@@ -7,6 +7,7 @@
         no tool calls?  -> done (final answer)
         else run each tool, append one {"role": "tool"} message per call
         a plan was saved?  -> done; code writes the summary (plan_summary), no LLM call
+    stopped with text after an ok validate_plan but no save? -> one SAVE_NUDGE, go on
 
 What goes back to the model as a tool result:
 - the tool's output, as JSON
@@ -22,7 +23,7 @@ save_run() writes that to agent_runs. Every run is logged, including failed ones
 
 Run on real data:  uv run python -m cf_coach.agent.loop TitanCoder1258 "5 hours, no geometry"
 Design reasons: docs/decisions.md #30, #32 (fixed constraints in the user message),
-#40 (the run ends at save_plan).
+#40 (the run ends at save_plan), #41 (the save nudge).
 """
 
 import json
@@ -64,12 +65,17 @@ Rules:
 - Each `reason` is one short sentence on why this problem suits this user and request
   (what it trains, how it fits the week). No numbers: code shows the skill, tries,
   abandon rate and rating next to it. Every reason must be different.
-- save_plan ends the run: code shows the saved plan to the user, so write no summary.
+- When validate_plan returns ok, call the save_plan tool with the same items. Saving ends
+  the run: code then shows the plan to the user.
 - If the message is a question (the note says so), answer it briefly in plain sentences
   (no tables) from the tools' data; you have only the read-only tools then."""
 
 READ_ONLY_TOOLS = ("get_tag_profile", "get_upsolve_backlog", "find_problems",
                    "get_progress_since")
+# Sent once when the model stops after an ok validate_plan without saving: gpt-oss
+# sometimes writes the save_plan arguments as text instead of calling the tool (#41).
+SAVE_NUDGE = ("validate_plan returned ok, but no plan was saved. Call the save_plan tool "
+              "now with the same items: a tool call, not text.")
 PROFILE_CALL_ID = "code-get_tag_profile"     # the call code makes before the first step
 
 
@@ -92,6 +98,7 @@ class RunResult:
     plan_id: int | None = None
     error: str | None = None
     model: str = ""
+    nudges: int = 0                # SAVE_NUDGE messages sent (0 or 1)
 
 
 def user_message(request: str, fixed: PlanConstraints, difficulty: str = "normal",
@@ -178,6 +185,10 @@ def run_agent(llm: LLM, ctx: ToolContext, request: str, max_steps: int = MAX_STE
             result.output_tokens += reply.output_tokens
             add(reply.message)
             if not reply.tool_calls:
+                if ctx.validated_ok and ctx.saved_plan_id is None and result.nudges == 0:
+                    result.nudges += 1               # a valid plan, but stopped before saving
+                    add({"role": "user", "content": SAVE_NUDGE})
+                    continue
                 result.final_text = reply.text
                 result.outcome = "saved" if ctx.saved_plan_id is not None else "no_plan"
                 break

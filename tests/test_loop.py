@@ -3,9 +3,12 @@ from datetime import datetime, timezone
 
 from cf_coach.agent.llm import LLMReply, ScriptedLLM, ToolCall, ToolCallRejected, scripted_reply
 from cf_coach.agent.loop import (
-    PROFILE_CALL_ID, READ_ONLY_TOOLS, allowed_tools, run_agent, run_tool, user_message,
+    PROFILE_CALL_ID, READ_ONLY_TOOLS, SAVE_NUDGE, allowed_tools, run_agent, run_tool,
+    user_message,
 )
-from cf_coach.agent.schemas import PlanConstraints, SavePlanOut, TagProfileOut, TOOL_SCHEMAS
+from cf_coach.agent.schemas import (
+    PlanConstraints, SavePlanOut, TagProfileOut, TOOL_SCHEMAS, ValidationOut,
+)
 from cf_coach.agent.tools import (
     SavedConstraints, SavedItem, ToolContext, ToolError, plan_summary,
 )
@@ -74,6 +77,43 @@ def test_saving_a_plan_ends_the_run_with_a_code_written_summary():
     assert result.steps == 1 and len(llm.seen) == 1          # no LLM call after the save
     assert result.final_text == plan_summary(SavedConstraints(), [SAVED_ITEM])
     assert result.messages[-1]["role"] == "tool"              # the save result is the last message
+
+
+def fake_validate_ok(ctx, args):
+    ctx.validated_ok = True
+    return ValidationOut(ok=True, errors=[])
+
+
+def run_with_validate(replies):
+    llm = ScriptedLLM(replies)
+    ctx = ToolContext("me", session=None, now=NOW)
+    tools = {**FAKE_TOOLS, "validate_plan": fake_validate_ok}
+    return run_agent(llm, ctx, "plan my week", tools=tools, start_with_profile=False), llm
+
+
+def test_save_written_as_text_after_an_ok_validation_gets_one_nudge():
+    result, llm = run_with_validate([
+        scripted_reply(calls=[call("validate_plan", PLAN)]),
+        scripted_reply(PLAN),                                  # the slip: the save as text
+        scripted_reply(calls=[call("save_plan", PLAN, id="c2")]),
+    ])
+    assert (result.outcome, result.plan_id, result.nudges, result.steps) == ("saved", 42, 1, 3)
+    assert {"role": "user", "content": SAVE_NUDGE} in result.messages
+    assert llm.seen[2][-1] == {"role": "user", "content": SAVE_NUDGE}   # the 3rd call saw it
+
+
+def test_the_nudge_is_sent_only_once():
+    result, _ = run_with_validate([
+        scripted_reply(calls=[call("validate_plan", PLAN)]),
+        scripted_reply(PLAN),
+        scripted_reply("I won't save it."),
+    ])
+    assert (result.outcome, result.nudges, result.final_text) == ("no_plan", 1, "I won't save it.")
+
+
+def test_a_refusal_without_an_ok_validation_is_not_nudged():
+    result, _ = run_with_validate([scripted_reply("No problems are rated that high for you.")])
+    assert (result.outcome, result.nudges, result.steps) == ("no_plan", 0, 1)
 
 
 def test_a_failed_save_does_not_end_the_run():

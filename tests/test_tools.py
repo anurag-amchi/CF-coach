@@ -355,6 +355,17 @@ def test_validate_enforces_user_constraints_the_model_dropped(monkeypatch):
         "2 problems is too many for 1 hours: at most 1 (about 60 min each)",
         "item 2 (2000B): has avoided tag(s) ['trees']",
     ]
+    assert ctx.validated_ok is False
+
+
+def test_validated_ok_follows_the_latest_validation(monkeypatch):
+    running = fake_plan_data(monkeypatch)
+    ctx = ToolContext("me", session=None, now=TODAY, running_contests=running,
+                      offered=offered_as_dp(plan_setup()[0]))
+    assert validate_plan(ctx, ValidatePlanInput(items=[item("2000A")])).ok
+    assert ctx.validated_ok is True
+    assert not validate_plan(ctx, ValidatePlanInput(items=[item("2000C")])).ok   # 1200: too easy
+    assert ctx.validated_ok is False
 
 
 class FakeSession:

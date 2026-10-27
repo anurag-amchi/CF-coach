@@ -105,6 +105,7 @@ def run_case(case: Case, llm: LLM, session: Session, handle: str, now: datetime,
         "steps": result.steps, "input_tokens": result.input_tokens,
         "output_tokens": result.output_tokens, "latency_ms": result.latency_ms,
         "tools_called": view.tools_called, "rejected_calls": view.rejected_calls,
+        "nudges": result.nudges,
         "plan": None if view.plan is None else [
             {**asdict(x), "id": x.id, "gap": x.gap} for x in view.plan],
         "final_text": result.final_text,
@@ -132,6 +133,7 @@ def summary(results: list[dict]) -> dict:
         "checks": len(checks),
         "checks_passed": sum(c["ok"] for c in checks),
         "rejected_calls": sum(r["rejected_calls"] for r in results),
+        "nudges": sum(r["nudges"] for r in results),
         "avg_steps": round(sum(r["steps"] for r in results) / len(results), 1),
         "avg_input_tokens": round(sum(r["input_tokens"] for r in results) / len(results)),
         "avg_latency_s": round(sum(r["latency_ms"] for r in results) / len(results) / 1000, 1),
@@ -191,6 +193,7 @@ def main(argv: list[str] | None = None) -> int:
     s = report["summary"]
     print(f"\n{s['cases_all_passed']}/{s['cases']} cases fully passed, "
           f"{s['checks_passed']}/{s['checks']} checks, {s['rejected_calls']} rejected calls, "
+          f"{s['nudges']} save nudges, "
           f"avg {s['avg_steps']} steps / {s['avg_input_tokens']:,} tokens / {s['avg_latency_s']}s")
     print(f"report: {path}")
     return 0 if s["checks_passed"] == s["checks"] else 1

@@ -1,0 +1,1333 @@
+{
+ "label": "after",
+ "started": "2026-10-27T11:52:33.194399+00:00",
+ "model": "openai/gpt-oss-120b",
+ "commit": "8fce98b",
+ "handle": "TitanCoder1258",
+ "summary": {
+  "cases": 11,
+  "cases_all_passed": 9,
+  "checks": 101,
+  "checks_passed": 99,
+  "rejected_calls": 0,
+  "avg_steps": 3.9,
+  "avg_input_tokens": 8422,
+  "avg_latency_s": 18.7
+ },
+ "results": [
+  {
+   "case": "dp_upskill",
+   "request": "Give me 3 problems of DP according to my skill level so that I can upskill",
+   "hours": null,
+   "avoid": [],
+   "parsed": {
+    "intent": "plan",
+    "count": 3,
+    "hours": null,
+    "focus_tags": [
+     "dp"
+    ],
+    "avoid_tags": [],
+    "difficulty": null
+   },
+   "parse_warnings": [],
+   "parse_tokens": 1135,
+   "outcome": "no_plan",
+   "error": null,
+   "steps": 3,
+   "input_tokens": 6307,
+   "output_tokens": 560,
+   "latency_ms": 2622,
+   "tools_called": [
+    "get_tag_profile",
+    "find_problems",
+    "validate_plan"
+   ],
+   "rejected_calls": 0,
+   "plan": null,
+   "final_text": "{\n  \"items\": [\n    {\n      \"id\": \"2238C\",\n      \"reason\": \"It reinforces DP on trees, matching your current DP skill level.\"\n    },\n    {\n      \"id\": \"2195E\",\n      \"reason\": \"It pushes you slightly above your DP rating, helping you bridge the gap.\"\n    },\n    {\n      \"id\": \"2242D\",\n      \"reason\": \"It combines DP with strings, expanding your DP toolbox.\"\n    }\n  ]\n}",
+   "checks": [
+    {
+     "check": "saved",
+     "ok": false,
+     "detail": "outcome no_plan"
+    },
+    {
+     "check": "3 problems",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "tags in {dp}",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "ladder +0/+100/+200",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "starts with get_tag_profile",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "no rejected calls",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "unsolved",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "no running contest",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "distinct reasons",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "summary has no table",
+     "ok": true,
+     "detail": null
+    }
+   ]
+  },
+  {
+   "case": "hours_in_text",
+   "request": "I have 4 hours this week. No geometry please.",
+   "hours": null,
+   "avoid": [],
+   "parsed": {
+    "intent": "plan",
+    "count": null,
+    "hours": 4,
+    "focus_tags": [],
+    "avoid_tags": [
+     "geometry"
+    ],
+    "difficulty": null
+   },
+   "parse_warnings": [],
+   "parse_tokens": 1072,
+   "outcome": "saved",
+   "error": null,
+   "steps": 7,
+   "input_tokens": 14503,
+   "output_tokens": 1811,
+   "latency_ms": 52965,
+   "tools_called": [
+    "get_tag_profile",
+    "find_problems",
+    "find_problems",
+    "find_problems",
+    "find_problems",
+    "find_problems",
+    "validate_plan",
+    "save_plan"
+   ],
+   "rejected_calls": 0,
+   "plan": [
+    {
+     "contest_id": 2238,
+     "idx": "C",
+     "rating": 1400,
+     "tags": [
+      "dfs and similar",
+      "dp",
+      "trees"
+     ],
+     "tag": "dp",
+     "reason": "Practices DFS and DP on trees, matching your solid skill in those areas.",
+     "skill": 1414.7214530598392,
+     "solved": false,
+     "running": false,
+     "facts": "dp skill 1415 (level 1400) · 26 tries · 12% abandoned · 1400 = level +0",
+     "id": "2238C",
+     "gap": 0
+    },
+    {
+     "contest_id": 2190,
+     "idx": "B1",
+     "rating": 1400,
+     "tags": [
+      "combinatorics",
+      "constructive algorithms",
+      "dp",
+      "greedy",
+      "strings",
+      "two pointers"
+     ],
+     "tag": "strings",
+     "reason": "Strengthens string handling and combinatorial constructions, fitting your high attempts.",
+     "skill": 1397.523306803151,
+     "solved": false,
+     "running": false,
+     "facts": "strings skill 1398 (level 1400) · 32 tries · 0% abandoned · 1400 = level +0",
+     "id": "2190B1",
+     "gap": 0
+    },
+    {
+     "contest_id": 2060,
+     "idx": "E",
+     "rating": 1500,
+     "tags": [
+      "dfs and similar",
+      "dsu",
+      "graphs",
+      "greedy"
+     ],
+     "tag": "greedy",
+     "reason": "Challenges greedy and DSU techniques, a good step up from your current rating.",
+     "skill": 1510.279377671619,
+     "solved": false,
+     "running": false,
+     "facts": "greedy skill 1510 (level 1500) · 130 tries · 2% abandoned · 1500 = level +0",
+     "id": "2060E",
+     "gap": 0
+    },
+    {
+     "contest_id": 2162,
+     "idx": "D",
+     "rating": 1400,
+     "tags": [
+      "binary search",
+      "interactive"
+     ],
+     "tag": "binary search",
+     "reason": "Reinforces binary search concepts while staying in your comfortable rating band.",
+     "skill": 1434.1431530529405,
+     "solved": false,
+     "running": false,
+     "facts": "binary search skill 1434 (level 1400) · 19 tries · 11% abandoned · 1400 = level +0",
+     "id": "2162D",
+     "gap": 0
+    }
+   ],
+   "final_text": "Saved 4 problems, easiest first, rated 1400-1500. Tags: dp x1, strings x1, greedy x1, binary search x1. Difficulty: normal (+0 to +200 around each tag's level). Hours: 4. Avoiding: geometry.",
+   "checks": [
+    {
+     "check": "saved",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "at most 4 problems",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "avoids geometry",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "saved hours = 4",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "band +0..+200",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "starts with get_tag_profile",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "no rejected calls",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "unsolved",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "no running contest",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "distinct reasons",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "summary has no table",
+     "ok": true,
+     "detail": null
+    }
+   ]
+  },
+  {
+   "case": "hours_as_flags",
+   "request": "Plan my week.",
+   "hours": 4,
+   "avoid": [
+    "geometry"
+   ],
+   "parsed": {
+    "intent": "plan",
+    "count": null,
+    "hours": 4,
+    "focus_tags": [],
+    "avoid_tags": [
+     "geometry"
+    ],
+    "difficulty": null
+   },
+   "parse_warnings": [],
+   "parse_tokens": 1027,
+   "outcome": "saved",
+   "error": null,
+   "steps": 6,
+   "input_tokens": 12244,
+   "output_tokens": 1724,
+   "latency_ms": 36369,
+   "tools_called": [
+    "get_tag_profile",
+    "find_problems",
+    "find_problems",
+    "find_problems",
+    "find_problems",
+    "validate_plan",
+    "save_plan"
+   ],
+   "rejected_calls": 0,
+   "plan": [
+    {
+     "contest_id": 2190,
+     "idx": "B1",
+     "rating": 1400,
+     "tags": [
+      "combinatorics",
+      "constructive algorithms",
+      "dp",
+      "greedy",
+      "strings",
+      "two pointers"
+     ],
+     "tag": "strings",
+     "reason": "Practices string manipulation and two‑pointer techniques at your current level",
+     "skill": 1397.523306803151,
+     "solved": false,
+     "running": false,
+     "facts": "strings skill 1398 (level 1400) · 32 tries · 0% abandoned · 1400 = level +0",
+     "id": "2190B1",
+     "gap": 0
+    },
+    {
+     "contest_id": 2238,
+     "idx": "C",
+     "rating": 1400,
+     "tags": [
+      "dfs and similar",
+      "dp",
+      "trees"
+     ],
+     "tag": "dfs and similar",
+     "reason": "Strengthens DFS recursion and tree DP skills where you have modest experience",
+     "skill": 1398.4927302276055,
+     "solved": false,
+     "running": false,
+     "facts": "dfs and similar skill 1398 (level 1400) · 3 tries · 33% abandoned · 1400 = level +0",
+     "id": "2238C",
+     "gap": 0
+    },
+    {
+     "contest_id": 1706,
+     "idx": "C",
+     "rating": 1400,
+     "tags": [
+      "dp",
+      "flows",
+      "greedy",
+      "implementation"
+     ],
+     "tag": "flows",
+     "reason": "Introduces flow‑based DP problems to improve your handling of greedy implementations",
+     "skill": 1398.916181952203,
+     "solved": false,
+     "running": false,
+     "facts": "flows skill 1399 (level 1400) · 1 tries · 0% abandoned · 1400 = level +0",
+     "id": "1706C",
+     "gap": 0
+    },
+    {
+     "contest_id": 2162,
+     "idx": "D",
+     "rating": 1400,
+     "tags": [
+      "binary search",
+      "interactive"
+     ],
+     "tag": "binary search",
+     "reason": "Applies binary search in a combinatorial setting to broaden your algorithmic toolbox",
+     "skill": 1434.1431530529405,
+     "solved": false,
+     "running": false,
+     "facts": "binary search skill 1434 (level 1400) · 19 tries · 11% abandoned · 1400 = level +0",
+     "id": "2162D",
+     "gap": 0
+    }
+   ],
+   "final_text": "Saved 4 problems, easiest first, rated 1400-1400. Tags: strings x1, dfs and similar x1, flows x1, binary search x1. Difficulty: normal (+0 to +200 around each tag's level). Hours: 4. Avoiding: geometry.",
+   "checks": [
+    {
+     "check": "saved",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "at most 4 problems",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "avoids geometry",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "saved hours = 4",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "band +0..+200",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "starts with get_tag_profile",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "no rejected calls",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "unsolved",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "no running contest",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "distinct reasons",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "summary has no table",
+     "ok": true,
+     "detail": null
+    }
+   ]
+  },
+  {
+   "case": "count_above_hours",
+   "request": "Give me 5 dp problems this week",
+   "hours": 3,
+   "avoid": [],
+   "parsed": {
+    "intent": "plan",
+    "count": 5,
+    "hours": 3,
+    "focus_tags": [
+     "dp"
+    ],
+    "avoid_tags": [],
+    "difficulty": null
+   },
+   "parse_warnings": [],
+   "parse_tokens": 1092,
+   "outcome": "saved",
+   "error": null,
+   "steps": 4,
+   "input_tokens": 8363,
+   "output_tokens": 739,
+   "latency_ms": 5431,
+   "tools_called": [
+    "get_tag_profile",
+    "find_problems",
+    "validate_plan",
+    "validate_plan",
+    "save_plan"
+   ],
+   "rejected_calls": 0,
+   "plan": [
+    {
+     "contest_id": 2238,
+     "idx": "C",
+     "rating": 1400,
+     "tags": [
+      "dfs and similar",
+      "dp",
+      "trees"
+     ],
+     "tag": "dp",
+     "reason": "Practice tree DP techniques to strengthen recursion and state merging",
+     "skill": 1414.7214530598392,
+     "solved": false,
+     "running": false,
+     "facts": "dp skill 1415 (level 1400) · 26 tries · 12% abandoned · 1400 = level +0",
+     "id": "2238C",
+     "gap": 0
+    },
+    {
+     "contest_id": 2195,
+     "idx": "E",
+     "rating": 1500,
+     "tags": [
+      "dfs and similar",
+      "dp",
+      "trees"
+     ],
+     "tag": "dp",
+     "reason": "Work on advanced DFS‑DP combos to improve handling of deep search spaces",
+     "skill": 1414.7214530598392,
+     "solved": false,
+     "running": false,
+     "facts": "dp skill 1415 (level 1400) · 26 tries · 12% abandoned · 1500 = level +100",
+     "id": "2195E",
+     "gap": 100
+    },
+    {
+     "contest_id": 2242,
+     "idx": "D",
+     "rating": 1600,
+     "tags": [
+      "dp",
+      "strings"
+     ],
+     "tag": "dp",
+     "reason": "Solve string DP to boost pattern‑matching and subsequence dynamic programming skills",
+     "skill": 1414.7214530598392,
+     "solved": false,
+     "running": false,
+     "facts": "dp skill 1415 (level 1400) · 26 tries · 12% abandoned · 1600 = level +200",
+     "id": "2242D",
+     "gap": 200
+    }
+   ],
+   "final_text": "Saved 3 problems, easiest first, rated 1400-1600. Tags: dp x3. Difficulty: normal (+0 to +200 around each tag's level). Hours: 3.",
+   "checks": [
+    {
+     "check": "saved",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "3 problems",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "tags in {dp}",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "band +0..+200",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "starts with get_tag_profile",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "no rejected calls",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "unsolved",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "no running contest",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "distinct reasons",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "summary has no table",
+     "ok": true,
+     "detail": null
+    }
+   ]
+  },
+  {
+   "case": "default_week",
+   "request": "Plan my practice for this week.",
+   "hours": null,
+   "avoid": [],
+   "parsed": {
+    "intent": "plan",
+    "count": null,
+    "hours": null,
+    "focus_tags": [],
+    "avoid_tags": [],
+    "difficulty": null
+   },
+   "parse_warnings": [],
+   "parse_tokens": 1037,
+   "outcome": "saved",
+   "error": null,
+   "steps": 9,
+   "input_tokens": 20982,
+   "output_tokens": 2311,
+   "latency_ms": 83865,
+   "tools_called": [
+    "get_tag_profile",
+    "find_problems",
+    "find_problems",
+    "get_upsolve_backlog",
+    "validate_plan",
+    "find_problems",
+    "find_problems",
+    "find_problems",
+    "validate_plan",
+    "save_plan"
+   ],
+   "rejected_calls": 0,
+   "plan": [
+    {
+     "contest_id": 2074,
+     "idx": "D",
+     "rating": 1400,
+     "tags": [
+      "brute force",
+      "data structures",
+      "geometry",
+      "implementation",
+      "two pointers"
+     ],
+     "tag": "geometry",
+     "reason": "It reinforces geometry fundamentals at your current level.",
+     "skill": 1391.611078493303,
+     "solved": false,
+     "running": false,
+     "facts": "geometry skill 1392 (level 1400) · 7 tries · 29% abandoned · 1400 = level +0",
+     "id": "2074D",
+     "gap": 0
+    },
+    {
+     "contest_id": 2238,
+     "idx": "C",
+     "rating": 1400,
+     "tags": [
+      "dfs and similar",
+      "dp",
+      "trees"
+     ],
+     "tag": "dfs and similar",
+     "reason": "It strengthens your DFS and DP techniques on trees.",
+     "skill": 1398.4927302276055,
+     "solved": false,
+     "running": false,
+     "facts": "dfs and similar skill 1398 (level 1400) · 3 tries · 33% abandoned · 1400 = level +0",
+     "id": "2238C",
+     "gap": 0
+    },
+    {
+     "contest_id": 2218,
+     "idx": "F",
+     "rating": 1500,
+     "tags": [
+      "constructive algorithms",
+      "implementation",
+      "trees"
+     ],
+     "tag": "constructive algorithms",
+     "reason": "It expands your constructive algorithms practice at a higher difficulty.",
+     "skill": 1464.0325795461413,
+     "solved": false,
+     "running": false,
+     "facts": "constructive algorithms skill 1464 (level 1500) · 61 tries · 3% abandoned · 1500 = level +0",
+     "id": "2218F",
+     "gap": 0
+    },
+    {
+     "contest_id": 2162,
+     "idx": "D",
+     "rating": 1400,
+     "tags": [
+      "binary search",
+      "interactive"
+     ],
+     "tag": "binary search",
+     "reason": "It sharpens binary search concepts with an interactive twist.",
+     "skill": 1434.1431530529405,
+     "solved": false,
+     "running": false,
+     "facts": "binary search skill 1434 (level 1400) · 19 tries · 11% abandoned · 1400 = level +0",
+     "id": "2162D",
+     "gap": 0
+    },
+    {
+     "contest_id": 2072,
+     "idx": "E",
+     "rating": 1500,
+     "tags": [
+      "binary search",
+      "brute force",
+      "constructive algorithms",
+      "dp",
+      "geometry",
+      "greedy",
+      "math"
+     ],
+     "tag": "geometry",
+     "reason": "It challenges your geometry skills with a higher rating.",
+     "skill": 1391.611078493303,
+     "solved": false,
+     "running": false,
+     "facts": "geometry skill 1392 (level 1400) · 7 tries · 29% abandoned · 1500 = level +100",
+     "id": "2072E",
+     "gap": 100
+    }
+   ],
+   "final_text": "Saved 5 problems, easiest first, rated 1400-1500. Tags: geometry x2, dfs and similar x1, constructive algorithms x1, binary search x1. Difficulty: normal (+0 to +200 around each tag's level).",
+   "checks": [
+    {
+     "check": "saved",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "5 problems",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "band +0..+200",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "starts with get_tag_profile",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "no rejected calls",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "unsolved",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "no running contest",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "distinct reasons",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "summary has no table",
+     "ok": true,
+     "detail": null
+    }
+   ]
+  },
+  {
+   "case": "two_tags",
+   "request": "I want to practise greedy and binary search. 4 problems.",
+   "hours": null,
+   "avoid": [],
+   "parsed": {
+    "intent": "plan",
+    "count": 4,
+    "hours": null,
+    "focus_tags": [
+     "greedy",
+     "binary search"
+    ],
+    "avoid_tags": [],
+    "difficulty": null
+   },
+   "parse_warnings": [],
+   "parse_tokens": 1087,
+   "outcome": "saved",
+   "error": null,
+   "steps": 4,
+   "input_tokens": 8343,
+   "output_tokens": 785,
+   "latency_ms": 10244,
+   "tools_called": [
+    "get_tag_profile",
+    "find_problems",
+    "find_problems",
+    "validate_plan",
+    "save_plan"
+   ],
+   "rejected_calls": 0,
+   "plan": [
+    {
+     "contest_id": 2060,
+     "idx": "E",
+     "rating": 1500,
+     "tags": [
+      "dfs and similar",
+      "dsu",
+      "graphs",
+      "greedy"
+     ],
+     "tag": "greedy",
+     "reason": "Practices greedy graph construction and DSU integration.",
+     "skill": 1510.279377671619,
+     "solved": false,
+     "running": false,
+     "facts": "greedy skill 1510 (level 1500) · 130 tries · 2% abandoned · 1500 = level +0",
+     "id": "2060E",
+     "gap": 0
+    },
+    {
+     "contest_id": 2162,
+     "idx": "D",
+     "rating": 1400,
+     "tags": [
+      "binary search",
+      "interactive"
+     ],
+     "tag": "binary search",
+     "reason": "Reinforces binary search on permutations with interactive checks.",
+     "skill": 1434.1431530529405,
+     "solved": false,
+     "running": false,
+     "facts": "binary search skill 1434 (level 1400) · 19 tries · 11% abandoned · 1400 = level +0",
+     "id": "2162D",
+     "gap": 0
+    },
+    {
+     "contest_id": 2193,
+     "idx": "F",
+     "rating": 1600,
+     "tags": [
+      "dp",
+      "greedy"
+     ],
+     "tag": "greedy",
+     "reason": "Focuses on greedy DP decisions for scheduling tasks.",
+     "skill": 1510.279377671619,
+     "solved": false,
+     "running": false,
+     "facts": "greedy skill 1510 (level 1500) · 130 tries · 2% abandoned · 1600 = level +100",
+     "id": "2193F",
+     "gap": 100
+    },
+    {
+     "contest_id": 1999,
+     "idx": "G1",
+     "rating": 1500,
+     "tags": [
+      "binary search",
+      "interactive"
+     ],
+     "tag": "binary search",
+     "reason": "Sharpens binary search handling of range queries in an easy setting.",
+     "skill": 1434.1431530529405,
+     "solved": false,
+     "running": false,
+     "facts": "binary search skill 1434 (level 1400) · 19 tries · 11% abandoned · 1500 = level +100",
+     "id": "1999G1",
+     "gap": 100
+    }
+   ],
+   "final_text": "Saved 4 problems, easiest first, rated 1400-1600. Tags: greedy x2, binary search x2. Difficulty: normal (+0 to +200 around each tag's level).",
+   "checks": [
+    {
+     "check": "saved",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "4 problems",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "tags in {greedy, binary search}",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "band +0..+200",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "starts with get_tag_profile",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "no rejected calls",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "unsolved",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "no running contest",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "distinct reasons",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "summary has no table",
+     "ok": true,
+     "detail": null
+    }
+   ]
+  },
+  {
+   "case": "challenge",
+   "request": "Challenge me: 3 hard dp problems.",
+   "hours": null,
+   "avoid": [],
+   "parsed": {
+    "intent": "plan",
+    "count": 3,
+    "hours": null,
+    "focus_tags": [
+     "dp"
+    ],
+    "avoid_tags": [],
+    "difficulty": "harder"
+   },
+   "parse_warnings": [],
+   "parse_tokens": 1058,
+   "outcome": "saved",
+   "error": null,
+   "steps": 3,
+   "input_tokens": 6282,
+   "output_tokens": 646,
+   "latency_ms": 3711,
+   "tools_called": [
+    "get_tag_profile",
+    "find_problems",
+    "validate_plan",
+    "save_plan"
+   ],
+   "rejected_calls": 0,
+   "plan": [
+    {
+     "contest_id": 2195,
+     "idx": "E",
+     "rating": 1500,
+     "tags": [
+      "dfs and similar",
+      "dp",
+      "trees"
+     ],
+     "tag": "dp",
+     "reason": "Idiot First Search sharpens your DFS‑DP hybrid skills at a higher rating.",
+     "skill": 1414.7214530598392,
+     "solved": false,
+     "running": false,
+     "facts": "dp skill 1415 (level 1400) · 26 tries · 12% abandoned · 1500 = level +100",
+     "id": "2195E",
+     "gap": 100
+    },
+    {
+     "contest_id": 2242,
+     "idx": "D",
+     "rating": 1600,
+     "tags": [
+      "dp",
+      "strings"
+     ],
+     "tag": "dp",
+     "reason": "Two Digit Strings pushes your DP on strings beyond your current level.",
+     "skill": 1414.7214530598392,
+     "solved": false,
+     "running": false,
+     "facts": "dp skill 1415 (level 1400) · 26 tries · 12% abandoned · 1600 = level +200",
+     "id": "2242D",
+     "gap": 200
+    },
+    {
+     "contest_id": 2181,
+     "idx": "M",
+     "rating": 1700,
+     "tags": [
+      "dp",
+      "strings"
+     ],
+     "tag": "dp",
+     "reason": "Medical Parity challenges DP with parity constraints, raising your problem‑solving depth.",
+     "skill": 1414.7214530598392,
+     "solved": false,
+     "running": false,
+     "facts": "dp skill 1415 (level 1400) · 26 tries · 12% abandoned · 1700 = level +300",
+     "id": "2181M",
+     "gap": 300
+    }
+   ],
+   "final_text": "Saved 3 problems, easiest first, rated 1500-1700. Tags: dp x3. Difficulty: harder (+100 to +300 around each tag's level).",
+   "checks": [
+    {
+     "check": "saved",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "3 problems",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "tags in {dp}",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "band +100..+300",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "starts with get_tag_profile",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "no rejected calls",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "unsolved",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "no running contest",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "distinct reasons",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "summary has no table",
+     "ok": true,
+     "detail": null
+    }
+   ]
+  },
+  {
+   "case": "rusty",
+   "request": "I'm rusty after a break. Give me 3 easy warm-up problems.",
+   "hours": null,
+   "avoid": [],
+   "parsed": {
+    "intent": "plan",
+    "count": 3,
+    "hours": null,
+    "focus_tags": [],
+    "avoid_tags": [],
+    "difficulty": "easier"
+   },
+   "parse_warnings": [],
+   "parse_tokens": 1029,
+   "outcome": "no_plan",
+   "error": null,
+   "steps": 3,
+   "input_tokens": 6324,
+   "output_tokens": 734,
+   "latency_ms": 4914,
+   "tools_called": [
+    "get_tag_profile",
+    "find_problems",
+    "validate_plan"
+   ],
+   "rejected_calls": 0,
+   "plan": null,
+   "final_text": "{\n  \"items\": [\n    {\n      \"id\": \"1900C\",\n      \"reason\": \"A simple DFS+DP problem to refresh tree traversal basics.\"\n    },\n    {\n      \"id\": \"2238C\",\n      \"reason\": \"Another DFS/DP task that reinforces recursion and state handling.\"\n    },\n    {\n      \"id\": \"2195E\",\n      \"reason\": \"A slightly harder DFS challenge to stretch your problem‑solving after the warm‑up.\"\n    }\n  ]\n}",
+   "checks": [
+    {
+     "check": "saved",
+     "ok": false,
+     "detail": "outcome no_plan"
+    },
+    {
+     "check": "3 problems",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "band -100..+100",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "starts with get_tag_profile",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "no rejected calls",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "unsolved",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "no running contest",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "distinct reasons",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "summary has no table",
+     "ok": true,
+     "detail": null
+    }
+   ]
+  },
+  {
+   "case": "too_hard",
+   "request": "Give me 3 problems rated 2400.",
+   "hours": null,
+   "avoid": [],
+   "parsed": {
+    "intent": "plan",
+    "count": 3,
+    "hours": null,
+    "focus_tags": [],
+    "avoid_tags": [],
+    "difficulty": null
+   },
+   "parse_warnings": [],
+   "parse_tokens": 1128,
+   "outcome": "no_plan",
+   "error": null,
+   "steps": 2,
+   "input_tokens": 4465,
+   "output_tokens": 1038,
+   "latency_ms": 3488,
+   "tools_called": [
+    "get_tag_profile",
+    "get_upsolve_backlog"
+   ],
+   "rejected_calls": 0,
+   "plan": null,
+   "final_text": "I’m sorry, but based on your current activity there are no unsolved problems at the 2400‑rating level that I can recommend. The backlog of problems you haven’t solved yet is limited to ratings well below 2400, and the “find problems” tool only returns problems near your present skill range. If you’d like, I can suggest a few challenging problems that are closer to your current level to help you keep improving.",
+   "checks": [
+    {
+     "check": "band -100..+300",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "starts with get_tag_profile",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "no rejected calls",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "unsolved",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "no running contest",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "distinct reasons",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "summary has no table",
+     "ok": true,
+     "detail": null
+    }
+   ]
+  },
+  {
+   "case": "running_contest",
+   "request": "Give me problems from the contest that is running right now.",
+   "hours": null,
+   "avoid": [],
+   "parsed": {
+    "intent": "plan",
+    "count": null,
+    "hours": null,
+    "focus_tags": [],
+    "avoid_tags": [],
+    "difficulty": null
+   },
+   "parse_warnings": [],
+   "parse_tokens": 1023,
+   "outcome": "no_plan",
+   "error": null,
+   "steps": 1,
+   "input_tokens": 2500,
+   "output_tokens": 290,
+   "latency_ms": 789,
+   "tools_called": [
+    "get_tag_profile"
+   ],
+   "rejected_calls": 0,
+   "plan": null,
+   "final_text": "I’m sorry, but I can’t provide problems from a contest that’s currently running.",
+   "checks": [
+    {
+     "check": "starts with get_tag_profile",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "no rejected calls",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "unsolved",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "no running contest",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "distinct reasons",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "summary has no table",
+     "ok": true,
+     "detail": null
+    }
+   ]
+  },
+  {
+   "case": "weakest_tag_question",
+   "request": "What is my weakest tag right now?",
+   "hours": null,
+   "avoid": [],
+   "parsed": {
+    "intent": "question",
+    "count": null,
+    "hours": null,
+    "focus_tags": [],
+    "avoid_tags": [],
+    "difficulty": null
+   },
+   "parse_warnings": [],
+   "parse_tokens": 1024,
+   "outcome": "no_plan",
+   "error": null,
+   "steps": 1,
+   "input_tokens": 2330,
+   "output_tokens": 405,
+   "latency_ms": 921,
+   "tools_called": [
+    "get_tag_profile"
+   ],
+   "rejected_calls": 0,
+   "plan": null,
+   "final_text": "Your weakest tag at the moment is **geometry**, with a skill rating of 1392.",
+   "checks": [
+    {
+     "check": "no plan saved",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "names the weakest tag",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "starts with get_tag_profile",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "no rejected calls",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "unsolved",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "no running contest",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "distinct reasons",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "summary has no table",
+     "ok": true,
+     "detail": null
+    }
+   ]
+  }
+ ]
+}
