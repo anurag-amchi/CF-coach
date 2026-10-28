@@ -565,8 +565,41 @@ def test_a_plan_that_meets_the_quota_is_valid():
 def test_quota_errors_name_the_tag_and_the_counts():
     assert quota_errors(["2400A", "2400C", "2400D"]) == [
         "item 3 (2400D): has none of this week's tags ['geometry', 'strings']",
-        "this week needs exactly 2 geometry problem(s); the plan has 1",
+        "this week needs exactly 2 geometry problem(s); the plan has 1 (2400A)",
     ]
+
+
+def test_quota_error_names_the_items_counted_for_a_tag():
+    """3 geometry + 0 strings: the model sees which ids counted as geometry (#48)."""
+    offers = {**QUOTA_OFFERS, "2400E": Offer(2400, "E", "geometry")}
+    problems = {**QUOTA_PROBLEMS,
+                (2400, "E"): ProblemRow(2400, "E", "g3", 1500, ("geometry", "strings"))}
+    errors = plan_errors([item(i) for i in ["2400A", "2400B", "2400E"]], PlanConstraints(),
+                         offers, problems, set(), QUOTA_PROFILE, set(),
+                         quota={"geometry": 2, "strings": 1})
+    assert errors == [
+        "this week needs exactly 2 geometry problem(s); the plan has 3 (2400A, 2400B, 2400E)",
+        "this week needs exactly 1 strings problem(s); the plan has 0"]
+
+
+def test_find_problems_skips_problems_offered_under_another_tag(monkeypatch):
+    """1753E came back for greedy; the brute force search must not return (and re-label) it."""
+    running = fake_plan_data(monkeypatch)
+    seen = {}
+
+    def fake_select(problems, solved, *args, **kwargs):
+        seen["solved"] = solved
+        return []
+
+    monkeypatch.setattr(tools, "select_candidates", fake_select)
+    ctx = ToolContext("me", session=None, now=TODAY, running_contests=running)
+    ctx.offer(1753, "E", "greedy")         # an earlier greedy search
+    ctx.offer(2000, "C", "dp")             # an earlier dp search: same tag, not skipped
+    ctx.offer(1900, "A", None)             # from the backlog: no tag, not skipped
+    find_problems(ctx, FindProblemsInput(tag="dp"))
+    assert (1753, "E") in seen["solved"]
+    assert (2000, "C") not in seen["solved"] and (1900, "A") not in seen["solved"]
+    assert ctx.offered["1753E"].tag == "greedy"
 
 
 # ---------- the week's levels: a ladder from easy to hard (decision #44) ----------
@@ -624,7 +657,7 @@ def test_level_errors_name_the_levels_and_the_ratings():
 
 def test_a_wrong_count_reports_only_the_count_not_the_levels():
     assert ladder_errors(["2400A", "2400C"], {"geometry": [0, 200], "strings": [100]}) == [
-        "this week needs exactly 2 geometry problem(s); the plan has 1"]
+        "this week needs exactly 2 geometry problem(s); the plan has 1 (2400A)"]
 
 
 def test_focus_re_matches_a_problem_to_the_asked_tag():

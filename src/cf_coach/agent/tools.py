@@ -210,12 +210,24 @@ def all_tags(problems: list[ProblemRow]) -> set[str]:
     return {t for p in problems for t in p.tags} - IGNORED_TAGS
 
 
+def taken_by_other_tags(ctx: ToolContext, tag: str | None) -> set[tuple[int, str]]:
+    """Problems an earlier find_problems returned for a different tag (#48).
+
+    A problem has one tag in a plan: the one it was found under. If a greedy + brute force
+    problem came back in both searches, the second search would re-label it and a "greedy"
+    pick would count as brute force. So each later search skips them.
+    """
+    return {(o.contest_id, o.idx) for o in ctx.offered.values()
+            if o.tag is not None and o.tag != tag}
+
+
 def find_problems(ctx: ToolContext, args: FindProblemsInput) -> FindProblemsOut:
     problems = load_problems(ctx.session)
     check_tags(([args.tag] if args.tag else []) + args.avoid_tags, all_tags(problems))
     candidates = select_candidates(
         problems,
-        load_solved(ctx.session, ctx.handle),
+        # skipped like solved ones: already offered under another tag
+        load_solved(ctx.session, ctx.handle) | taken_by_other_tags(ctx, args.tag),
         build_profile(ctx.session, ctx.handle, ctx.now),
         ctx.get_running_contests(),
         STRATEGIES[args.strategy](),
@@ -443,6 +455,7 @@ def plan_errors(items: list[PlanItem], constraints: PlanConstraints, offered: di
     gaps = gaps or {}
     match_focus = list(focus) or list(quota)
     used: dict[str, list[int]] = {}            # quota tag -> the levels of its items
+    used_ids: dict[str, list[str]] = {}        # quota tag -> the ids of its items
     errors = []
     hours = constraints.hours
     want = wanted_count(count, hours)
@@ -508,11 +521,14 @@ def plan_errors(items: list[PlanItem], constraints: PlanConstraints, offered: di
                           f"band {lo}-{hi}")
         elif tag in quota:
             used.setdefault(tag, []).append(p.rating - round_skill(tag_skill(profile, tag)))
+            used_ids.setdefault(tag, []).append(pid)
     for tag, want in quota.items():
         have = used.get(tag, [])
         if len(have) != want:
+            # name the items, so the model sees which tag each problem counted for (#48)
+            which = f" ({', '.join(used_ids[tag])})" if have else ""
             errors.append(f"this week needs exactly {want} {tag} problem(s); "
-                          f"the plan has {len(have)}")
+                          f"the plan has {len(have)}{which}")
         elif tag in gaps and sorted(have) != sorted(gaps[tag]):
             level = round_skill(tag_skill(profile, tag))
             ratings = ", ".join(str(level + g) for g in sorted(gaps[tag]))

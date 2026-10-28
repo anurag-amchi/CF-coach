@@ -1,0 +1,9 @@
+[
+ {"label": "specialist_300", "handle": "TitanCoder1258", "why": "middle: specialist, ~280 solved, 17 measured tags"},
+ {"label": "lgm_2000", "handle": "tourist", "why": "top: LGM, huge history, 3500 ceiling for harder"},
+ {"label": "missing", "handle": "zz_no_such_user_404", "why": "error path: handle does not exist"},
+ {
+    "label": "gm", "handle": "rainboy",
+    "why": "weird contest solving pattern"
+ }
+]

@@ -66,3 +66,21 @@ CASES = [
          "What is my weakest tag right now?",
          [no_plan(), mentions_weakest_tag()]),
 ]
+
+# For the multi-handle eval (#47): checks that must hold for ANY user, whatever their
+# rating and history. No ladder check: whether code sets the week's levels depends on the
+# user's data, so the report records it (week_rules) instead of asserting it.
+ANY_USER_CASES = [
+    Case("default_week",
+         "Plan my practice for this week.",
+         [saved(), count(5), band(*NORMAL)]),
+    Case("greedy_focus",
+         "Give me 3 greedy problems.",
+         [saved(), count(3), tags_in("greedy"), band(*NORMAL)]),
+    Case("challenge_any",
+         "Challenge me: 3 hard problems.",
+         [saved(), count(3), band(*HARDER)]),
+    Case("rusty",
+         "I'm rusty after a break. Give me 3 easy warm-up problems.",
+         [saved(), count(3), band(*EASIER)]),
+]
