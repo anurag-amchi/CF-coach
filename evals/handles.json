@@ -1,9 +1,8 @@
 [
- {"label": "specialist_300", "handle": "TitanCoder1258", "why": "middle: specialist, ~280 solved, 17 measured tags"},
- {"label": "lgm_2000", "handle": "tourist", "why": "top: LGM, huge history, 3500 ceiling for harder"},
- {"label": "missing", "handle": "zz_no_such_user_404", "why": "error path: handle does not exist"},
- {
-    "label": "gm", "handle": "rainboy",
-    "why": "weird contest solving pattern"
- }
+ {"label": "new_first_contest", "handle": "rehuMachli", "why": "no data: one contest, 4 submissions, rating 400"},
+ {"label": "newbie_50", "handle": "toto_the_boss", "why": "bottom: newbie 1008, 37 solved; 800 floor for easier"},
+ {"label": "grinder_5800", "handle": "rainboy", "why": "band runs out: rating 1702, 5,861 solved, weakest tags are rare; weird contest solving pattern"},
+ {"label": "inactive_2y", "handle": "K_StA", "why": "old data: not online for 2+ years, 1488, 285 solved"},
+ {"label": "below_max", "handle": "Jimanbanashi", "why": "which rating counts: 1644 now, max 2528, 3,055 solved; harder hits the search cap"},
+ {"label": "missing", "handle": "zz_no_such_user_404", "why": "error path: handle does not exist"}
 ]

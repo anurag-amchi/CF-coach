@@ -84,6 +84,7 @@ SAVE_NUDGE = ("validate_plan returned ok, but no plan was saved. Call the save_p
 PROFILE_CALL_ID = "code-get_tag_profile"     # the call code makes before the first step
 SEARCH_CALL_ID = "code-find_problems"        # + "-1", "-2"...: the week's searches (#43)
 SEARCH_PER_LEVEL = 2                         # problems per level in each week search (#44)
+MAX_WEEK_SEARCHES = 10                       # tags tried for the week, joined or skipped (#49)
 
 
 def allowed_tools(intent: str, tools: dict[str, Callable]) -> dict[str, Callable]:
@@ -161,35 +162,51 @@ def run_tool(name: str, raw_args: str, ctx: ToolContext,
 def pick_week(ctx: ToolContext, profile_json: str,
               tools: dict[str, Callable]) -> tuple[list[ToolCall], list[str]]:
     """For a plan request with no focus tags: choose the week's tags (week_quota) and the
-    level of each problem (week_ladder), then run one find_problems per tag
-    (SEARCH_PER_LEVEL per level of the band, so the model has a choice at every level).
+    level of each problem (week_ladder), searching each tag first (#43, #44, #49).
 
-    Sets ctx.tag_quota and ctx.tag_gaps. Returns the code's calls and their results, for
-    the messages. If the profile can't be read or a tag has too few problems, both rules
-    are dropped and the model plans as before (the searches' results are still shown).
-    If only a level is missing (no problem at that gap), just the level rule is dropped.
+    Measured tags are searched weakest first, SEARCH_PER_LEVEL problems per level of the
+    band. A tag joins the week only if its search has a problem at EVERY level; otherwise
+    it is skipped (its offers are forgotten) and the next weakest is tried, at most
+    MAX_WEEK_SEARCHES searches. So whatever level week_ladder gives a tag, it exists.
+
+    Sets ctx.tag_quota, ctx.tag_gaps and ctx.week_skipped. Returns the calls and results
+    of the tags that joined, for the messages. If the profile can't be read or too few tags
+    fill the band, no rule is set and the model plans as before (with what was found).
     """
     try:
         tags = TagProfileOut.model_validate_json(profile_json).tags
     except ValueError:                            # the profile call returned an error
         return [], []
-    size = plan_size(ctx.count, ctx.user_constraints.hours)
-    quota = week_quota(tags, size or 0, ctx.user_constraints.avoid_tags)
-    ladder = week_ladder(quota, ctx.difficulty)
+    size = plan_size(ctx.count, ctx.user_constraints.hours) or 0
+    avoid = ctx.user_constraints.avoid_tags
+    measured = [t for t in tags if t.attempts >= MIN_ATTEMPTS and t.tag not in avoid]
+    need = len(week_quota(measured, size))        # how many tags the week uses
+    if need == 0:
+        return [], []
     lo, hi = DIFFICULTY_GAPS[ctx.difficulty]
-    per_tag = SEARCH_PER_LEVEL * ((hi - lo) // 100 + 1)
-    calls, results, short, missing_level = [], [], False, False
-    for n, (tag, k) in enumerate(quota.items(), start=1):
-        call = ToolCall(f"{SEARCH_CALL_ID}-{n}", "find_problems",
-                        json.dumps({"tag": tag, "count": per_tag}))
+    levels = set(range(lo, hi + 1, 100))
+    per_tag = SEARCH_PER_LEVEL * len(levels)
+    joined, calls, results = [], [], []
+    for t in measured[:MAX_WEEK_SEARCHES]:
+        call = ToolCall(f"{SEARCH_CALL_ID}-{len(calls) + 1}", "find_problems",
+                        json.dumps({"tag": t.tag, "count": per_tag}))
+        before = set(ctx.offered)
         content = run_tool(call.name, call.arguments, ctx, tools)
         found = json.loads(content).get("problems", [])
-        short = short or len(found) < k
-        missing_level = missing_level or not set(ladder[tag]) <= {p["gap"] for p in found}
-        calls.append(call)
-        results.append(content)
-    ctx.tag_quota = {} if short else quota
-    ctx.tag_gaps = {} if short or missing_level else ladder
+        if levels <= {p["gap"] for p in found}:
+            joined.append(t)
+            calls.append(call)
+            results.append(content)
+            if len(joined) == need:
+                break
+        else:                       # can't fill the band: not shown, not plannable
+            for pid in set(ctx.offered) - before:
+                del ctx.offered[pid]
+            ctx.week_skipped.append(t.tag)
+    if len(joined) < need:          # too few tags fill the band: no week rules
+        return calls, results
+    ctx.tag_quota = week_quota(joined, size)
+    ctx.tag_gaps = week_ladder(ctx.tag_quota, ctx.difficulty)
     return calls, results
 
 

@@ -139,6 +139,8 @@ class ToolContext:
     # tag -> the levels (gaps) its problems must sit at, so the week climbs (week_ladder).
     # Empty = no level rule. Set by the loop with tag_quota. Decision #44.
     tag_gaps: dict[str, list[int]] = field(default_factory=dict)
+    # weak tags left out of the week: their search had no problem at some level (#49)
+    week_skipped: list[str] = field(default_factory=list)
 
     def plan_focus(self) -> list[str]:
         """The tags a plan item must practise: the asked ones, else the week's picked ones."""

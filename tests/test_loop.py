@@ -160,17 +160,27 @@ def test_a_week_with_no_tags_gets_its_tags_and_searches_from_code():
     assert result.steps == 1 and llm.seen[0][-1] == result.messages[7]   # no LLM step spent
 
 
-def test_a_missing_level_drops_only_the_level_rule():
-    result, ctx, _ = run_week(per_tag=2, count=4)       # gaps +0, +100 only; geometry needs +200
-    assert ctx.tag_quota == {"geometry": 2, "strings": 1, "trees": 1}
-    assert ctx.tag_gaps == {}
-    assert "this week's tags (your weakest with 5+ attempts; their problems are loaded): " \
-           "geometry x2, strings x1, trees x1" in result.messages[1]["content"]
+def test_a_tag_that_cant_fill_the_band_is_skipped_for_the_next_weakest():
+    """geometry has nothing at +200 (a rare tag the user mostly solved): dp joins instead (#49)."""
+    def search(ctx, args):
+        per_tag = 2 if args.tag == "geometry" else 3            # geometry: +0, +100 only
+        ctx.offer(9000, args.tag[0].upper(), args.tag)          # as the real tool records it
+        return search_returning(per_tag)(ctx, args)
+    llm = ScriptedLLM([scripted_reply("ok")])
+    ctx = ToolContext("me", session=None, now=NOW, count=4)
+    tools = {**FAKE_TOOLS, "get_tag_profile": week_profile, "find_problems": search}
+    result = run_agent(llm, ctx, "plan my week", tools=tools)
+    assert ctx.week_skipped == ["geometry"]
+    assert ctx.tag_quota == {"strings": 2, "trees": 1, "dp": 1}
+    assert ctx.tag_gaps == {"strings": [0, 200], "trees": [0], "dp": [100]}
+    assert "geometry" not in str(result.messages[4]["tool_calls"])   # its search isn't shown
+    assert "9000G" not in ctx.offered and "9000S" in ctx.offered     # nor plannable
 
 
-def test_a_tag_with_too_few_problems_drops_the_quota():
-    result, ctx, _ = run_week(per_tag=1, count=4)       # geometry needs 2, only 1 exists
+def test_too_few_tags_that_fill_the_band_means_no_week_rules():
+    result, ctx, _ = run_week(per_tag=2, count=4)       # every tag: +0, +100 only
     assert ctx.tag_quota == {} and ctx.tag_gaps == {}
+    assert ctx.week_skipped == ["geometry", "strings", "trees", "dp"]
     assert "this week's tags" not in result.messages[1]["content"]
 
 
