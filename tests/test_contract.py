@@ -4,8 +4,8 @@ import pytest
 from pydantic import BaseModel, ValidationError
 
 from cf_coach.api.contract import (
-    ENDPOINTS, RUN_EVENT, CredentialsIn, DoneEvent, ErrorBody, ErrorEvent, ItemActionIn,
-    RunIn, StepEvent, sse,
+    ENDPOINTS, RUN_EVENT, DoneEvent, ErrorBody, ErrorEvent, ItemActionIn, RunIn, SessionIn,
+    StepEvent, sse,
 )
 
 
@@ -37,12 +37,17 @@ def test_a_request_body_rejects_unknown_fields():
         ItemActionIn.model_validate({"action": "swap", "rating": 3000})
 
 
-def test_credentials_check_email_shape_and_password_length():
-    CredentialsIn(email="a@b.co", password="x" * 10)
+def test_no_endpoint_takes_a_password():
+    # Firebase handles passwords in the browser (decision #53): the API must never see one.
+    for e in ENDPOINTS:
+        if e.body is not None:
+            assert "password" not in e.body.model_fields, e.path
+
+
+def test_a_session_needs_a_token_shaped_string():
+    SessionIn(id_token="x" * 900)              # real Firebase ID tokens are ~900-1200 chars
     with pytest.raises(ValidationError):
-        CredentialsIn(email="not-an-email", password="x" * 10)
-    with pytest.raises(ValidationError):
-        CredentialsIn(email="a@b.co", password="short")
+        SessionIn(id_token="")
 
 
 def test_only_an_adjust_run_takes_a_plan_id():

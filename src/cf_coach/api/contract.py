@@ -19,7 +19,7 @@ Who may call (Auth):
 Every error is ErrorOut: {"error": {"code": ..., "message": ..., "retry_after_s": ...}}.
 
 Print the table and an example event stream:  uv run python -m cf_coach.api.contract
-Design reasons: docs/decisions.md #51, #52.
+Design reasons: docs/decisions.md #51, #52, #53 (Firebase auth).
 """
 
 from dataclasses import dataclass
@@ -46,9 +46,9 @@ class Out(BaseModel):
 ErrorCode = Literal[
     "validation",          # 422: the body or query is wrong
     "not_found",           # 404: no such handle / plan / run
-    "unauthorized",        # 401: wrong email or password (one message for both)
+    "unauthorized",        # 401: the ID token or session cookie is bad or expired
     "sign_in_required",    # 401: a guest called an account-only endpoint
-    "email_not_verified",  # 403: password login before the email link was opened
+    "email_not_verified",  # 403: a password account before its email link was opened
     "rate_limited",        # 429: too many tries; retry_after_s says when
     "guest_limit",         # 429: a guest already made today's plan
     "budget_exhausted",    # 503: today's token budget is spent
@@ -67,36 +67,20 @@ class ErrorOut(Out):
     error: ErrorBody
 
 
-class MessageOut(Out):
-    message: str
+# ---------- Auth (slices 4a-4b, Firebase: decision #53) ----------
+# The browser signs in with the Firebase JS SDK (email + password or Google); Firebase
+# also sends the verify and reset emails. The API never sees a password. The browser
+# posts the ID token Firebase gives it once; the API verifies it and sets an httpOnly
+# session cookie, which every later request (and the SSE stream) carries.
 
-
-# ---------- Auth (slices 4a-4c) ----------
-
-EMAIL = r"^[^@\s]+@[^@\s]+\.[^@\s]+$"      # a shape check only; the emailed link proves it
-
-
-class CredentialsIn(In):
-    email: str = Field(max_length=254, pattern=EMAIL)
-    password: str = Field(min_length=10, max_length=128)
-
-
-class EmailIn(In):
-    email: str = Field(max_length=254, pattern=EMAIL)
-
-
-class TokenIn(In):
-    token: str = Field(min_length=20, max_length=200)    # from the emailed link
-
-
-class ResetPasswordIn(TokenIn):
-    password: str = Field(min_length=10, max_length=128)
+class SessionIn(In):
+    id_token: str = Field(min_length=100, max_length=4096)   # a Firebase ID token (a JWT)
 
 
 class MeOut(Out):
     email: str
     email_verified: bool
-    google_linked: bool
+    sign_in_provider: Literal["password", "google.com"]
     handle: str | None             # the CF handle this account plans for; None until set
 
 
@@ -297,25 +281,15 @@ class Endpoint:
 
 
 ENDPOINTS = [
-    # auth: the session is an httpOnly cookie, never in the body
-    Endpoint("POST", "/api/auth/register", "public", CredentialsIn, MessageOut, 201, "4a",
-             "sends the verify email"),
-    Endpoint("POST", "/api/auth/login", "public", CredentialsIn, MeOut, 200, "4a",
-             "sets the session cookie; claims the guest plan"),
+    # auth: sign-in itself happens in the browser with Firebase; the session is an
+    # httpOnly cookie, never in a body or in localStorage
+    Endpoint("POST", "/api/auth/session", "public", SessionIn, MeOut, 200, "4a",
+             "verifies the Firebase ID token, sets the session cookie; claims the guest plan"),
     Endpoint("POST", "/api/auth/logout", "account", None, None, 204, "4a",
-             "deletes the session in Redis"),
+             "clears the cookie, revokes the Firebase session"),
     Endpoint("GET", "/api/me", "account", None, MeOut, 200, "4a"),
     Endpoint("PATCH", "/api/me", "account", MeUpdateIn, MeOut, 200, "4a",
              "sets the CF handle"),
-    Endpoint("POST", "/api/auth/verify-email", "public", TokenIn, MessageOut, 200, "4b"),
-    Endpoint("POST", "/api/auth/forgot-password", "public", EmailIn, MessageOut, 202, "4b",
-             "same reply whether or not the email exists"),
-    Endpoint("POST", "/api/auth/reset-password", "public", ResetPasswordIn, MessageOut, 200,
-             "4b", "ends every session of that account"),
-    Endpoint("GET", "/api/auth/google/start", "public", None, None, 302, "4c",
-             "redirect to Google with state + PKCE"),
-    Endpoint("GET", "/api/auth/google/callback", "public", None, None, 302, "4c",
-             "checks state, swaps the code, verifies the ID token; claims the guest plan"),
     # data
     Endpoint("POST", "/api/users/{handle}/sync", "public", None, SyncStatusOut, 202, "3/8",
              "queues a sync; one per handle at a time"),
