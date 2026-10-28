@@ -397,6 +397,21 @@ def levels_text(gaps: list[int]) -> str:
     return shown[0] if len(shown) == 1 else ", ".join(shown[:-1]) + " and " + shown[-1]
 
 
+def level_roles(gaps: list[int], difficulty: Difficulty = "normal") -> str:
+    """Each level as a role word + its gap, for the week note (#46). The words give the
+    model something to say in a reason instead of the number.
+
+    normal (band +0..+200): [0, 200] -> 'warm-up (gap +0) and stretch (gap +200)'
+    """
+    lo, hi = DIFFICULTY_GAPS[difficulty]
+
+    def role(g: int) -> str:
+        return "warm-up" if g <= lo else "stretch" if g >= hi else "step-up"
+
+    shown = [f"{role(g)} (gap {g:+d})" for g in sorted(gaps)]
+    return shown[0] if len(shown) == 1 else ", ".join(shown[:-1]) + " and " + shown[-1]
+
+
 def plan_size(count: int | None, hours: int | None) -> int | None:
     """How many problems the plan will have: the exact count, else what the hours allow."""
     want = wanted_count(count, hours)

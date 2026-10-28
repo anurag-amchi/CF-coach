@@ -1,0 +1,2130 @@
+{
+ "label": "final",
+ "started": "2026-10-28T11:59:34.019238+00:00",
+ "model": "openai/gpt-oss-120b",
+ "commit": "feba5f9+dirty",
+ "handle": "TitanCoder1258",
+ "summary": {
+  "cases": 11,
+  "cases_all_passed": 11,
+  "checks": 116,
+  "checks_passed": 116,
+  "rejected_calls": 0,
+  "nudges": 1,
+  "avg_steps": 2.5,
+  "avg_input_tokens": 6703,
+  "avg_latency_s": 7.3
+ },
+ "results": [
+  {
+   "case": "dp_upskill",
+   "request": "Give me 3 problems of DP according to my skill level so that I can upskill",
+   "hours": null,
+   "avoid": [],
+   "parsed": {
+    "intent": "plan",
+    "count": 3,
+    "hours": null,
+    "focus_tags": [
+     "dp"
+    ],
+    "avoid_tags": [],
+    "difficulty": null
+   },
+   "parse_warnings": [],
+   "parse_tokens": 1131,
+   "outcome": "saved",
+   "error": null,
+   "steps": 3,
+   "input_tokens": 6551,
+   "output_tokens": 648,
+   "latency_ms": 4291,
+   "tools_called": [
+    "get_tag_profile",
+    "find_problems",
+    "validate_plan",
+    "save_plan"
+   ],
+   "rejected_calls": 0,
+   "nudges": 0,
+   "plan": [
+    {
+     "contest_id": 2238,
+     "idx": "C",
+     "rating": 1400,
+     "tags": [
+      "dfs and similar",
+      "dp",
+      "trees"
+     ],
+     "tag": "dp",
+     "reason": "A warm‑up on DP with tree recursion",
+     "skill": 1414.7214530598392,
+     "solved": false,
+     "running": false,
+     "facts": "dp skill 1415 (level 1400) · 26 tries · 12% abandoned · 1400 = level +0",
+     "id": "2238C",
+     "gap": 0
+    },
+    {
+     "contest_id": 2195,
+     "idx": "E",
+     "rating": 1500,
+     "tags": [
+      "dfs and similar",
+      "dp",
+      "trees"
+     ],
+     "tag": "dp",
+     "reason": "A step‑up on DP exploring search strategies",
+     "skill": 1414.7214530598392,
+     "solved": false,
+     "running": false,
+     "facts": "dp skill 1415 (level 1400) · 26 tries · 12% abandoned · 1500 = level +100",
+     "id": "2195E",
+     "gap": 100
+    },
+    {
+     "contest_id": 2242,
+     "idx": "D",
+     "rating": 1600,
+     "tags": [
+      "dp",
+      "strings"
+     ],
+     "tag": "dp",
+     "reason": "A stretch on DP with string manipulation",
+     "skill": 1414.7214530598392,
+     "solved": false,
+     "running": false,
+     "facts": "dp skill 1415 (level 1400) · 26 tries · 12% abandoned · 1600 = level +200",
+     "id": "2242D",
+     "gap": 200
+    }
+   ],
+   "final_text": "Saved 3 problems, easiest first, rated 1400-1600. Tags: dp x3. Difficulty: normal (+0 to +200 around each tag's level).",
+   "checks": [
+    {
+     "check": "saved",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "3 problems",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "tags in {dp}",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "ladder +0/+100/+200",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "starts with get_tag_profile",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "no rejected calls",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "unsolved",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "no running contest",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "distinct reasons",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "no numbers in reasons",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "summary has no table",
+     "ok": true,
+     "detail": null
+    }
+   ],
+   "steps_log": [
+    {
+     "user": "Give me 3 problems of DP according to my skill level so that I can upskill\n\nFixed constraints: problems: exactly 3; focus tags: dp"
+    },
+    {
+     "call": "get_tag_profile",
+     "args": "{}"
+    },
+    {
+     "result": "{\"rating\":1400,\"tags\":[{\"tag\":\"geometry\",\"skill\":1392,\"attempts\":7,\"abandon_rate\":0.29},{\"tag\":\"strings\",\"skill\":1398,\"attempts\":32,\"abandon_rate\":0.0},{\"tag\":\"dfs and similar\",\"skill\":1398,\"attempts\":3,\"abandon_rate\":0.33},{\"tag\":\"flows\",\"skill\":1399,\"attempts\":1,\"abandon_rate\":0.0},{\"tag\":\"probabilities\",\"skill\":1400,\"attempts\":1,\"abandon_rate\":0.0},{\"tag\":\"matrices\",\"skill\":1401,\"attempts\":1,\"abandon_rate\":0.0},{\"tag\":\"dsu\",\"skill\":1402,\"attempts\":1,\"abandon_rate\":0.0},{\"tag\":\"ternary search\",\"skill\":1404,\"attempts\":1,\"abandon_rate\":0.0},{\"tag\":\"graphs\",\"skill\":1404,\"attempts\":3,\"abandon_rate\":0.0},{\"tag\":\"shortest paths\",\"skill\":1406,\"attempts\":2,\"abandon_rate\":0.0},{\"tag\":\"hashing\",\"skill\":1407,\"attempts\":3,\"abandon_rate\":0.0},{\"tag\":\"trees\",\"skill\":1409,\"attempts\":5,\"abandon_rate\":0.2},{\"tag\":\"combinatorics\",\"skill\":1412,\"attempts\":17,\"abandon_rate\":0.18},{\"tag\":\"dp\",\"skill\":1415,\"attempts\":26,\"abandon_rate\":0.12},{\"tag\":\"games\",\"skill\":1418,\"attempts\":9,\"abandon_rate\":0.0},{\"tag\":\"two pointers\",\"skill\":1424,\"attempts\":20,\"abandon_rate\":0.05},{\"tag\":\"binary search\",\"skill\":1434,\"attempts\":19,\"abandon_rate\":0.11},{\"tag\":\"bitmasks\",\"skill\":1438,\"attempts\":21,\"abandon_rate\":0.05},{\"tag\":\"sortings\",\"skill\":1440,\"attempts\":42,\"abandon_rate\":0.02},{\"tag\":\"number theory\",\"skill\":1441,\"attempts\":27,\"abandon_rate\":0.0},{\"tag\":\"brute force\",\"skill\":1443,\"attempts\":54,\"abandon_rate\":0.02},{\"tag\":\"implementation\",\"skill\":1454,\"attempts\":103,\"abandon_rate\":0.02},{\"tag\":\"data structures\",\"skill\":1457,\"attempts\":22,\"abandon_rate\":0.09},{\"tag\":\"constructive algorithms\",\"skill\":1464,\"attempts\":61,\"abandon_rate\":0.03},{\"tag\":\"math\",\"skill\":1471,\"attempts\":122,\"abandon_rate\":0.05},{\"tag\":\"greedy\",\"skill\":1510,\"attempts\":130,\"abandon_rate\":0.02}]}"
+    },
+    {
+     "call": "find_problems",
+     "args": "{\"count\":3,\"tag\":\"dp\"}"
+    },
+    {
+     "result": "{\"difficulty\":\"normal\",\"problems\":[{\"id\":\"2238C\",\"name\":\"Village Guilds\",\"rating\":1400,\"tags\":[\"dfs and similar\",\"dp\",\"trees\"],\"matched_tag\":\"dp\",\"tag_skill\":1415,\"gap\":0,\"score\":2.83},{\"id\":\"2195E\",\"name\":\"Idiot First Search\",\"rating\":1500,\"tags\":[\"dfs and similar\",\"dp\",\"trees\"],\"matched_tag\":\"dp\",\"tag_skill\":1415,\"gap\":100,\"score\":2.79},{\"id\":\"2242D\",\"name\":\"Two Digit Strings\",\"rating\":1600,\"tags\":[\"dp\",\"strings\"],\"matched_tag\":\"dp\",\"tag_skill\":1415,\"gap\":200,\"score\":2.89}]}"
+    },
+    {
+     "call": "validate_plan",
+     "args": "{\"items\":[{\"id\":\"2238C\",\"reason\":\"A warm‑up on DP with tree recursion\"},{\"id\":\"2195E\",\"reason\":\"A step‑up on DP exploring search strategies\"},{\"id\":\"2242D\",\"reason\":\"A stretch on DP with string manipulation\"}]}"
+    },
+    {
+     "result": "{\"ok\":true,\"errors\":[]}"
+    },
+    {
+     "call": "save_plan",
+     "args": "{\"items\":[{\"id\":\"2238C\",\"reason\":\"A warm‑up on DP with tree recursion\"},{\"id\":\"2195E\",\"reason\":\"A step‑up on DP exploring search strategies\"},{\"id\":\"2242D\",\"reason\":\"A stretch on DP with string manipulation\"}]}"
+    },
+    {
+     "result": "{\"plan_id\":1,\"items\":3}"
+    }
+   ]
+  },
+  {
+   "case": "hours_in_text",
+   "request": "I have 4 hours this week. No geometry please.",
+   "hours": null,
+   "avoid": [],
+   "parsed": {
+    "intent": "plan",
+    "count": null,
+    "hours": 4,
+    "focus_tags": [],
+    "avoid_tags": [
+     "geometry"
+    ],
+    "difficulty": null
+   },
+   "parse_warnings": [],
+   "parse_tokens": 1073,
+   "outcome": "saved",
+   "error": null,
+   "steps": 2,
+   "input_tokens": 6699,
+   "output_tokens": 1064,
+   "latency_ms": 5193,
+   "tools_called": [
+    "get_tag_profile",
+    "find_problems",
+    "find_problems",
+    "find_problems",
+    "validate_plan",
+    "save_plan"
+   ],
+   "rejected_calls": 0,
+   "nudges": 0,
+   "plan": [
+    {
+     "contest_id": 2190,
+     "idx": "B1",
+     "rating": 1400,
+     "tags": [
+      "combinatorics",
+      "constructive algorithms",
+      "dp",
+      "greedy",
+      "strings",
+      "two pointers"
+     ],
+     "tag": "strings",
+     "reason": "A warm-up on string manipulation",
+     "skill": 1397.523306803151,
+     "solved": false,
+     "running": false,
+     "facts": "strings skill 1398 (level 1400) · 32 tries · 0% abandoned · 1400 = level +0",
+     "id": "2190B1",
+     "gap": 0
+    },
+    {
+     "contest_id": 2238,
+     "idx": "C",
+     "rating": 1400,
+     "tags": [
+      "dfs and similar",
+      "dp",
+      "trees"
+     ],
+     "tag": "trees",
+     "reason": "A warm-up on basic tree traversal",
+     "skill": 1408.5127683908688,
+     "solved": false,
+     "running": false,
+     "facts": "trees skill 1409 (level 1400) · 5 tries · 20% abandoned · 1400 = level +0",
+     "id": "2238C",
+     "gap": 0
+    },
+    {
+     "contest_id": 608,
+     "idx": "B",
+     "rating": 1500,
+     "tags": [
+      "combinatorics",
+      "strings"
+     ],
+     "tag": "combinatorics",
+     "reason": "A step-up on combinatorial counting techniques",
+     "skill": 1412.0863144712905,
+     "solved": false,
+     "running": false,
+     "facts": "combinatorics skill 1412 (level 1400) · 17 tries · 18% abandoned · 1500 = level +100",
+     "id": "608B",
+     "gap": 100
+    },
+    {
+     "contest_id": 2242,
+     "idx": "D",
+     "rating": 1600,
+     "tags": [
+      "dp",
+      "strings"
+     ],
+     "tag": "strings",
+     "reason": "A stretch on advanced string patterns",
+     "skill": 1397.523306803151,
+     "solved": false,
+     "running": false,
+     "facts": "strings skill 1398 (level 1400) · 32 tries · 0% abandoned · 1600 = level +200",
+     "id": "2242D",
+     "gap": 200
+    }
+   ],
+   "final_text": "Saved 4 problems, easiest first, rated 1400-1600. Tags: strings x2, trees x1, combinatorics x1. Difficulty: normal (+0 to +200 around each tag's level). Hours: 4. Avoiding: geometry.",
+   "checks": [
+    {
+     "check": "saved",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "at most 4 problems",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "avoids geometry",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "saved hours = 4",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "band +0..+200",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "ladder +0/+0/+100/+200",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "starts with get_tag_profile",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "no rejected calls",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "unsolved",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "no running contest",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "distinct reasons",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "no numbers in reasons",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "summary has no table",
+     "ok": true,
+     "detail": null
+    }
+   ],
+   "steps_log": [
+    {
+     "user": "I have 4 hours this week. No geometry please.\n\nFixed constraints: this week's tags and levels (your weakest with 5+ attempts; their problems are loaded; pick each by its gap field): strings warm-up (gap +0) and stretch (gap +200), trees warm-up (gap +0), combinatorics step-up (gap +100); hours: 4 (at most 4 problems); avoid tags: geometry"
+    },
+    {
+     "call": "get_tag_profile",
+     "args": "{}"
+    },
+    {
+     "result": "{\"rating\":1400,\"tags\":[{\"tag\":\"geometry\",\"skill\":1392,\"attempts\":7,\"abandon_rate\":0.29},{\"tag\":\"strings\",\"skill\":1398,\"attempts\":32,\"abandon_rate\":0.0},{\"tag\":\"dfs and similar\",\"skill\":1398,\"attempts\":3,\"abandon_rate\":0.33},{\"tag\":\"flows\",\"skill\":1399,\"attempts\":1,\"abandon_rate\":0.0},{\"tag\":\"probabilities\",\"skill\":1400,\"attempts\":1,\"abandon_rate\":0.0},{\"tag\":\"matrices\",\"skill\":1401,\"attempts\":1,\"abandon_rate\":0.0},{\"tag\":\"dsu\",\"skill\":1402,\"attempts\":1,\"abandon_rate\":0.0},{\"tag\":\"ternary search\",\"skill\":1404,\"attempts\":1,\"abandon_rate\":0.0},{\"tag\":\"graphs\",\"skill\":1404,\"attempts\":3,\"abandon_rate\":0.0},{\"tag\":\"shortest paths\",\"skill\":1406,\"attempts\":2,\"abandon_rate\":0.0},{\"tag\":\"hashing\",\"skill\":1407,\"attempts\":3,\"abandon_rate\":0.0},{\"tag\":\"trees\",\"skill\":1409,\"attempts\":5,\"abandon_rate\":0.2},{\"tag\":\"combinatorics\",\"skill\":1412,\"attempts\":17,\"abandon_rate\":0.18},{\"tag\":\"dp\",\"skill\":1415,\"attempts\":26,\"abandon_rate\":0.12},{\"tag\":\"games\",\"skill\":1418,\"attempts\":9,\"abandon_rate\":0.0},{\"tag\":\"two pointers\",\"skill\":1424,\"attempts\":20,\"abandon_rate\":0.05},{\"tag\":\"binary search\",\"skill\":1434,\"attempts\":19,\"abandon_rate\":0.11},{\"tag\":\"bitmasks\",\"skill\":1438,\"attempts\":21,\"abandon_rate\":0.05},{\"tag\":\"sortings\",\"skill\":1440,\"attempts\":42,\"abandon_rate\":0.02},{\"tag\":\"number theory\",\"skill\":1441,\"attempts\":27,\"abandon_rate\":0.0},{\"tag\":\"brute force\",\"skill\":1443,\"attempts\":54,\"abandon_rate\":0.02},{\"tag\":\"implementation\",\"skill\":1454,\"attempts\":103,\"abandon_rate\":0.02},{\"tag\":\"data structures\",\"skill\":1457,\"attempts\":22,\"abandon_rate\":0.09},{\"tag\":\"constructive algorithms\",\"skill\":1464,\"attempts\":61,\"abandon_rate\":0.03},{\"tag\":\"math\",\"skill\":1471,\"attempts\":122,\"abandon_rate\":0.05},{\"tag\":\"greedy\",\"skill\":1510,\"attempts\":130,\"abandon_rate\":0.02}]}"
+    },
+    {
+     "call": "find_problems",
+     "args": "{\"tag\": \"strings\", \"count\": 6}"
+    },
+    {
+     "call": "find_problems",
+     "args": "{\"tag\": \"trees\", \"count\": 6}"
+    },
+    {
+     "call": "find_problems",
+     "args": "{\"tag\": \"combinatorics\", \"count\": 6}"
+    },
+    {
+     "result": "{\"difficulty\":\"normal\",\"problems\":[{\"id\":\"2190B1\",\"name\":\"Sub-RBS (Easy Version)\",\"rating\":1400,\"tags\":[\"combinatorics\",\"constructive algorithms\",\"dp\",\"greedy\",\"strings\",\"two pointers\"],\"matched_tag\":\"strings\",\"tag_skill\":1398,\"gap\":0,\"score\":2.19},{\"id\":\"638B\",\"name\":\"Making Genome in Berland\",\"rating\":1500,\"tags\":[\"dfs and similar\",\"strings\"],\"matched_tag\":\"strings\",\"tag_skill\":1398,\"gap\":100,\"score\":2.25},{\"id\":\"2242D\",\"name\":\"Two Digit Strings\",\"rating\":1600,\"tags\":[\"dp\",\"strings\"],\"matched_tag\":\"strings\",\"tag_skill\":1398,\"gap\":200,\"score\":2.55},{\"id\":\"2013C\",\"name\":\"Password Cracking\",\"rating\":1400,\"tags\":[\"constructive algorithms\",\"interactive\",\"strings\"],\"matched_tag\":\"strings\",\"tag_skill\":1398,\"gap\":0,\"score\":2.15},{\"id\":\"1326D1\",\"name\":\"Prefix-Suffix Palindrome (Easy version)\",\"rating\":1500,\"tags\":[\"hashing\",\"string suffix structures\",\"strings\"],\"matched_tag\":\"strings\",\"tag_skill\":1398,\"gap\":100,\"score\":2.2},{\"id\":\"1045I\",\"name\":\"Palindrome Pairs\",\"rating\":1600,\"tags\":[\"hashing\",\"strings\"],\"matched_tag\":\"strings\",\"tag_skill\":1398,\"gap\":200,\"score\":2.16}]}"
+    },
+    {
+     "result": "{\"difficulty\":\"normal\",\"problems\":[{\"id\":\"2238C\",\"name\":\"Village Guilds\",\"rating\":1400,\"tags\":[\"dfs and similar\",\"dp\",\"trees\"],\"matched_tag\":\"trees\",\"tag_skill\":1409,\"gap\":0,\"score\":3.12},{\"id\":\"2195E\",\"name\":\"Idiot First Search\",\"rating\":1500,\"tags\":[\"dfs and similar\",\"dp\",\"trees\"],\"matched_tag\":\"trees\",\"tag_skill\":1409,\"gap\":100,\"score\":3.07},{\"id\":\"2258C\",\"name\":\"Far Cities\",\"rating\":1600,\"tags\":[\"interactive\",\"trees\",\"two pointers\"],\"matched_tag\":\"trees\",\"tag_skill\":1409,\"gap\":200,\"score\":3.08},{\"id\":\"1143C\",\"name\":\"Queen\",\"rating\":1400,\"tags\":[\"dfs and similar\",\"trees\"],\"matched_tag\":\"trees\",\"tag_skill\":1409,\"gap\":0,\"score\":2.74},{\"id\":\"930A\",\"name\":\"Peculiar apple-tree\",\"rating\":1500,\"tags\":[\"dfs and similar\",\"graphs\",\"trees\"],\"matched_tag\":\"trees\",\"tag_skill\":1409,\"gap\":100,\"score\":2.71},{\"id\":\"2070D\",\"name\":\"Tree Jumps\",\"rating\":1600,\"tags\":[\"dfs and similar\",\"dp\",\"trees\"],\"matched_tag\":\"trees\",\"tag_skill\":1409,\"gap\":200,\"score\":2.95}]}"
+    },
+    {
+     "result": "{\"difficulty\":\"normal\",\"problems\":[{\"id\":\"2276D\",\"name\":\"Caveman\",\"rating\":1400,\"tags\":[\"combinatorics\",\"graphs\"],\"matched_tag\":\"combinatorics\",\"tag_skill\":1412,\"gap\":0,\"score\":3.07},{\"id\":\"608B\",\"name\":\"Hamming Distance Sum\",\"rating\":1500,\"tags\":[\"combinatorics\",\"strings\"],\"matched_tag\":\"combinatorics\",\"tag_skill\":1412,\"gap\":100,\"score\":2.64},{\"id\":\"2061C\",\"name\":\"Kevin and Puzzle\",\"rating\":1600,\"tags\":[\"2-sat\",\"combinatorics\",\"dp\"],\"matched_tag\":\"combinatorics\",\"tag_skill\":1412,\"gap\":200,\"score\":2.82},{\"id\":\"2246C\",\"name\":\"0mar and Alternating Sums\",\"rating\":1400,\"tags\":[\"combinatorics\",\"dp\",\"math\"],\"matched_tag\":\"combinatorics\",\"tag_skill\":1412,\"gap\":0,\"score\":2.66},{\"id\":\"2163C\",\"name\":\"Monopati\",\"rating\":1500,\"tags\":[\"brute force\",\"combinatorics\",\"dp\",\"math\",\"two pointers\"],\"matched_tag\":\"combinatorics\",\"tag_skill\":1412,\"gap\":100,\"score\":2.62},{\"id\":\"2241E\",\"name\":\"Fair and Square\",\"rating\":1600,\"tags\":[\"combinatorics\",\"dp\",\"graphs\",\"math\",\"number theory\",\"trees\"],\"matched_tag\":\"combinatorics\",\"tag_skill\":1412,\"gap\":200,\"score\":2.8}]}"
+    },
+    {
+     "call": "validate_plan",
+     "args": "{\"constraints\":{\"avoid_tags\":[\"geometry\"],\"hours\":4},\"items\":[{\"id\":\"2190B1\",\"reason\":\"A warm-up on string manipulation\"},{\"id\":\"2242D\",\"reason\":\"A stretch on advanced string patterns\"},{\"id\":\"2238C\",\"reason\":\"A warm-up on basic tree traversal\"},{\"id\":\"608B\",\"reason\":\"A step-up on combinatorial counting techniques\"}]}"
+    },
+    {
+     "result": "{\"ok\":true,\"errors\":[]}"
+    },
+    {
+     "call": "save_plan",
+     "args": "{\"constraints\":{\"avoid_tags\":[\"geometry\"],\"hours\":4},\"items\":[{\"id\":\"2190B1\",\"reason\":\"A warm-up on string manipulation\"},{\"id\":\"2242D\",\"reason\":\"A stretch on advanced string patterns\"},{\"id\":\"2238C\",\"reason\":\"A warm-up on basic tree traversal\"},{\"id\":\"608B\",\"reason\":\"A step-up on combinatorial counting techniques\"}]}"
+    },
+    {
+     "result": "{\"plan_id\":1,\"items\":4}"
+    }
+   ]
+  },
+  {
+   "case": "hours_as_flags",
+   "request": "Plan my week.",
+   "hours": 4,
+   "avoid": [
+    "geometry"
+   ],
+   "parsed": {
+    "intent": "plan",
+    "count": null,
+    "hours": 4,
+    "focus_tags": [],
+    "avoid_tags": [
+     "geometry"
+    ],
+    "difficulty": null
+   },
+   "parse_warnings": [],
+   "parse_tokens": 1045,
+   "outcome": "saved",
+   "error": null,
+   "steps": 2,
+   "input_tokens": 6683,
+   "output_tokens": 1313,
+   "latency_ms": 5537,
+   "tools_called": [
+    "get_tag_profile",
+    "find_problems",
+    "find_problems",
+    "find_problems",
+    "validate_plan",
+    "save_plan"
+   ],
+   "rejected_calls": 0,
+   "nudges": 0,
+   "plan": [
+    {
+     "contest_id": 2190,
+     "idx": "B1",
+     "rating": 1400,
+     "tags": [
+      "combinatorics",
+      "constructive algorithms",
+      "dp",
+      "greedy",
+      "strings",
+      "two pointers"
+     ],
+     "tag": "strings",
+     "reason": "A warm-up on string patterns to sharpen basics.",
+     "skill": 1397.523306803151,
+     "solved": false,
+     "running": false,
+     "facts": "strings skill 1398 (level 1400) · 32 tries · 0% abandoned · 1400 = level +0",
+     "id": "2190B1",
+     "gap": 0
+    },
+    {
+     "contest_id": 2238,
+     "idx": "C",
+     "rating": 1400,
+     "tags": [
+      "dfs and similar",
+      "dp",
+      "trees"
+     ],
+     "tag": "trees",
+     "reason": "A warm-up on tree traversal fundamentals.",
+     "skill": 1408.5127683908688,
+     "solved": false,
+     "running": false,
+     "facts": "trees skill 1409 (level 1400) · 5 tries · 20% abandoned · 1400 = level +0",
+     "id": "2238C",
+     "gap": 0
+    },
+    {
+     "contest_id": 608,
+     "idx": "B",
+     "rating": 1500,
+     "tags": [
+      "combinatorics",
+      "strings"
+     ],
+     "tag": "combinatorics",
+     "reason": "A step-up on combinatorial counting to bridge gaps.",
+     "skill": 1412.0863144712905,
+     "solved": false,
+     "running": false,
+     "facts": "combinatorics skill 1412 (level 1400) · 17 tries · 18% abandoned · 1500 = level +100",
+     "id": "608B",
+     "gap": 100
+    },
+    {
+     "contest_id": 2242,
+     "idx": "D",
+     "rating": 1600,
+     "tags": [
+      "dp",
+      "strings"
+     ],
+     "tag": "strings",
+     "reason": "A stretch on advanced string construction for deeper skill.",
+     "skill": 1397.523306803151,
+     "solved": false,
+     "running": false,
+     "facts": "strings skill 1398 (level 1400) · 32 tries · 0% abandoned · 1600 = level +200",
+     "id": "2242D",
+     "gap": 200
+    }
+   ],
+   "final_text": "Saved 4 problems, easiest first, rated 1400-1600. Tags: strings x2, trees x1, combinatorics x1. Difficulty: normal (+0 to +200 around each tag's level). Hours: 4. Avoiding: geometry.",
+   "checks": [
+    {
+     "check": "saved",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "at most 4 problems",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "avoids geometry",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "saved hours = 4",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "band +0..+200",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "ladder +0/+0/+100/+200",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "starts with get_tag_profile",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "no rejected calls",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "unsolved",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "no running contest",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "distinct reasons",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "no numbers in reasons",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "summary has no table",
+     "ok": true,
+     "detail": null
+    }
+   ],
+   "steps_log": [
+    {
+     "user": "Plan my week.\n\nFixed constraints: this week's tags and levels (your weakest with 5+ attempts; their problems are loaded; pick each by its gap field): strings warm-up (gap +0) and stretch (gap +200), trees warm-up (gap +0), combinatorics step-up (gap +100); hours: 4 (at most 4 problems); avoid tags: geometry"
+    },
+    {
+     "call": "get_tag_profile",
+     "args": "{}"
+    },
+    {
+     "result": "{\"rating\":1400,\"tags\":[{\"tag\":\"geometry\",\"skill\":1392,\"attempts\":7,\"abandon_rate\":0.29},{\"tag\":\"strings\",\"skill\":1398,\"attempts\":32,\"abandon_rate\":0.0},{\"tag\":\"dfs and similar\",\"skill\":1398,\"attempts\":3,\"abandon_rate\":0.33},{\"tag\":\"flows\",\"skill\":1399,\"attempts\":1,\"abandon_rate\":0.0},{\"tag\":\"probabilities\",\"skill\":1400,\"attempts\":1,\"abandon_rate\":0.0},{\"tag\":\"matrices\",\"skill\":1401,\"attempts\":1,\"abandon_rate\":0.0},{\"tag\":\"dsu\",\"skill\":1402,\"attempts\":1,\"abandon_rate\":0.0},{\"tag\":\"ternary search\",\"skill\":1404,\"attempts\":1,\"abandon_rate\":0.0},{\"tag\":\"graphs\",\"skill\":1404,\"attempts\":3,\"abandon_rate\":0.0},{\"tag\":\"shortest paths\",\"skill\":1406,\"attempts\":2,\"abandon_rate\":0.0},{\"tag\":\"hashing\",\"skill\":1407,\"attempts\":3,\"abandon_rate\":0.0},{\"tag\":\"trees\",\"skill\":1409,\"attempts\":5,\"abandon_rate\":0.2},{\"tag\":\"combinatorics\",\"skill\":1412,\"attempts\":17,\"abandon_rate\":0.18},{\"tag\":\"dp\",\"skill\":1415,\"attempts\":26,\"abandon_rate\":0.12},{\"tag\":\"games\",\"skill\":1418,\"attempts\":9,\"abandon_rate\":0.0},{\"tag\":\"two pointers\",\"skill\":1424,\"attempts\":20,\"abandon_rate\":0.05},{\"tag\":\"binary search\",\"skill\":1434,\"attempts\":19,\"abandon_rate\":0.11},{\"tag\":\"bitmasks\",\"skill\":1438,\"attempts\":21,\"abandon_rate\":0.05},{\"tag\":\"sortings\",\"skill\":1440,\"attempts\":42,\"abandon_rate\":0.02},{\"tag\":\"number theory\",\"skill\":1441,\"attempts\":27,\"abandon_rate\":0.0},{\"tag\":\"brute force\",\"skill\":1443,\"attempts\":54,\"abandon_rate\":0.02},{\"tag\":\"implementation\",\"skill\":1454,\"attempts\":103,\"abandon_rate\":0.02},{\"tag\":\"data structures\",\"skill\":1457,\"attempts\":22,\"abandon_rate\":0.09},{\"tag\":\"constructive algorithms\",\"skill\":1464,\"attempts\":61,\"abandon_rate\":0.03},{\"tag\":\"math\",\"skill\":1471,\"attempts\":122,\"abandon_rate\":0.05},{\"tag\":\"greedy\",\"skill\":1510,\"attempts\":130,\"abandon_rate\":0.02}]}"
+    },
+    {
+     "call": "find_problems",
+     "args": "{\"tag\": \"strings\", \"count\": 6}"
+    },
+    {
+     "call": "find_problems",
+     "args": "{\"tag\": \"trees\", \"count\": 6}"
+    },
+    {
+     "call": "find_problems",
+     "args": "{\"tag\": \"combinatorics\", \"count\": 6}"
+    },
+    {
+     "result": "{\"difficulty\":\"normal\",\"problems\":[{\"id\":\"2190B1\",\"name\":\"Sub-RBS (Easy Version)\",\"rating\":1400,\"tags\":[\"combinatorics\",\"constructive algorithms\",\"dp\",\"greedy\",\"strings\",\"two pointers\"],\"matched_tag\":\"strings\",\"tag_skill\":1398,\"gap\":0,\"score\":2.19},{\"id\":\"638B\",\"name\":\"Making Genome in Berland\",\"rating\":1500,\"tags\":[\"dfs and similar\",\"strings\"],\"matched_tag\":\"strings\",\"tag_skill\":1398,\"gap\":100,\"score\":2.25},{\"id\":\"2242D\",\"name\":\"Two Digit Strings\",\"rating\":1600,\"tags\":[\"dp\",\"strings\"],\"matched_tag\":\"strings\",\"tag_skill\":1398,\"gap\":200,\"score\":2.55},{\"id\":\"2013C\",\"name\":\"Password Cracking\",\"rating\":1400,\"tags\":[\"constructive algorithms\",\"interactive\",\"strings\"],\"matched_tag\":\"strings\",\"tag_skill\":1398,\"gap\":0,\"score\":2.15},{\"id\":\"1326D1\",\"name\":\"Prefix-Suffix Palindrome (Easy version)\",\"rating\":1500,\"tags\":[\"hashing\",\"string suffix structures\",\"strings\"],\"matched_tag\":\"strings\",\"tag_skill\":1398,\"gap\":100,\"score\":2.2},{\"id\":\"1045I\",\"name\":\"Palindrome Pairs\",\"rating\":1600,\"tags\":[\"hashing\",\"strings\"],\"matched_tag\":\"strings\",\"tag_skill\":1398,\"gap\":200,\"score\":2.16}]}"
+    },
+    {
+     "result": "{\"difficulty\":\"normal\",\"problems\":[{\"id\":\"2238C\",\"name\":\"Village Guilds\",\"rating\":1400,\"tags\":[\"dfs and similar\",\"dp\",\"trees\"],\"matched_tag\":\"trees\",\"tag_skill\":1409,\"gap\":0,\"score\":3.12},{\"id\":\"2195E\",\"name\":\"Idiot First Search\",\"rating\":1500,\"tags\":[\"dfs and similar\",\"dp\",\"trees\"],\"matched_tag\":\"trees\",\"tag_skill\":1409,\"gap\":100,\"score\":3.07},{\"id\":\"2258C\",\"name\":\"Far Cities\",\"rating\":1600,\"tags\":[\"interactive\",\"trees\",\"two pointers\"],\"matched_tag\":\"trees\",\"tag_skill\":1409,\"gap\":200,\"score\":3.08},{\"id\":\"1143C\",\"name\":\"Queen\",\"rating\":1400,\"tags\":[\"dfs and similar\",\"trees\"],\"matched_tag\":\"trees\",\"tag_skill\":1409,\"gap\":0,\"score\":2.74},{\"id\":\"930A\",\"name\":\"Peculiar apple-tree\",\"rating\":1500,\"tags\":[\"dfs and similar\",\"graphs\",\"trees\"],\"matched_tag\":\"trees\",\"tag_skill\":1409,\"gap\":100,\"score\":2.71},{\"id\":\"2070D\",\"name\":\"Tree Jumps\",\"rating\":1600,\"tags\":[\"dfs and similar\",\"dp\",\"trees\"],\"matched_tag\":\"trees\",\"tag_skill\":1409,\"gap\":200,\"score\":2.95}]}"
+    },
+    {
+     "result": "{\"difficulty\":\"normal\",\"problems\":[{\"id\":\"2276D\",\"name\":\"Caveman\",\"rating\":1400,\"tags\":[\"combinatorics\",\"graphs\"],\"matched_tag\":\"combinatorics\",\"tag_skill\":1412,\"gap\":0,\"score\":3.07},{\"id\":\"608B\",\"name\":\"Hamming Distance Sum\",\"rating\":1500,\"tags\":[\"combinatorics\",\"strings\"],\"matched_tag\":\"combinatorics\",\"tag_skill\":1412,\"gap\":100,\"score\":2.64},{\"id\":\"2061C\",\"name\":\"Kevin and Puzzle\",\"rating\":1600,\"tags\":[\"2-sat\",\"combinatorics\",\"dp\"],\"matched_tag\":\"combinatorics\",\"tag_skill\":1412,\"gap\":200,\"score\":2.82},{\"id\":\"2246C\",\"name\":\"0mar and Alternating Sums\",\"rating\":1400,\"tags\":[\"combinatorics\",\"dp\",\"math\"],\"matched_tag\":\"combinatorics\",\"tag_skill\":1412,\"gap\":0,\"score\":2.66},{\"id\":\"2163C\",\"name\":\"Monopati\",\"rating\":1500,\"tags\":[\"brute force\",\"combinatorics\",\"dp\",\"math\",\"two pointers\"],\"matched_tag\":\"combinatorics\",\"tag_skill\":1412,\"gap\":100,\"score\":2.62},{\"id\":\"2241E\",\"name\":\"Fair and Square\",\"rating\":1600,\"tags\":[\"combinatorics\",\"dp\",\"graphs\",\"math\",\"number theory\",\"trees\"],\"matched_tag\":\"combinatorics\",\"tag_skill\":1412,\"gap\":200,\"score\":2.8}]}"
+    },
+    {
+     "call": "validate_plan",
+     "args": "{\"constraints\":{\"avoid_tags\":[\"geometry\"]},\"items\":[{\"id\":\"2190B1\",\"reason\":\"A warm-up on string patterns to sharpen basics.\"},{\"id\":\"2242D\",\"reason\":\"A stretch on advanced string construction for deeper skill.\"},{\"id\":\"2238C\",\"reason\":\"A warm-up on tree traversal fundamentals.\"},{\"id\":\"608B\",\"reason\":\"A step-up on combinatorial counting to bridge gaps.\"}]}"
+    },
+    {
+     "result": "{\"ok\":true,\"errors\":[]}"
+    },
+    {
+     "call": "save_plan",
+     "args": "{\"constraints\":{\"avoid_tags\":[\"geometry\"]},\"items\":[{\"id\":\"2190B1\",\"reason\":\"A warm-up on string patterns to sharpen basics.\"},{\"id\":\"2242D\",\"reason\":\"A stretch on advanced string construction for deeper skill.\"},{\"id\":\"2238C\",\"reason\":\"A warm-up on tree traversal fundamentals.\"},{\"id\":\"608B\",\"reason\":\"A step-up on combinatorial counting to bridge gaps.\"}]}"
+    },
+    {
+     "result": "{\"plan_id\":1,\"items\":4}"
+    }
+   ]
+  },
+  {
+   "case": "count_above_hours",
+   "request": "Give me 5 dp problems this week",
+   "hours": 3,
+   "avoid": [],
+   "parsed": {
+    "intent": "plan",
+    "count": 5,
+    "hours": 3,
+    "focus_tags": [
+     "dp"
+    ],
+    "avoid_tags": [],
+    "difficulty": null
+   },
+   "parse_warnings": [],
+   "parse_tokens": 1078,
+   "outcome": "saved",
+   "error": null,
+   "steps": 3,
+   "input_tokens": 6566,
+   "output_tokens": 757,
+   "latency_ms": 4060,
+   "tools_called": [
+    "get_tag_profile",
+    "find_problems",
+    "validate_plan",
+    "save_plan"
+   ],
+   "rejected_calls": 0,
+   "nudges": 0,
+   "plan": [
+    {
+     "contest_id": 2238,
+     "idx": "C",
+     "rating": 1400,
+     "tags": [
+      "dfs and similar",
+      "dp",
+      "trees"
+     ],
+     "tag": "dp",
+     "reason": "A warm‑up on tree dp before the step‑up problem.",
+     "skill": 1414.7214530598392,
+     "solved": false,
+     "running": false,
+     "facts": "dp skill 1415 (level 1400) · 26 tries · 12% abandoned · 1400 = level +0",
+     "id": "2238C",
+     "gap": 0
+    },
+    {
+     "contest_id": 2195,
+     "idx": "E",
+     "rating": 1500,
+     "tags": [
+      "dfs and similar",
+      "dp",
+      "trees"
+     ],
+     "tag": "dp",
+     "reason": "A step‑up on dfs dp to build deeper recursion skills.",
+     "skill": 1414.7214530598392,
+     "solved": false,
+     "running": false,
+     "facts": "dp skill 1415 (level 1400) · 26 tries · 12% abandoned · 1500 = level +100",
+     "id": "2195E",
+     "gap": 100
+    },
+    {
+     "contest_id": 2242,
+     "idx": "D",
+     "rating": 1600,
+     "tags": [
+      "dp",
+      "strings"
+     ],
+     "tag": "dp",
+     "reason": "A stretch on string dp to finish the week strong.",
+     "skill": 1414.7214530598392,
+     "solved": false,
+     "running": false,
+     "facts": "dp skill 1415 (level 1400) · 26 tries · 12% abandoned · 1600 = level +200",
+     "id": "2242D",
+     "gap": 200
+    }
+   ],
+   "final_text": "Saved 3 problems, easiest first, rated 1400-1600. Tags: dp x3. Difficulty: normal (+0 to +200 around each tag's level). Hours: 3.",
+   "checks": [
+    {
+     "check": "saved",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "3 problems",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "tags in {dp}",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "band +0..+200",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "starts with get_tag_profile",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "no rejected calls",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "unsolved",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "no running contest",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "distinct reasons",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "no numbers in reasons",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "summary has no table",
+     "ok": true,
+     "detail": null
+    }
+   ],
+   "steps_log": [
+    {
+     "user": "Give me 5 dp problems this week\n\nFixed constraints: problems: exactly 3; focus tags: dp; hours: 3 (at most 3 problems)"
+    },
+    {
+     "call": "get_tag_profile",
+     "args": "{}"
+    },
+    {
+     "result": "{\"rating\":1400,\"tags\":[{\"tag\":\"geometry\",\"skill\":1392,\"attempts\":7,\"abandon_rate\":0.29},{\"tag\":\"strings\",\"skill\":1398,\"attempts\":32,\"abandon_rate\":0.0},{\"tag\":\"dfs and similar\",\"skill\":1398,\"attempts\":3,\"abandon_rate\":0.33},{\"tag\":\"flows\",\"skill\":1399,\"attempts\":1,\"abandon_rate\":0.0},{\"tag\":\"probabilities\",\"skill\":1400,\"attempts\":1,\"abandon_rate\":0.0},{\"tag\":\"matrices\",\"skill\":1401,\"attempts\":1,\"abandon_rate\":0.0},{\"tag\":\"dsu\",\"skill\":1402,\"attempts\":1,\"abandon_rate\":0.0},{\"tag\":\"ternary search\",\"skill\":1404,\"attempts\":1,\"abandon_rate\":0.0},{\"tag\":\"graphs\",\"skill\":1404,\"attempts\":3,\"abandon_rate\":0.0},{\"tag\":\"shortest paths\",\"skill\":1406,\"attempts\":2,\"abandon_rate\":0.0},{\"tag\":\"hashing\",\"skill\":1407,\"attempts\":3,\"abandon_rate\":0.0},{\"tag\":\"trees\",\"skill\":1409,\"attempts\":5,\"abandon_rate\":0.2},{\"tag\":\"combinatorics\",\"skill\":1412,\"attempts\":17,\"abandon_rate\":0.18},{\"tag\":\"dp\",\"skill\":1415,\"attempts\":26,\"abandon_rate\":0.12},{\"tag\":\"games\",\"skill\":1418,\"attempts\":9,\"abandon_rate\":0.0},{\"tag\":\"two pointers\",\"skill\":1424,\"attempts\":20,\"abandon_rate\":0.05},{\"tag\":\"binary search\",\"skill\":1434,\"attempts\":19,\"abandon_rate\":0.11},{\"tag\":\"bitmasks\",\"skill\":1438,\"attempts\":21,\"abandon_rate\":0.05},{\"tag\":\"sortings\",\"skill\":1440,\"attempts\":42,\"abandon_rate\":0.02},{\"tag\":\"number theory\",\"skill\":1441,\"attempts\":27,\"abandon_rate\":0.0},{\"tag\":\"brute force\",\"skill\":1443,\"attempts\":54,\"abandon_rate\":0.02},{\"tag\":\"implementation\",\"skill\":1454,\"attempts\":103,\"abandon_rate\":0.02},{\"tag\":\"data structures\",\"skill\":1457,\"attempts\":22,\"abandon_rate\":0.09},{\"tag\":\"constructive algorithms\",\"skill\":1464,\"attempts\":61,\"abandon_rate\":0.03},{\"tag\":\"math\",\"skill\":1471,\"attempts\":122,\"abandon_rate\":0.05},{\"tag\":\"greedy\",\"skill\":1510,\"attempts\":130,\"abandon_rate\":0.02}]}"
+    },
+    {
+     "call": "find_problems",
+     "args": "{\"count\":3,\"tag\":\"dp\"}"
+    },
+    {
+     "result": "{\"difficulty\":\"normal\",\"problems\":[{\"id\":\"2238C\",\"name\":\"Village Guilds\",\"rating\":1400,\"tags\":[\"dfs and similar\",\"dp\",\"trees\"],\"matched_tag\":\"dp\",\"tag_skill\":1415,\"gap\":0,\"score\":2.83},{\"id\":\"2195E\",\"name\":\"Idiot First Search\",\"rating\":1500,\"tags\":[\"dfs and similar\",\"dp\",\"trees\"],\"matched_tag\":\"dp\",\"tag_skill\":1415,\"gap\":100,\"score\":2.79},{\"id\":\"2242D\",\"name\":\"Two Digit Strings\",\"rating\":1600,\"tags\":[\"dp\",\"strings\"],\"matched_tag\":\"dp\",\"tag_skill\":1415,\"gap\":200,\"score\":2.89}]}"
+    },
+    {
+     "call": "validate_plan",
+     "args": "{\"constraints\":{\"hours\":3},\"items\":[{\"id\":\"2238C\",\"reason\":\"A warm‑up on tree dp before the step‑up problem.\"},{\"id\":\"2195E\",\"reason\":\"A step‑up on dfs dp to build deeper recursion skills.\"},{\"id\":\"2242D\",\"reason\":\"A stretch on string dp to finish the week strong.\"}]}"
+    },
+    {
+     "result": "{\"ok\":true,\"errors\":[]}"
+    },
+    {
+     "call": "save_plan",
+     "args": "{\"constraints\":{\"hours\":3},\"items\":[{\"id\":\"2238C\",\"reason\":\"A warm‑up on tree dp before the step‑up problem.\"},{\"id\":\"2195E\",\"reason\":\"A step‑up on dfs dp to build deeper recursion skills.\"},{\"id\":\"2242D\",\"reason\":\"A stretch on string dp to finish the week strong.\"}]}"
+    },
+    {
+     "result": "{\"plan_id\":1,\"items\":3}"
+    }
+   ]
+  },
+  {
+   "case": "default_week",
+   "request": "Plan my practice for this week.",
+   "hours": null,
+   "avoid": [],
+   "parsed": {
+    "intent": "plan",
+    "count": null,
+    "hours": null,
+    "focus_tags": [],
+    "avoid_tags": [],
+    "difficulty": null
+   },
+   "parse_warnings": [],
+   "parse_tokens": 1037,
+   "outcome": "saved",
+   "error": null,
+   "steps": 2,
+   "input_tokens": 7478,
+   "output_tokens": 1017,
+   "latency_ms": 8990,
+   "tools_called": [
+    "get_tag_profile",
+    "find_problems",
+    "find_problems",
+    "find_problems",
+    "find_problems",
+    "validate_plan",
+    "save_plan"
+   ],
+   "rejected_calls": 0,
+   "nudges": 0,
+   "plan": [
+    {
+     "contest_id": 2074,
+     "idx": "D",
+     "rating": 1400,
+     "tags": [
+      "brute force",
+      "data structures",
+      "geometry",
+      "implementation",
+      "two pointers"
+     ],
+     "tag": "geometry",
+     "reason": "A warm‑up on basic geometry concepts.",
+     "skill": 1391.611078493303,
+     "solved": false,
+     "running": false,
+     "facts": "geometry skill 1392 (level 1400) · 7 tries · 29% abandoned · 1400 = level +0",
+     "id": "2074D",
+     "gap": 0
+    },
+    {
+     "contest_id": 2190,
+     "idx": "B1",
+     "rating": 1400,
+     "tags": [
+      "combinatorics",
+      "constructive algorithms",
+      "dp",
+      "greedy",
+      "strings",
+      "two pointers"
+     ],
+     "tag": "strings",
+     "reason": "A warm‑up on simple string manipulation techniques.",
+     "skill": 1397.523306803151,
+     "solved": false,
+     "running": false,
+     "facts": "strings skill 1398 (level 1400) · 32 tries · 0% abandoned · 1400 = level +0",
+     "id": "2190B1",
+     "gap": 0
+    },
+    {
+     "contest_id": 2195,
+     "idx": "E",
+     "rating": 1500,
+     "tags": [
+      "dfs and similar",
+      "dp",
+      "trees"
+     ],
+     "tag": "trees",
+     "reason": "A step‑up problem strengthening tree traversal skills.",
+     "skill": 1408.5127683908688,
+     "solved": false,
+     "running": false,
+     "facts": "trees skill 1409 (level 1400) · 5 tries · 20% abandoned · 1500 = level +100",
+     "id": "2195E",
+     "gap": 100
+    },
+    {
+     "contest_id": 608,
+     "idx": "B",
+     "rating": 1500,
+     "tags": [
+      "combinatorics",
+      "strings"
+     ],
+     "tag": "combinatorics",
+     "reason": "A step‑up problem enhancing combinatorial counting abilities.",
+     "skill": 1412.0863144712905,
+     "solved": false,
+     "running": false,
+     "facts": "combinatorics skill 1412 (level 1400) · 17 tries · 18% abandoned · 1500 = level +100",
+     "id": "608B",
+     "gap": 100
+    },
+    {
+     "contest_id": 2074,
+     "idx": "E",
+     "rating": 1600,
+     "tags": [
+      "geometry",
+      "interactive",
+      "probabilities"
+     ],
+     "tag": "geometry",
+     "reason": "A stretch problem testing advanced geometry reasoning.",
+     "skill": 1391.611078493303,
+     "solved": false,
+     "running": false,
+     "facts": "geometry skill 1392 (level 1400) · 7 tries · 29% abandoned · 1600 = level +200",
+     "id": "2074E",
+     "gap": 200
+    }
+   ],
+   "final_text": "Saved 5 problems, easiest first, rated 1400-1600. Tags: geometry x2, strings x1, trees x1, combinatorics x1. Difficulty: normal (+0 to +200 around each tag's level).",
+   "checks": [
+    {
+     "check": "saved",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "5 problems",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "band +0..+200",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "ladder +0/+0/+100/+100/+200",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "starts with get_tag_profile",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "no rejected calls",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "unsolved",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "no running contest",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "distinct reasons",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "no numbers in reasons",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "summary has no table",
+     "ok": true,
+     "detail": null
+    }
+   ],
+   "steps_log": [
+    {
+     "user": "Plan my practice for this week.\n\nFixed constraints: problems: exactly 5; this week's tags and levels (your weakest with 5+ attempts; their problems are loaded; pick each by its gap field): geometry warm-up (gap +0) and stretch (gap +200), strings warm-up (gap +0), trees step-up (gap +100), combinatorics step-up (gap +100)"
+    },
+    {
+     "call": "get_tag_profile",
+     "args": "{}"
+    },
+    {
+     "result": "{\"rating\":1400,\"tags\":[{\"tag\":\"geometry\",\"skill\":1392,\"attempts\":7,\"abandon_rate\":0.29},{\"tag\":\"strings\",\"skill\":1398,\"attempts\":32,\"abandon_rate\":0.0},{\"tag\":\"dfs and similar\",\"skill\":1398,\"attempts\":3,\"abandon_rate\":0.33},{\"tag\":\"flows\",\"skill\":1399,\"attempts\":1,\"abandon_rate\":0.0},{\"tag\":\"probabilities\",\"skill\":1400,\"attempts\":1,\"abandon_rate\":0.0},{\"tag\":\"matrices\",\"skill\":1401,\"attempts\":1,\"abandon_rate\":0.0},{\"tag\":\"dsu\",\"skill\":1402,\"attempts\":1,\"abandon_rate\":0.0},{\"tag\":\"ternary search\",\"skill\":1404,\"attempts\":1,\"abandon_rate\":0.0},{\"tag\":\"graphs\",\"skill\":1404,\"attempts\":3,\"abandon_rate\":0.0},{\"tag\":\"shortest paths\",\"skill\":1406,\"attempts\":2,\"abandon_rate\":0.0},{\"tag\":\"hashing\",\"skill\":1407,\"attempts\":3,\"abandon_rate\":0.0},{\"tag\":\"trees\",\"skill\":1409,\"attempts\":5,\"abandon_rate\":0.2},{\"tag\":\"combinatorics\",\"skill\":1412,\"attempts\":17,\"abandon_rate\":0.18},{\"tag\":\"dp\",\"skill\":1415,\"attempts\":26,\"abandon_rate\":0.12},{\"tag\":\"games\",\"skill\":1418,\"attempts\":9,\"abandon_rate\":0.0},{\"tag\":\"two pointers\",\"skill\":1424,\"attempts\":20,\"abandon_rate\":0.05},{\"tag\":\"binary search\",\"skill\":1434,\"attempts\":19,\"abandon_rate\":0.11},{\"tag\":\"bitmasks\",\"skill\":1438,\"attempts\":21,\"abandon_rate\":0.05},{\"tag\":\"sortings\",\"skill\":1440,\"attempts\":42,\"abandon_rate\":0.02},{\"tag\":\"number theory\",\"skill\":1441,\"attempts\":27,\"abandon_rate\":0.0},{\"tag\":\"brute force\",\"skill\":1443,\"attempts\":54,\"abandon_rate\":0.02},{\"tag\":\"implementation\",\"skill\":1454,\"attempts\":103,\"abandon_rate\":0.02},{\"tag\":\"data structures\",\"skill\":1457,\"attempts\":22,\"abandon_rate\":0.09},{\"tag\":\"constructive algorithms\",\"skill\":1464,\"attempts\":61,\"abandon_rate\":0.03},{\"tag\":\"math\",\"skill\":1471,\"attempts\":122,\"abandon_rate\":0.05},{\"tag\":\"greedy\",\"skill\":1510,\"attempts\":130,\"abandon_rate\":0.02}]}"
+    },
+    {
+     "call": "find_problems",
+     "args": "{\"tag\": \"geometry\", \"count\": 6}"
+    },
+    {
+     "call": "find_problems",
+     "args": "{\"tag\": \"strings\", \"count\": 6}"
+    },
+    {
+     "call": "find_problems",
+     "args": "{\"tag\": \"trees\", \"count\": 6}"
+    },
+    {
+     "call": "find_problems",
+     "args": "{\"tag\": \"combinatorics\", \"count\": 6}"
+    },
+    {
+     "result": "{\"difficulty\":\"normal\",\"problems\":[{\"id\":\"2074D\",\"name\":\"Counting Points\",\"rating\":1400,\"tags\":[\"brute force\",\"data structures\",\"geometry\",\"implementation\",\"two pointers\"],\"matched_tag\":\"geometry\",\"tag_skill\":1392,\"gap\":0,\"score\":3.0},{\"id\":\"2072E\",\"name\":\"Do You Love Your Hero and His Two-Hit Multi-Target Attacks?\",\"rating\":1500,\"tags\":[\"binary search\",\"brute force\",\"constructive algorithms\",\"dp\",\"geometry\",\"greedy\",\"math\"],\"matched_tag\":\"geometry\",\"tag_skill\":1392,\"gap\":100,\"score\":2.88},{\"id\":\"2074E\",\"name\":\"Empty Triangle\",\"rating\":1600,\"tags\":[\"geometry\",\"interactive\",\"probabilities\"],\"matched_tag\":\"geometry\",\"tag_skill\":1392,\"gap\":200,\"score\":3.44},{\"id\":\"1648A\",\"name\":\"Weird Sum\",\"rating\":1400,\"tags\":[\"combinatorics\",\"data structures\",\"geometry\",\"math\",\"matrices\",\"sortings\"],\"matched_tag\":\"geometry\",\"tag_skill\":1392,\"gap\":0,\"score\":2.79},{\"id\":\"1486B\",\"name\":\"Eastern Exhibition\",\"rating\":1500,\"tags\":[\"binary search\",\"geometry\",\"shortest paths\",\"sortings\"],\"matched_tag\":\"geometry\",\"tag_skill\":1392,\"gap\":100,\"score\":2.88},{\"id\":\"1971F\",\"name\":\"Circle Perimeter\",\"rating\":1600,\"tags\":[\"binary search\",\"brute force\",\"dfs and similar\",\"geometry\",\"implementation\",\"math\"],\"matched_tag\":\"geometry\",\"tag_skill\":1392,\"gap\":200,\"score\":2.94}]}"
+    },
+    {
+     "result": "{\"difficulty\":\"normal\",\"problems\":[{\"id\":\"2190B1\",\"name\":\"Sub-RBS (Easy Version)\",\"rating\":1400,\"tags\":[\"combinatorics\",\"constructive algorithms\",\"dp\",\"greedy\",\"strings\",\"two pointers\"],\"matched_tag\":\"strings\",\"tag_skill\":1398,\"gap\":0,\"score\":2.19},{\"id\":\"638B\",\"name\":\"Making Genome in Berland\",\"rating\":1500,\"tags\":[\"dfs and similar\",\"strings\"],\"matched_tag\":\"strings\",\"tag_skill\":1398,\"gap\":100,\"score\":2.25},{\"id\":\"2242D\",\"name\":\"Two Digit Strings\",\"rating\":1600,\"tags\":[\"dp\",\"strings\"],\"matched_tag\":\"strings\",\"tag_skill\":1398,\"gap\":200,\"score\":2.55},{\"id\":\"2013C\",\"name\":\"Password Cracking\",\"rating\":1400,\"tags\":[\"constructive algorithms\",\"interactive\",\"strings\"],\"matched_tag\":\"strings\",\"tag_skill\":1398,\"gap\":0,\"score\":2.15},{\"id\":\"1326D1\",\"name\":\"Prefix-Suffix Palindrome (Easy version)\",\"rating\":1500,\"tags\":[\"hashing\",\"string suffix structures\",\"strings\"],\"matched_tag\":\"strings\",\"tag_skill\":1398,\"gap\":100,\"score\":2.2},{\"id\":\"1045I\",\"name\":\"Palindrome Pairs\",\"rating\":1600,\"tags\":[\"hashing\",\"strings\"],\"matched_tag\":\"strings\",\"tag_skill\":1398,\"gap\":200,\"score\":2.16}]}"
+    },
+    {
+     "result": "{\"difficulty\":\"normal\",\"problems\":[{\"id\":\"2238C\",\"name\":\"Village Guilds\",\"rating\":1400,\"tags\":[\"dfs and similar\",\"dp\",\"trees\"],\"matched_tag\":\"trees\",\"tag_skill\":1409,\"gap\":0,\"score\":3.12},{\"id\":\"2195E\",\"name\":\"Idiot First Search\",\"rating\":1500,\"tags\":[\"dfs and similar\",\"dp\",\"trees\"],\"matched_tag\":\"trees\",\"tag_skill\":1409,\"gap\":100,\"score\":3.07},{\"id\":\"2258C\",\"name\":\"Far Cities\",\"rating\":1600,\"tags\":[\"interactive\",\"trees\",\"two pointers\"],\"matched_tag\":\"trees\",\"tag_skill\":1409,\"gap\":200,\"score\":3.08},{\"id\":\"1143C\",\"name\":\"Queen\",\"rating\":1400,\"tags\":[\"dfs and similar\",\"trees\"],\"matched_tag\":\"trees\",\"tag_skill\":1409,\"gap\":0,\"score\":2.74},{\"id\":\"930A\",\"name\":\"Peculiar apple-tree\",\"rating\":1500,\"tags\":[\"dfs and similar\",\"graphs\",\"trees\"],\"matched_tag\":\"trees\",\"tag_skill\":1409,\"gap\":100,\"score\":2.71},{\"id\":\"2070D\",\"name\":\"Tree Jumps\",\"rating\":1600,\"tags\":[\"dfs and similar\",\"dp\",\"trees\"],\"matched_tag\":\"trees\",\"tag_skill\":1409,\"gap\":200,\"score\":2.95}]}"
+    },
+    {
+     "result": "{\"difficulty\":\"normal\",\"problems\":[{\"id\":\"2276D\",\"name\":\"Caveman\",\"rating\":1400,\"tags\":[\"combinatorics\",\"graphs\"],\"matched_tag\":\"combinatorics\",\"tag_skill\":1412,\"gap\":0,\"score\":3.07},{\"id\":\"608B\",\"name\":\"Hamming Distance Sum\",\"rating\":1500,\"tags\":[\"combinatorics\",\"strings\"],\"matched_tag\":\"combinatorics\",\"tag_skill\":1412,\"gap\":100,\"score\":2.64},{\"id\":\"2061C\",\"name\":\"Kevin and Puzzle\",\"rating\":1600,\"tags\":[\"2-sat\",\"combinatorics\",\"dp\"],\"matched_tag\":\"combinatorics\",\"tag_skill\":1412,\"gap\":200,\"score\":2.82},{\"id\":\"2246C\",\"name\":\"0mar and Alternating Sums\",\"rating\":1400,\"tags\":[\"combinatorics\",\"dp\",\"math\"],\"matched_tag\":\"combinatorics\",\"tag_skill\":1412,\"gap\":0,\"score\":2.66},{\"id\":\"2163C\",\"name\":\"Monopati\",\"rating\":1500,\"tags\":[\"brute force\",\"combinatorics\",\"dp\",\"math\",\"two pointers\"],\"matched_tag\":\"combinatorics\",\"tag_skill\":1412,\"gap\":100,\"score\":2.62},{\"id\":\"2241E\",\"name\":\"Fair and Square\",\"rating\":1600,\"tags\":[\"combinatorics\",\"dp\",\"graphs\",\"math\",\"number theory\",\"trees\"],\"matched_tag\":\"combinatorics\",\"tag_skill\":1412,\"gap\":200,\"score\":2.8}]}"
+    },
+    {
+     "call": "validate_plan",
+     "args": "{\"constraints\":{},\"items\":[{\"id\":\"2074D\",\"reason\":\"A warm‑up on basic geometry concepts.\"},{\"id\":\"2074E\",\"reason\":\"A stretch problem testing advanced geometry reasoning.\"},{\"id\":\"2190B1\",\"reason\":\"A warm‑up on simple string manipulation techniques.\"},{\"id\":\"2195E\",\"reason\":\"A step‑up problem strengthening tree traversal skills.\"},{\"id\":\"608B\",\"reason\":\"A step‑up problem enhancing combinatorial counting abilities.\"}]}"
+    },
+    {
+     "result": "{\"ok\":true,\"errors\":[]}"
+    },
+    {
+     "call": "save_plan",
+     "args": "{\"constraints\":{},\"items\":[{\"id\":\"2074D\",\"reason\":\"A warm‑up on basic geometry concepts.\"},{\"id\":\"2074E\",\"reason\":\"A stretch problem testing advanced geometry reasoning.\"},{\"id\":\"2190B1\",\"reason\":\"A warm‑up on simple string manipulation techniques.\"},{\"id\":\"2195E\",\"reason\":\"A step‑up problem strengthening tree traversal skills.\"},{\"id\":\"608B\",\"reason\":\"A step‑up problem enhancing combinatorial counting abilities.\"}]}"
+    },
+    {
+     "result": "{\"plan_id\":1,\"items\":5}"
+    }
+   ]
+  },
+  {
+   "case": "two_tags",
+   "request": "I want to practise greedy and binary search. 4 problems.",
+   "hours": null,
+   "avoid": [],
+   "parsed": {
+    "intent": "plan",
+    "count": 4,
+    "hours": null,
+    "focus_tags": [
+     "greedy",
+     "binary search"
+    ],
+    "avoid_tags": [],
+    "difficulty": null
+   },
+   "parse_warnings": [],
+   "parse_tokens": 1091,
+   "outcome": "saved",
+   "error": null,
+   "steps": 4,
+   "input_tokens": 8631,
+   "output_tokens": 790,
+   "latency_ms": 5329,
+   "tools_called": [
+    "get_tag_profile",
+    "find_problems",
+    "find_problems",
+    "validate_plan",
+    "save_plan"
+   ],
+   "rejected_calls": 0,
+   "nudges": 0,
+   "plan": [
+    {
+     "contest_id": 2060,
+     "idx": "E",
+     "rating": 1500,
+     "tags": [
+      "dfs and similar",
+      "dsu",
+      "graphs",
+      "greedy"
+     ],
+     "tag": "greedy",
+     "reason": "A warm up on greedy graph composition.",
+     "skill": 1510.279377671619,
+     "solved": false,
+     "running": false,
+     "facts": "greedy skill 1510 (level 1500) · 130 tries · 2% abandoned · 1500 = level +0",
+     "id": "2060E",
+     "gap": 0
+    },
+    {
+     "contest_id": 2162,
+     "idx": "D",
+     "rating": 1400,
+     "tags": [
+      "binary search",
+      "interactive"
+     ],
+     "tag": "binary search",
+     "reason": "A warm up on binary search permutation.",
+     "skill": 1434.1431530529405,
+     "solved": false,
+     "running": false,
+     "facts": "binary search skill 1434 (level 1400) · 19 tries · 11% abandoned · 1400 = level +0",
+     "id": "2162D",
+     "gap": 0
+    },
+    {
+     "contest_id": 2193,
+     "idx": "F",
+     "rating": 1600,
+     "tags": [
+      "dp",
+      "greedy"
+     ],
+     "tag": "greedy",
+     "reason": "A step up on greedy dp integration.",
+     "skill": 1510.279377671619,
+     "solved": false,
+     "running": false,
+     "facts": "greedy skill 1510 (level 1500) · 130 tries · 2% abandoned · 1600 = level +100",
+     "id": "2193F",
+     "gap": 100
+    },
+    {
+     "contest_id": 1999,
+     "idx": "G1",
+     "rating": 1500,
+     "tags": [
+      "binary search",
+      "interactive"
+     ],
+     "tag": "binary search",
+     "reason": "A stretch on binary search ruler.",
+     "skill": 1434.1431530529405,
+     "solved": false,
+     "running": false,
+     "facts": "binary search skill 1434 (level 1400) · 19 tries · 11% abandoned · 1500 = level +100",
+     "id": "1999G1",
+     "gap": 100
+    }
+   ],
+   "final_text": "Saved 4 problems, easiest first, rated 1400-1600. Tags: greedy x2, binary search x2. Difficulty: normal (+0 to +200 around each tag's level).",
+   "checks": [
+    {
+     "check": "saved",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "4 problems",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "tags in {greedy, binary search}",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "band +0..+200",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "starts with get_tag_profile",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "no rejected calls",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "unsolved",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "no running contest",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "distinct reasons",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "no numbers in reasons",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "summary has no table",
+     "ok": true,
+     "detail": null
+    }
+   ],
+   "steps_log": [
+    {
+     "user": "I want to practise greedy and binary search. 4 problems.\n\nFixed constraints: problems: exactly 4; focus tags: greedy, binary search"
+    },
+    {
+     "call": "get_tag_profile",
+     "args": "{}"
+    },
+    {
+     "result": "{\"rating\":1400,\"tags\":[{\"tag\":\"geometry\",\"skill\":1392,\"attempts\":7,\"abandon_rate\":0.29},{\"tag\":\"strings\",\"skill\":1398,\"attempts\":32,\"abandon_rate\":0.0},{\"tag\":\"dfs and similar\",\"skill\":1398,\"attempts\":3,\"abandon_rate\":0.33},{\"tag\":\"flows\",\"skill\":1399,\"attempts\":1,\"abandon_rate\":0.0},{\"tag\":\"probabilities\",\"skill\":1400,\"attempts\":1,\"abandon_rate\":0.0},{\"tag\":\"matrices\",\"skill\":1401,\"attempts\":1,\"abandon_rate\":0.0},{\"tag\":\"dsu\",\"skill\":1402,\"attempts\":1,\"abandon_rate\":0.0},{\"tag\":\"ternary search\",\"skill\":1404,\"attempts\":1,\"abandon_rate\":0.0},{\"tag\":\"graphs\",\"skill\":1404,\"attempts\":3,\"abandon_rate\":0.0},{\"tag\":\"shortest paths\",\"skill\":1406,\"attempts\":2,\"abandon_rate\":0.0},{\"tag\":\"hashing\",\"skill\":1407,\"attempts\":3,\"abandon_rate\":0.0},{\"tag\":\"trees\",\"skill\":1409,\"attempts\":5,\"abandon_rate\":0.2},{\"tag\":\"combinatorics\",\"skill\":1412,\"attempts\":17,\"abandon_rate\":0.18},{\"tag\":\"dp\",\"skill\":1415,\"attempts\":26,\"abandon_rate\":0.12},{\"tag\":\"games\",\"skill\":1418,\"attempts\":9,\"abandon_rate\":0.0},{\"tag\":\"two pointers\",\"skill\":1424,\"attempts\":20,\"abandon_rate\":0.05},{\"tag\":\"binary search\",\"skill\":1434,\"attempts\":19,\"abandon_rate\":0.11},{\"tag\":\"bitmasks\",\"skill\":1438,\"attempts\":21,\"abandon_rate\":0.05},{\"tag\":\"sortings\",\"skill\":1440,\"attempts\":42,\"abandon_rate\":0.02},{\"tag\":\"number theory\",\"skill\":1441,\"attempts\":27,\"abandon_rate\":0.0},{\"tag\":\"brute force\",\"skill\":1443,\"attempts\":54,\"abandon_rate\":0.02},{\"tag\":\"implementation\",\"skill\":1454,\"attempts\":103,\"abandon_rate\":0.02},{\"tag\":\"data structures\",\"skill\":1457,\"attempts\":22,\"abandon_rate\":0.09},{\"tag\":\"constructive algorithms\",\"skill\":1464,\"attempts\":61,\"abandon_rate\":0.03},{\"tag\":\"math\",\"skill\":1471,\"attempts\":122,\"abandon_rate\":0.05},{\"tag\":\"greedy\",\"skill\":1510,\"attempts\":130,\"abandon_rate\":0.02}]}"
+    },
+    {
+     "call": "find_problems",
+     "args": "{\"count\":2,\"tag\":\"greedy\"}"
+    },
+    {
+     "result": "{\"difficulty\":\"normal\",\"problems\":[{\"id\":\"2060E\",\"name\":\"Graph Composition\",\"rating\":1500,\"tags\":[\"dfs and similar\",\"dsu\",\"graphs\",\"greedy\"],\"matched_tag\":\"greedy\",\"tag_skill\":1510,\"gap\":0,\"score\":1.44},{\"id\":\"2193F\",\"name\":\"Pizza Delivery\",\"rating\":1600,\"tags\":[\"dp\",\"greedy\"],\"matched_tag\":\"greedy\",\"tag_skill\":1510,\"gap\":100,\"score\":1.44}]}"
+    },
+    {
+     "call": "find_problems",
+     "args": "{\"count\":2,\"tag\":\"binary search\"}"
+    },
+    {
+     "result": "{\"difficulty\":\"normal\",\"problems\":[{\"id\":\"2162D\",\"name\":\"Beautiful Permutation\",\"rating\":1400,\"tags\":[\"binary search\",\"interactive\"],\"matched_tag\":\"binary search\",\"tag_skill\":1434,\"gap\":0,\"score\":2.56},{\"id\":\"1999G1\",\"name\":\"Ruler (easy version)\",\"rating\":1500,\"tags\":[\"binary search\",\"interactive\"],\"matched_tag\":\"binary search\",\"tag_skill\":1434,\"gap\":100,\"score\":2.4}]}"
+    },
+    {
+     "call": "validate_plan",
+     "args": "{\"constraints\":{},\"items\":[{\"id\":\"2060E\",\"reason\":\"A warm up on greedy graph composition.\"},{\"id\":\"2193F\",\"reason\":\"A step up on greedy dp integration.\"},{\"id\":\"2162D\",\"reason\":\"A warm up on binary search permutation.\"},{\"id\":\"1999G1\",\"reason\":\"A stretch on binary search ruler.\"}]}"
+    },
+    {
+     "result": "{\"ok\":true,\"errors\":[]}"
+    },
+    {
+     "call": "save_plan",
+     "args": "{\"constraints\":{},\"items\":[{\"id\":\"2060E\",\"reason\":\"A warm up on greedy graph composition.\"},{\"id\":\"2193F\",\"reason\":\"A step up on greedy dp integration.\"},{\"id\":\"2162D\",\"reason\":\"A warm up on binary search permutation.\"},{\"id\":\"1999G1\",\"reason\":\"A stretch on binary search ruler.\"}]}"
+    },
+    {
+     "result": "{\"plan_id\":1,\"items\":4}"
+    }
+   ]
+  },
+  {
+   "case": "challenge",
+   "request": "Challenge me: 3 hard dp problems.",
+   "hours": null,
+   "avoid": [],
+   "parsed": {
+    "intent": "plan",
+    "count": 3,
+    "hours": null,
+    "focus_tags": [
+     "dp"
+    ],
+    "avoid_tags": [],
+    "difficulty": "harder"
+   },
+   "parse_warnings": [],
+   "parse_tokens": 1043,
+   "outcome": "saved",
+   "error": null,
+   "steps": 3,
+   "input_tokens": 6522,
+   "output_tokens": 916,
+   "latency_ms": 5512,
+   "tools_called": [
+    "get_tag_profile",
+    "find_problems",
+    "validate_plan",
+    "save_plan"
+   ],
+   "rejected_calls": 0,
+   "nudges": 0,
+   "plan": [
+    {
+     "contest_id": 2195,
+     "idx": "E",
+     "rating": 1500,
+     "tags": [
+      "dfs and similar",
+      "dp",
+      "trees"
+     ],
+     "tag": "dp",
+     "reason": "A warm-up on dfs based dynamic programming.",
+     "skill": 1414.7214530598392,
+     "solved": false,
+     "running": false,
+     "facts": "dp skill 1415 (level 1400) · 26 tries · 12% abandoned · 1500 = level +100",
+     "id": "2195E",
+     "gap": 100
+    },
+    {
+     "contest_id": 2242,
+     "idx": "D",
+     "rating": 1600,
+     "tags": [
+      "dp",
+      "strings"
+     ],
+     "tag": "dp",
+     "reason": "A step-up on string dp techniques.",
+     "skill": 1414.7214530598392,
+     "solved": false,
+     "running": false,
+     "facts": "dp skill 1415 (level 1400) · 26 tries · 12% abandoned · 1600 = level +200",
+     "id": "2242D",
+     "gap": 200
+    },
+    {
+     "contest_id": 2181,
+     "idx": "M",
+     "rating": 1700,
+     "tags": [
+      "dp",
+      "strings"
+     ],
+     "tag": "dp",
+     "reason": "A stretch on advanced parity dp challenges.",
+     "skill": 1414.7214530598392,
+     "solved": false,
+     "running": false,
+     "facts": "dp skill 1415 (level 1400) · 26 tries · 12% abandoned · 1700 = level +300",
+     "id": "2181M",
+     "gap": 300
+    }
+   ],
+   "final_text": "Saved 3 problems, easiest first, rated 1500-1700. Tags: dp x3. Difficulty: harder (+100 to +300 around each tag's level).",
+   "checks": [
+    {
+     "check": "saved",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "3 problems",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "tags in {dp}",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "band +100..+300",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "starts with get_tag_profile",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "no rejected calls",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "unsolved",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "no running contest",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "distinct reasons",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "no numbers in reasons",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "summary has no table",
+     "ok": true,
+     "detail": null
+    }
+   ],
+   "steps_log": [
+    {
+     "user": "Challenge me: 3 hard dp problems.\n\nFixed constraints: problems: exactly 3; focus tags: dp; difficulty: harder"
+    },
+    {
+     "call": "get_tag_profile",
+     "args": "{}"
+    },
+    {
+     "result": "{\"rating\":1400,\"tags\":[{\"tag\":\"geometry\",\"skill\":1392,\"attempts\":7,\"abandon_rate\":0.29},{\"tag\":\"strings\",\"skill\":1398,\"attempts\":32,\"abandon_rate\":0.0},{\"tag\":\"dfs and similar\",\"skill\":1398,\"attempts\":3,\"abandon_rate\":0.33},{\"tag\":\"flows\",\"skill\":1399,\"attempts\":1,\"abandon_rate\":0.0},{\"tag\":\"probabilities\",\"skill\":1400,\"attempts\":1,\"abandon_rate\":0.0},{\"tag\":\"matrices\",\"skill\":1401,\"attempts\":1,\"abandon_rate\":0.0},{\"tag\":\"dsu\",\"skill\":1402,\"attempts\":1,\"abandon_rate\":0.0},{\"tag\":\"ternary search\",\"skill\":1404,\"attempts\":1,\"abandon_rate\":0.0},{\"tag\":\"graphs\",\"skill\":1404,\"attempts\":3,\"abandon_rate\":0.0},{\"tag\":\"shortest paths\",\"skill\":1406,\"attempts\":2,\"abandon_rate\":0.0},{\"tag\":\"hashing\",\"skill\":1407,\"attempts\":3,\"abandon_rate\":0.0},{\"tag\":\"trees\",\"skill\":1409,\"attempts\":5,\"abandon_rate\":0.2},{\"tag\":\"combinatorics\",\"skill\":1412,\"attempts\":17,\"abandon_rate\":0.18},{\"tag\":\"dp\",\"skill\":1415,\"attempts\":26,\"abandon_rate\":0.12},{\"tag\":\"games\",\"skill\":1418,\"attempts\":9,\"abandon_rate\":0.0},{\"tag\":\"two pointers\",\"skill\":1424,\"attempts\":20,\"abandon_rate\":0.05},{\"tag\":\"binary search\",\"skill\":1434,\"attempts\":19,\"abandon_rate\":0.11},{\"tag\":\"bitmasks\",\"skill\":1438,\"attempts\":21,\"abandon_rate\":0.05},{\"tag\":\"sortings\",\"skill\":1440,\"attempts\":42,\"abandon_rate\":0.02},{\"tag\":\"number theory\",\"skill\":1441,\"attempts\":27,\"abandon_rate\":0.0},{\"tag\":\"brute force\",\"skill\":1443,\"attempts\":54,\"abandon_rate\":0.02},{\"tag\":\"implementation\",\"skill\":1454,\"attempts\":103,\"abandon_rate\":0.02},{\"tag\":\"data structures\",\"skill\":1457,\"attempts\":22,\"abandon_rate\":0.09},{\"tag\":\"constructive algorithms\",\"skill\":1464,\"attempts\":61,\"abandon_rate\":0.03},{\"tag\":\"math\",\"skill\":1471,\"attempts\":122,\"abandon_rate\":0.05},{\"tag\":\"greedy\",\"skill\":1510,\"attempts\":130,\"abandon_rate\":0.02}]}"
+    },
+    {
+     "call": "find_problems",
+     "args": "{\"count\":3,\"tag\":\"dp\"}"
+    },
+    {
+     "result": "{\"difficulty\":\"harder\",\"problems\":[{\"id\":\"2195E\",\"name\":\"Idiot First Search\",\"rating\":1500,\"tags\":[\"dfs and similar\",\"dp\",\"trees\"],\"matched_tag\":\"dp\",\"tag_skill\":1415,\"gap\":100,\"score\":2.79},{\"id\":\"2242D\",\"name\":\"Two Digit Strings\",\"rating\":1600,\"tags\":[\"dp\",\"strings\"],\"matched_tag\":\"dp\",\"tag_skill\":1415,\"gap\":200,\"score\":2.89},{\"id\":\"2181M\",\"name\":\"Medical Parity\",\"rating\":1700,\"tags\":[\"dp\",\"strings\"],\"matched_tag\":\"dp\",\"tag_skill\":1415,\"gap\":300,\"score\":2.83}]}"
+    },
+    {
+     "call": "validate_plan",
+     "args": "{\"constraints\":{},\"items\":[{\"id\":\"2195E\",\"reason\":\"A warm-up on dfs based dynamic programming.\"},{\"id\":\"2242D\",\"reason\":\"A step-up on string dp techniques.\"},{\"id\":\"2181M\",\"reason\":\"A stretch on advanced parity dp challenges.\"}]}"
+    },
+    {
+     "result": "{\"ok\":true,\"errors\":[]}"
+    },
+    {
+     "call": "save_plan",
+     "args": "{\"constraints\":{},\"items\":[{\"id\":\"2195E\",\"reason\":\"A warm-up on dfs based dynamic programming.\"},{\"id\":\"2242D\",\"reason\":\"A step-up on string dp techniques.\"},{\"id\":\"2181M\",\"reason\":\"A stretch on advanced parity dp challenges.\"}]}"
+    },
+    {
+     "result": "{\"plan_id\":1,\"items\":3}"
+    }
+   ]
+  },
+  {
+   "case": "rusty",
+   "request": "I'm rusty after a break. Give me 3 easy warm-up problems.",
+   "hours": null,
+   "avoid": [],
+   "parsed": {
+    "intent": "plan",
+    "count": 3,
+    "hours": null,
+    "focus_tags": [],
+    "avoid_tags": [],
+    "difficulty": "easier"
+   },
+   "parse_warnings": [],
+   "parse_tokens": 1082,
+   "outcome": "saved",
+   "error": null,
+   "steps": 2,
+   "input_tokens": 6006,
+   "output_tokens": 1281,
+   "latency_ms": 6610,
+   "tools_called": [
+    "get_tag_profile",
+    "find_problems",
+    "find_problems",
+    "validate_plan",
+    "save_plan"
+   ],
+   "rejected_calls": 0,
+   "nudges": 0,
+   "plan": [
+    {
+     "contest_id": 750,
+     "idx": "B",
+     "rating": 1300,
+     "tags": [
+      "geometry",
+      "implementation"
+     ],
+     "tag": "geometry",
+     "reason": "A warm-up on geometry basics before the step-up problem.",
+     "skill": 1391.611078493303,
+     "solved": false,
+     "running": false,
+     "facts": "geometry skill 1392 (level 1400) · 7 tries · 29% abandoned · 1300 = level -100",
+     "id": "750B",
+     "gap": -100
+    },
+    {
+     "contest_id": 2190,
+     "idx": "B1",
+     "rating": 1400,
+     "tags": [
+      "combinatorics",
+      "constructive algorithms",
+      "dp",
+      "greedy",
+      "strings",
+      "two pointers"
+     ],
+     "tag": "strings",
+     "reason": "A step-up on string manipulation following the warm-up.",
+     "skill": 1397.523306803151,
+     "solved": false,
+     "running": false,
+     "facts": "strings skill 1398 (level 1400) · 32 tries · 0% abandoned · 1400 = level +0",
+     "id": "2190B1",
+     "gap": 0
+    },
+    {
+     "contest_id": 2072,
+     "idx": "E",
+     "rating": 1500,
+     "tags": [
+      "binary search",
+      "brute force",
+      "constructive algorithms",
+      "dp",
+      "geometry",
+      "greedy",
+      "math"
+     ],
+     "tag": "geometry",
+     "reason": "A stretch on advanced geometry concepts after the warm-up.",
+     "skill": 1391.611078493303,
+     "solved": false,
+     "running": false,
+     "facts": "geometry skill 1392 (level 1400) · 7 tries · 29% abandoned · 1500 = level +100",
+     "id": "2072E",
+     "gap": 100
+    }
+   ],
+   "final_text": "Saved 3 problems, easiest first, rated 1300-1500. Tags: geometry x2, strings x1. Difficulty: easier (-100 to +100 around each tag's level).",
+   "checks": [
+    {
+     "check": "saved",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "3 problems",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "band -100..+100",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "ladder -100/+0/+100",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "starts with get_tag_profile",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "no rejected calls",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "unsolved",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "no running contest",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "distinct reasons",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "no numbers in reasons",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "summary has no table",
+     "ok": true,
+     "detail": null
+    }
+   ],
+   "steps_log": [
+    {
+     "user": "I'm rusty after a break. Give me 3 easy warm-up problems.\n\nFixed constraints: problems: exactly 3; this week's tags and levels (your weakest with 5+ attempts; their problems are loaded; pick each by its gap field): geometry warm-up (gap -100) and stretch (gap +100), strings step-up (gap +0); difficulty: easier"
+    },
+    {
+     "call": "get_tag_profile",
+     "args": "{}"
+    },
+    {
+     "result": "{\"rating\":1400,\"tags\":[{\"tag\":\"geometry\",\"skill\":1392,\"attempts\":7,\"abandon_rate\":0.29},{\"tag\":\"strings\",\"skill\":1398,\"attempts\":32,\"abandon_rate\":0.0},{\"tag\":\"dfs and similar\",\"skill\":1398,\"attempts\":3,\"abandon_rate\":0.33},{\"tag\":\"flows\",\"skill\":1399,\"attempts\":1,\"abandon_rate\":0.0},{\"tag\":\"probabilities\",\"skill\":1400,\"attempts\":1,\"abandon_rate\":0.0},{\"tag\":\"matrices\",\"skill\":1401,\"attempts\":1,\"abandon_rate\":0.0},{\"tag\":\"dsu\",\"skill\":1402,\"attempts\":1,\"abandon_rate\":0.0},{\"tag\":\"ternary search\",\"skill\":1404,\"attempts\":1,\"abandon_rate\":0.0},{\"tag\":\"graphs\",\"skill\":1404,\"attempts\":3,\"abandon_rate\":0.0},{\"tag\":\"shortest paths\",\"skill\":1406,\"attempts\":2,\"abandon_rate\":0.0},{\"tag\":\"hashing\",\"skill\":1407,\"attempts\":3,\"abandon_rate\":0.0},{\"tag\":\"trees\",\"skill\":1409,\"attempts\":5,\"abandon_rate\":0.2},{\"tag\":\"combinatorics\",\"skill\":1412,\"attempts\":17,\"abandon_rate\":0.18},{\"tag\":\"dp\",\"skill\":1415,\"attempts\":26,\"abandon_rate\":0.12},{\"tag\":\"games\",\"skill\":1418,\"attempts\":9,\"abandon_rate\":0.0},{\"tag\":\"two pointers\",\"skill\":1424,\"attempts\":20,\"abandon_rate\":0.05},{\"tag\":\"binary search\",\"skill\":1434,\"attempts\":19,\"abandon_rate\":0.11},{\"tag\":\"bitmasks\",\"skill\":1438,\"attempts\":21,\"abandon_rate\":0.05},{\"tag\":\"sortings\",\"skill\":1440,\"attempts\":42,\"abandon_rate\":0.02},{\"tag\":\"number theory\",\"skill\":1441,\"attempts\":27,\"abandon_rate\":0.0},{\"tag\":\"brute force\",\"skill\":1443,\"attempts\":54,\"abandon_rate\":0.02},{\"tag\":\"implementation\",\"skill\":1454,\"attempts\":103,\"abandon_rate\":0.02},{\"tag\":\"data structures\",\"skill\":1457,\"attempts\":22,\"abandon_rate\":0.09},{\"tag\":\"constructive algorithms\",\"skill\":1464,\"attempts\":61,\"abandon_rate\":0.03},{\"tag\":\"math\",\"skill\":1471,\"attempts\":122,\"abandon_rate\":0.05},{\"tag\":\"greedy\",\"skill\":1510,\"attempts\":130,\"abandon_rate\":0.02}]}"
+    },
+    {
+     "call": "find_problems",
+     "args": "{\"tag\": \"geometry\", \"count\": 6}"
+    },
+    {
+     "call": "find_problems",
+     "args": "{\"tag\": \"strings\", \"count\": 6}"
+    },
+    {
+     "result": "{\"difficulty\":\"easier\",\"problems\":[{\"id\":\"750B\",\"name\":\"New Year and North Pole\",\"rating\":1300,\"tags\":[\"geometry\",\"implementation\"],\"matched_tag\":\"geometry\",\"tag_skill\":1392,\"gap\":-100,\"score\":2.61},{\"id\":\"2074D\",\"name\":\"Counting Points\",\"rating\":1400,\"tags\":[\"brute force\",\"data structures\",\"geometry\",\"implementation\",\"two pointers\"],\"matched_tag\":\"geometry\",\"tag_skill\":1392,\"gap\":0,\"score\":3.0},{\"id\":\"2072E\",\"name\":\"Do You Love Your Hero and His Two-Hit Multi-Target Attacks?\",\"rating\":1500,\"tags\":[\"binary search\",\"brute force\",\"constructive algorithms\",\"dp\",\"geometry\",\"greedy\",\"math\"],\"matched_tag\":\"geometry\",\"tag_skill\":1392,\"gap\":100,\"score\":2.88},{\"id\":\"40A\",\"name\":\"Find Color\",\"rating\":1300,\"tags\":[\"constructive algorithms\",\"geometry\",\"implementation\",\"math\"],\"matched_tag\":\"geometry\",\"tag_skill\":1392,\"gap\":-100,\"score\":2.52},{\"id\":\"1648A\",\"name\":\"Weird Sum\",\"rating\":1400,\"tags\":[\"combinatorics\",\"data structures\",\"geometry\",\"math\",\"matrices\",\"sortings\"],\"matched_tag\":\"geometry\",\"tag_skill\":1392,\"gap\":0,\"score\":2.79},{\"id\":\"1486B\",\"name\":\"Eastern Exhibition\",\"rating\":1500,\"tags\":[\"binary search\",\"geometry\",\"shortest paths\",\"sortings\"],\"matched_tag\":\"geometry\",\"tag_skill\":1392,\"gap\":100,\"score\":2.88}]}"
+    },
+    {
+     "result": "{\"difficulty\":\"easier\",\"problems\":[{\"id\":\"2181A\",\"name\":\"Alphabet City\",\"rating\":1300,\"tags\":[\"binary search\",\"math\",\"strings\"],\"matched_tag\":\"strings\",\"tag_skill\":1398,\"gap\":-100,\"score\":2.11},{\"id\":\"2190B1\",\"name\":\"Sub-RBS (Easy Version)\",\"rating\":1400,\"tags\":[\"combinatorics\",\"constructive algorithms\",\"dp\",\"greedy\",\"strings\",\"two pointers\"],\"matched_tag\":\"strings\",\"tag_skill\":1398,\"gap\":0,\"score\":2.19},{\"id\":\"638B\",\"name\":\"Making Genome in Berland\",\"rating\":1500,\"tags\":[\"dfs and similar\",\"strings\"],\"matched_tag\":\"strings\",\"tag_skill\":1398,\"gap\":100,\"score\":2.25},{\"id\":\"1178B\",\"name\":\"WOW Factor\",\"rating\":1300,\"tags\":[\"dp\",\"strings\"],\"matched_tag\":\"strings\",\"tag_skill\":1398,\"gap\":-100,\"score\":2.08},{\"id\":\"2013C\",\"name\":\"Password Cracking\",\"rating\":1400,\"tags\":[\"constructive algorithms\",\"interactive\",\"strings\"],\"matched_tag\":\"strings\",\"tag_skill\":1398,\"gap\":0,\"score\":2.15},{\"id\":\"1326D1\",\"name\":\"Prefix-Suffix Palindrome (Easy version)\",\"rating\":1500,\"tags\":[\"hashing\",\"string suffix structures\",\"strings\"],\"matched_tag\":\"strings\",\"tag_skill\":1398,\"gap\":100,\"score\":2.2}]}"
+    },
+    {
+     "call": "validate_plan",
+     "args": "{\"constraints\":{},\"items\":[{\"id\":\"750B\",\"reason\":\"A warm-up on geometry basics before the step-up problem.\"},{\"id\":\"2072E\",\"reason\":\"A stretch on advanced geometry concepts after the warm-up.\"},{\"id\":\"2190B1\",\"reason\":\"A step-up on string manipulation following the warm-up.\"}]}"
+    },
+    {
+     "result": "{\"ok\":true,\"errors\":[]}"
+    },
+    {
+     "call": "save_plan",
+     "args": "{\"constraints\":{},\"items\":[{\"id\":\"750B\",\"reason\":\"A warm-up on geometry basics before the step-up problem.\"},{\"id\":\"2072E\",\"reason\":\"A stretch on advanced geometry concepts after the warm-up.\"},{\"id\":\"2190B1\",\"reason\":\"A step-up on string manipulation following the warm-up.\"}]}"
+    },
+    {
+     "result": "{\"plan_id\":1,\"items\":3}"
+    }
+   ]
+  },
+  {
+   "case": "too_hard",
+   "request": "Give me 3 problems rated 2400.",
+   "hours": null,
+   "avoid": [],
+   "parsed": {
+    "intent": "plan",
+    "count": 3,
+    "hours": null,
+    "focus_tags": [],
+    "avoid_tags": [],
+    "difficulty": "harder"
+   },
+   "parse_warnings": [],
+   "parse_tokens": 1141,
+   "outcome": "saved",
+   "error": null,
+   "steps": 3,
+   "input_tokens": 8694,
+   "output_tokens": 1862,
+   "latency_ms": 26477,
+   "tools_called": [
+    "get_tag_profile",
+    "find_problems",
+    "find_problems",
+    "validate_plan",
+    "save_plan"
+   ],
+   "rejected_calls": 0,
+   "nudges": 1,
+   "plan": [
+    {
+     "contest_id": 2072,
+     "idx": "E",
+     "rating": 1500,
+     "tags": [
+      "binary search",
+      "brute force",
+      "constructive algorithms",
+      "dp",
+      "geometry",
+      "greedy",
+      "math"
+     ],
+     "tag": "geometry",
+     "reason": "A warm-up on geometry fundamentals before the stretch problem.",
+     "skill": 1391.611078493303,
+     "solved": false,
+     "running": false,
+     "facts": "geometry skill 1392 (level 1400) · 7 tries · 29% abandoned · 1500 = level +100",
+     "id": "2072E",
+     "gap": 100
+    },
+    {
+     "contest_id": 2242,
+     "idx": "D",
+     "rating": 1600,
+     "tags": [
+      "dp",
+      "strings"
+     ],
+     "tag": "strings",
+     "reason": "A step‑up on string algorithms bridging geometry and strings.",
+     "skill": 1397.523306803151,
+     "solved": false,
+     "running": false,
+     "facts": "strings skill 1398 (level 1400) · 32 tries · 0% abandoned · 1600 = level +200",
+     "id": "2242D",
+     "gap": 200
+    },
+    {
+     "contest_id": 1468,
+     "idx": "F",
+     "rating": 1700,
+     "tags": [
+      "geometry",
+      "hashing",
+      "number theory"
+     ],
+     "tag": "geometry",
+     "reason": "A stretch on advanced geometry techniques after the warm-up.",
+     "skill": 1391.611078493303,
+     "solved": false,
+     "running": false,
+     "facts": "geometry skill 1392 (level 1400) · 7 tries · 29% abandoned · 1700 = level +300",
+     "id": "1468F",
+     "gap": 300
+    }
+   ],
+   "final_text": "Saved 3 problems, easiest first, rated 1500-1700. Tags: geometry x2, strings x1. Difficulty: harder (+100 to +300 around each tag's level).",
+   "checks": [
+    {
+     "check": "band -100..+300",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "starts with get_tag_profile",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "no rejected calls",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "unsolved",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "no running contest",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "distinct reasons",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "no numbers in reasons",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "summary has no table",
+     "ok": true,
+     "detail": null
+    }
+   ],
+   "steps_log": [
+    {
+     "user": "Give me 3 problems rated 2400.\n\nFixed constraints: problems: exactly 3; this week's tags and levels (your weakest with 5+ attempts; their problems are loaded; pick each by its gap field): geometry warm-up (gap +100) and stretch (gap +300), strings step-up (gap +200); difficulty: harder"
+    },
+    {
+     "call": "get_tag_profile",
+     "args": "{}"
+    },
+    {
+     "result": "{\"rating\":1400,\"tags\":[{\"tag\":\"geometry\",\"skill\":1392,\"attempts\":7,\"abandon_rate\":0.29},{\"tag\":\"strings\",\"skill\":1398,\"attempts\":32,\"abandon_rate\":0.0},{\"tag\":\"dfs and similar\",\"skill\":1398,\"attempts\":3,\"abandon_rate\":0.33},{\"tag\":\"flows\",\"skill\":1399,\"attempts\":1,\"abandon_rate\":0.0},{\"tag\":\"probabilities\",\"skill\":1400,\"attempts\":1,\"abandon_rate\":0.0},{\"tag\":\"matrices\",\"skill\":1401,\"attempts\":1,\"abandon_rate\":0.0},{\"tag\":\"dsu\",\"skill\":1402,\"attempts\":1,\"abandon_rate\":0.0},{\"tag\":\"ternary search\",\"skill\":1404,\"attempts\":1,\"abandon_rate\":0.0},{\"tag\":\"graphs\",\"skill\":1404,\"attempts\":3,\"abandon_rate\":0.0},{\"tag\":\"shortest paths\",\"skill\":1406,\"attempts\":2,\"abandon_rate\":0.0},{\"tag\":\"hashing\",\"skill\":1407,\"attempts\":3,\"abandon_rate\":0.0},{\"tag\":\"trees\",\"skill\":1409,\"attempts\":5,\"abandon_rate\":0.2},{\"tag\":\"combinatorics\",\"skill\":1412,\"attempts\":17,\"abandon_rate\":0.18},{\"tag\":\"dp\",\"skill\":1415,\"attempts\":26,\"abandon_rate\":0.12},{\"tag\":\"games\",\"skill\":1418,\"attempts\":9,\"abandon_rate\":0.0},{\"tag\":\"two pointers\",\"skill\":1424,\"attempts\":20,\"abandon_rate\":0.05},{\"tag\":\"binary search\",\"skill\":1434,\"attempts\":19,\"abandon_rate\":0.11},{\"tag\":\"bitmasks\",\"skill\":1438,\"attempts\":21,\"abandon_rate\":0.05},{\"tag\":\"sortings\",\"skill\":1440,\"attempts\":42,\"abandon_rate\":0.02},{\"tag\":\"number theory\",\"skill\":1441,\"attempts\":27,\"abandon_rate\":0.0},{\"tag\":\"brute force\",\"skill\":1443,\"attempts\":54,\"abandon_rate\":0.02},{\"tag\":\"implementation\",\"skill\":1454,\"attempts\":103,\"abandon_rate\":0.02},{\"tag\":\"data structures\",\"skill\":1457,\"attempts\":22,\"abandon_rate\":0.09},{\"tag\":\"constructive algorithms\",\"skill\":1464,\"attempts\":61,\"abandon_rate\":0.03},{\"tag\":\"math\",\"skill\":1471,\"attempts\":122,\"abandon_rate\":0.05},{\"tag\":\"greedy\",\"skill\":1510,\"attempts\":130,\"abandon_rate\":0.02}]}"
+    },
+    {
+     "call": "find_problems",
+     "args": "{\"tag\": \"geometry\", \"count\": 6}"
+    },
+    {
+     "call": "find_problems",
+     "args": "{\"tag\": \"strings\", \"count\": 6}"
+    },
+    {
+     "result": "{\"difficulty\":\"harder\",\"problems\":[{\"id\":\"2072E\",\"name\":\"Do You Love Your Hero and His Two-Hit Multi-Target Attacks?\",\"rating\":1500,\"tags\":[\"binary search\",\"brute force\",\"constructive algorithms\",\"dp\",\"geometry\",\"greedy\",\"math\"],\"matched_tag\":\"geometry\",\"tag_skill\":1392,\"gap\":100,\"score\":2.88},{\"id\":\"2074E\",\"name\":\"Empty Triangle\",\"rating\":1600,\"tags\":[\"geometry\",\"interactive\",\"probabilities\"],\"matched_tag\":\"geometry\",\"tag_skill\":1392,\"gap\":200,\"score\":3.44},{\"id\":\"1468F\",\"name\":\"Full Turn\",\"rating\":1700,\"tags\":[\"geometry\",\"hashing\",\"number theory\"],\"matched_tag\":\"geometry\",\"tag_skill\":1392,\"gap\":300,\"score\":2.91},{\"id\":\"1486B\",\"name\":\"Eastern Exhibition\",\"rating\":1500,\"tags\":[\"binary search\",\"geometry\",\"shortest paths\",\"sortings\"],\"matched_tag\":\"geometry\",\"tag_skill\":1392,\"gap\":100,\"score\":2.88},{\"id\":\"1971F\",\"name\":\"Circle Perimeter\",\"rating\":1600,\"tags\":[\"binary search\",\"brute force\",\"dfs and similar\",\"geometry\",\"implementation\",\"math\"],\"matched_tag\":\"geometry\",\"tag_skill\":1392,\"gap\":200,\"score\":2.94},{\"id\":\"2122C\",\"name\":\"Manhattan Pairs\",\"rating\":1700,\"tags\":[\"constructive algorithms\",\"geometry\",\"greedy\",\"math\",\"sortings\"],\"matched_tag\":\"geometry\",\"tag_skill\":1392,\"gap\":300,\"score\":2.78}]}"
+    },
+    {
+     "result": "{\"difficulty\":\"harder\",\"problems\":[{\"id\":\"638B\",\"name\":\"Making Genome in Berland\",\"rating\":1500,\"tags\":[\"dfs and similar\",\"strings\"],\"matched_tag\":\"strings\",\"tag_skill\":1398,\"gap\":100,\"score\":2.25},{\"id\":\"2242D\",\"name\":\"Two Digit Strings\",\"rating\":1600,\"tags\":[\"dp\",\"strings\"],\"matched_tag\":\"strings\",\"tag_skill\":1398,\"gap\":200,\"score\":2.55},{\"id\":\"2181M\",\"name\":\"Medical Parity\",\"rating\":1700,\"tags\":[\"dp\",\"strings\"],\"matched_tag\":\"strings\",\"tag_skill\":1398,\"gap\":300,\"score\":2.49},{\"id\":\"1326D1\",\"name\":\"Prefix-Suffix Palindrome (Easy version)\",\"rating\":1500,\"tags\":[\"hashing\",\"string suffix structures\",\"strings\"],\"matched_tag\":\"strings\",\"tag_skill\":1398,\"gap\":100,\"score\":2.2},{\"id\":\"1045I\",\"name\":\"Palindrome Pairs\",\"rating\":1600,\"tags\":[\"hashing\",\"strings\"],\"matched_tag\":\"strings\",\"tag_skill\":1398,\"gap\":200,\"score\":2.16},{\"id\":\"2010C2\",\"name\":\"Message Transmission Error (hard version)\",\"rating\":1700,\"tags\":[\"hashing\",\"string suffix structures\",\"strings\",\"two pointers\"],\"matched_tag\":\"strings\",\"tag_skill\":1398,\"gap\":300,\"score\":2.36}]}"
+    },
+    {
+     "call": "validate_plan",
+     "args": "{\"constraints\":{},\"items\":[{\"id\":\"2072E\",\"reason\":\"A warm-up on geometry fundamentals before the stretch problem.\"},{\"id\":\"1468F\",\"reason\":\"A stretch on advanced geometry techniques after the warm-up.\"},{\"id\":\"2242D\",\"reason\":\"A step‑up on string algorithms bridging geometry and strings.\"}]}"
+    },
+    {
+     "result": "{\"ok\":true,\"errors\":[]}"
+    },
+    {
+     "text": "I’m sorry, but there are no unsolved harder‑difficulty problems at the 2400 rating that also match the required geometry warm‑up (gap +100), geometry stretch (gap +300) and strings step‑up (gap +200) gaps for this week. I can instead give you the three best available problems that satisfy the tag and gap constraints. Let me know if that works for you."
+    },
+    {
+     "user": "validate_plan returned ok, but no plan was saved. Call the save_plan tool now with the same items: a tool call, not text."
+    },
+    {
+     "call": "save_plan",
+     "args": "{\"constraints\":{},\"items\":[{\"id\":\"2072E\",\"reason\":\"A warm-up on geometry fundamentals before the stretch problem.\"},{\"id\":\"1468F\",\"reason\":\"A stretch on advanced geometry techniques after the warm-up.\"},{\"id\":\"2242D\",\"reason\":\"A step‑up on string algorithms bridging geometry and strings.\"}]}"
+    },
+    {
+     "result": "{\"plan_id\":1,\"items\":3}"
+    }
+   ]
+  },
+  {
+   "case": "running_contest",
+   "request": "Give me problems from the contest that is running right now.",
+   "hours": null,
+   "avoid": [],
+   "parsed": {
+    "intent": "plan",
+    "count": null,
+    "hours": null,
+    "focus_tags": [],
+    "avoid_tags": [],
+    "difficulty": null
+   },
+   "parse_warnings": [],
+   "parse_tokens": 1026,
+   "outcome": "saved",
+   "error": null,
+   "steps": 2,
+   "input_tokens": 7484,
+   "output_tokens": 1147,
+   "latency_ms": 7136,
+   "tools_called": [
+    "get_tag_profile",
+    "find_problems",
+    "find_problems",
+    "find_problems",
+    "find_problems",
+    "validate_plan",
+    "save_plan"
+   ],
+   "rejected_calls": 0,
+   "nudges": 0,
+   "plan": [
+    {
+     "contest_id": 2074,
+     "idx": "D",
+     "rating": 1400,
+     "tags": [
+      "brute force",
+      "data structures",
+      "geometry",
+      "implementation",
+      "two pointers"
+     ],
+     "tag": "geometry",
+     "reason": "A warm up on geometry fundamentals.",
+     "skill": 1391.611078493303,
+     "solved": false,
+     "running": false,
+     "facts": "geometry skill 1392 (level 1400) · 7 tries · 29% abandoned · 1400 = level +0",
+     "id": "2074D",
+     "gap": 0
+    },
+    {
+     "contest_id": 2190,
+     "idx": "B1",
+     "rating": 1400,
+     "tags": [
+      "combinatorics",
+      "constructive algorithms",
+      "dp",
+      "greedy",
+      "strings",
+      "two pointers"
+     ],
+     "tag": "strings",
+     "reason": "A warm up on string manipulation techniques.",
+     "skill": 1397.523306803151,
+     "solved": false,
+     "running": false,
+     "facts": "strings skill 1398 (level 1400) · 32 tries · 0% abandoned · 1400 = level +0",
+     "id": "2190B1",
+     "gap": 0
+    },
+    {
+     "contest_id": 2195,
+     "idx": "E",
+     "rating": 1500,
+     "tags": [
+      "dfs and similar",
+      "dp",
+      "trees"
+     ],
+     "tag": "trees",
+     "reason": "A step up problem to advance tree traversal skills.",
+     "skill": 1408.5127683908688,
+     "solved": false,
+     "running": false,
+     "facts": "trees skill 1409 (level 1400) · 5 tries · 20% abandoned · 1500 = level +100",
+     "id": "2195E",
+     "gap": 100
+    },
+    {
+     "contest_id": 608,
+     "idx": "B",
+     "rating": 1500,
+     "tags": [
+      "combinatorics",
+      "strings"
+     ],
+     "tag": "combinatorics",
+     "reason": "A step up problem to sharpen combinatorial reasoning.",
+     "skill": 1412.0863144712905,
+     "solved": false,
+     "running": false,
+     "facts": "combinatorics skill 1412 (level 1400) · 17 tries · 18% abandoned · 1500 = level +100",
+     "id": "608B",
+     "gap": 100
+    },
+    {
+     "contest_id": 2074,
+     "idx": "E",
+     "rating": 1600,
+     "tags": [
+      "geometry",
+      "interactive",
+      "probabilities"
+     ],
+     "tag": "geometry",
+     "reason": "A stretch problem to deepen geometry insight.",
+     "skill": 1391.611078493303,
+     "solved": false,
+     "running": false,
+     "facts": "geometry skill 1392 (level 1400) · 7 tries · 29% abandoned · 1600 = level +200",
+     "id": "2074E",
+     "gap": 200
+    }
+   ],
+   "final_text": "Saved 5 problems, easiest first, rated 1400-1600. Tags: geometry x2, strings x1, trees x1, combinatorics x1. Difficulty: normal (+0 to +200 around each tag's level).",
+   "checks": [
+    {
+     "check": "starts with get_tag_profile",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "no rejected calls",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "unsolved",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "no running contest",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "distinct reasons",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "no numbers in reasons",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "summary has no table",
+     "ok": true,
+     "detail": null
+    }
+   ],
+   "steps_log": [
+    {
+     "user": "Give me problems from the contest that is running right now.\n\nFixed constraints: problems: exactly 5; this week's tags and levels (your weakest with 5+ attempts; their problems are loaded; pick each by its gap field): geometry warm-up (gap +0) and stretch (gap +200), strings warm-up (gap +0), trees step-up (gap +100), combinatorics step-up (gap +100)"
+    },
+    {
+     "call": "get_tag_profile",
+     "args": "{}"
+    },
+    {
+     "result": "{\"rating\":1400,\"tags\":[{\"tag\":\"geometry\",\"skill\":1392,\"attempts\":7,\"abandon_rate\":0.29},{\"tag\":\"strings\",\"skill\":1398,\"attempts\":32,\"abandon_rate\":0.0},{\"tag\":\"dfs and similar\",\"skill\":1398,\"attempts\":3,\"abandon_rate\":0.33},{\"tag\":\"flows\",\"skill\":1399,\"attempts\":1,\"abandon_rate\":0.0},{\"tag\":\"probabilities\",\"skill\":1400,\"attempts\":1,\"abandon_rate\":0.0},{\"tag\":\"matrices\",\"skill\":1401,\"attempts\":1,\"abandon_rate\":0.0},{\"tag\":\"dsu\",\"skill\":1402,\"attempts\":1,\"abandon_rate\":0.0},{\"tag\":\"ternary search\",\"skill\":1404,\"attempts\":1,\"abandon_rate\":0.0},{\"tag\":\"graphs\",\"skill\":1404,\"attempts\":3,\"abandon_rate\":0.0},{\"tag\":\"shortest paths\",\"skill\":1406,\"attempts\":2,\"abandon_rate\":0.0},{\"tag\":\"hashing\",\"skill\":1407,\"attempts\":3,\"abandon_rate\":0.0},{\"tag\":\"trees\",\"skill\":1409,\"attempts\":5,\"abandon_rate\":0.2},{\"tag\":\"combinatorics\",\"skill\":1412,\"attempts\":17,\"abandon_rate\":0.18},{\"tag\":\"dp\",\"skill\":1415,\"attempts\":26,\"abandon_rate\":0.12},{\"tag\":\"games\",\"skill\":1418,\"attempts\":9,\"abandon_rate\":0.0},{\"tag\":\"two pointers\",\"skill\":1424,\"attempts\":20,\"abandon_rate\":0.05},{\"tag\":\"binary search\",\"skill\":1434,\"attempts\":19,\"abandon_rate\":0.11},{\"tag\":\"bitmasks\",\"skill\":1438,\"attempts\":21,\"abandon_rate\":0.05},{\"tag\":\"sortings\",\"skill\":1440,\"attempts\":42,\"abandon_rate\":0.02},{\"tag\":\"number theory\",\"skill\":1441,\"attempts\":27,\"abandon_rate\":0.0},{\"tag\":\"brute force\",\"skill\":1443,\"attempts\":54,\"abandon_rate\":0.02},{\"tag\":\"implementation\",\"skill\":1454,\"attempts\":103,\"abandon_rate\":0.02},{\"tag\":\"data structures\",\"skill\":1457,\"attempts\":22,\"abandon_rate\":0.09},{\"tag\":\"constructive algorithms\",\"skill\":1464,\"attempts\":61,\"abandon_rate\":0.03},{\"tag\":\"math\",\"skill\":1471,\"attempts\":122,\"abandon_rate\":0.05},{\"tag\":\"greedy\",\"skill\":1510,\"attempts\":130,\"abandon_rate\":0.02}]}"
+    },
+    {
+     "call": "find_problems",
+     "args": "{\"tag\": \"geometry\", \"count\": 6}"
+    },
+    {
+     "call": "find_problems",
+     "args": "{\"tag\": \"strings\", \"count\": 6}"
+    },
+    {
+     "call": "find_problems",
+     "args": "{\"tag\": \"trees\", \"count\": 6}"
+    },
+    {
+     "call": "find_problems",
+     "args": "{\"tag\": \"combinatorics\", \"count\": 6}"
+    },
+    {
+     "result": "{\"difficulty\":\"normal\",\"problems\":[{\"id\":\"2074D\",\"name\":\"Counting Points\",\"rating\":1400,\"tags\":[\"brute force\",\"data structures\",\"geometry\",\"implementation\",\"two pointers\"],\"matched_tag\":\"geometry\",\"tag_skill\":1392,\"gap\":0,\"score\":3.0},{\"id\":\"2072E\",\"name\":\"Do You Love Your Hero and His Two-Hit Multi-Target Attacks?\",\"rating\":1500,\"tags\":[\"binary search\",\"brute force\",\"constructive algorithms\",\"dp\",\"geometry\",\"greedy\",\"math\"],\"matched_tag\":\"geometry\",\"tag_skill\":1392,\"gap\":100,\"score\":2.88},{\"id\":\"2074E\",\"name\":\"Empty Triangle\",\"rating\":1600,\"tags\":[\"geometry\",\"interactive\",\"probabilities\"],\"matched_tag\":\"geometry\",\"tag_skill\":1392,\"gap\":200,\"score\":3.44},{\"id\":\"1648A\",\"name\":\"Weird Sum\",\"rating\":1400,\"tags\":[\"combinatorics\",\"data structures\",\"geometry\",\"math\",\"matrices\",\"sortings\"],\"matched_tag\":\"geometry\",\"tag_skill\":1392,\"gap\":0,\"score\":2.79},{\"id\":\"1486B\",\"name\":\"Eastern Exhibition\",\"rating\":1500,\"tags\":[\"binary search\",\"geometry\",\"shortest paths\",\"sortings\"],\"matched_tag\":\"geometry\",\"tag_skill\":1392,\"gap\":100,\"score\":2.88},{\"id\":\"1971F\",\"name\":\"Circle Perimeter\",\"rating\":1600,\"tags\":[\"binary search\",\"brute force\",\"dfs and similar\",\"geometry\",\"implementation\",\"math\"],\"matched_tag\":\"geometry\",\"tag_skill\":1392,\"gap\":200,\"score\":2.94}]}"
+    },
+    {
+     "result": "{\"difficulty\":\"normal\",\"problems\":[{\"id\":\"2190B1\",\"name\":\"Sub-RBS (Easy Version)\",\"rating\":1400,\"tags\":[\"combinatorics\",\"constructive algorithms\",\"dp\",\"greedy\",\"strings\",\"two pointers\"],\"matched_tag\":\"strings\",\"tag_skill\":1398,\"gap\":0,\"score\":2.19},{\"id\":\"638B\",\"name\":\"Making Genome in Berland\",\"rating\":1500,\"tags\":[\"dfs and similar\",\"strings\"],\"matched_tag\":\"strings\",\"tag_skill\":1398,\"gap\":100,\"score\":2.25},{\"id\":\"2242D\",\"name\":\"Two Digit Strings\",\"rating\":1600,\"tags\":[\"dp\",\"strings\"],\"matched_tag\":\"strings\",\"tag_skill\":1398,\"gap\":200,\"score\":2.55},{\"id\":\"2013C\",\"name\":\"Password Cracking\",\"rating\":1400,\"tags\":[\"constructive algorithms\",\"interactive\",\"strings\"],\"matched_tag\":\"strings\",\"tag_skill\":1398,\"gap\":0,\"score\":2.15},{\"id\":\"1326D1\",\"name\":\"Prefix-Suffix Palindrome (Easy version)\",\"rating\":1500,\"tags\":[\"hashing\",\"string suffix structures\",\"strings\"],\"matched_tag\":\"strings\",\"tag_skill\":1398,\"gap\":100,\"score\":2.2},{\"id\":\"1045I\",\"name\":\"Palindrome Pairs\",\"rating\":1600,\"tags\":[\"hashing\",\"strings\"],\"matched_tag\":\"strings\",\"tag_skill\":1398,\"gap\":200,\"score\":2.16}]}"
+    },
+    {
+     "result": "{\"difficulty\":\"normal\",\"problems\":[{\"id\":\"2238C\",\"name\":\"Village Guilds\",\"rating\":1400,\"tags\":[\"dfs and similar\",\"dp\",\"trees\"],\"matched_tag\":\"trees\",\"tag_skill\":1409,\"gap\":0,\"score\":3.12},{\"id\":\"2195E\",\"name\":\"Idiot First Search\",\"rating\":1500,\"tags\":[\"dfs and similar\",\"dp\",\"trees\"],\"matched_tag\":\"trees\",\"tag_skill\":1409,\"gap\":100,\"score\":3.07},{\"id\":\"2258C\",\"name\":\"Far Cities\",\"rating\":1600,\"tags\":[\"interactive\",\"trees\",\"two pointers\"],\"matched_tag\":\"trees\",\"tag_skill\":1409,\"gap\":200,\"score\":3.08},{\"id\":\"1143C\",\"name\":\"Queen\",\"rating\":1400,\"tags\":[\"dfs and similar\",\"trees\"],\"matched_tag\":\"trees\",\"tag_skill\":1409,\"gap\":0,\"score\":2.74},{\"id\":\"930A\",\"name\":\"Peculiar apple-tree\",\"rating\":1500,\"tags\":[\"dfs and similar\",\"graphs\",\"trees\"],\"matched_tag\":\"trees\",\"tag_skill\":1409,\"gap\":100,\"score\":2.71},{\"id\":\"2070D\",\"name\":\"Tree Jumps\",\"rating\":1600,\"tags\":[\"dfs and similar\",\"dp\",\"trees\"],\"matched_tag\":\"trees\",\"tag_skill\":1409,\"gap\":200,\"score\":2.95}]}"
+    },
+    {
+     "result": "{\"difficulty\":\"normal\",\"problems\":[{\"id\":\"2276D\",\"name\":\"Caveman\",\"rating\":1400,\"tags\":[\"combinatorics\",\"graphs\"],\"matched_tag\":\"combinatorics\",\"tag_skill\":1412,\"gap\":0,\"score\":3.07},{\"id\":\"608B\",\"name\":\"Hamming Distance Sum\",\"rating\":1500,\"tags\":[\"combinatorics\",\"strings\"],\"matched_tag\":\"combinatorics\",\"tag_skill\":1412,\"gap\":100,\"score\":2.64},{\"id\":\"2061C\",\"name\":\"Kevin and Puzzle\",\"rating\":1600,\"tags\":[\"2-sat\",\"combinatorics\",\"dp\"],\"matched_tag\":\"combinatorics\",\"tag_skill\":1412,\"gap\":200,\"score\":2.82},{\"id\":\"2246C\",\"name\":\"0mar and Alternating Sums\",\"rating\":1400,\"tags\":[\"combinatorics\",\"dp\",\"math\"],\"matched_tag\":\"combinatorics\",\"tag_skill\":1412,\"gap\":0,\"score\":2.66},{\"id\":\"2163C\",\"name\":\"Monopati\",\"rating\":1500,\"tags\":[\"brute force\",\"combinatorics\",\"dp\",\"math\",\"two pointers\"],\"matched_tag\":\"combinatorics\",\"tag_skill\":1412,\"gap\":100,\"score\":2.62},{\"id\":\"2241E\",\"name\":\"Fair and Square\",\"rating\":1600,\"tags\":[\"combinatorics\",\"dp\",\"graphs\",\"math\",\"number theory\",\"trees\"],\"matched_tag\":\"combinatorics\",\"tag_skill\":1412,\"gap\":200,\"score\":2.8}]}"
+    },
+    {
+     "call": "validate_plan",
+     "args": "{\"items\":[{\"id\":\"2074D\",\"reason\":\"A warm up on geometry fundamentals.\"},{\"id\":\"2074E\",\"reason\":\"A stretch problem to deepen geometry insight.\"},{\"id\":\"2190B1\",\"reason\":\"A warm up on string manipulation techniques.\"},{\"id\":\"2195E\",\"reason\":\"A step up problem to advance tree traversal skills.\"},{\"id\":\"608B\",\"reason\":\"A step up problem to sharpen combinatorial reasoning.\"}]}"
+    },
+    {
+     "result": "{\"ok\":true,\"errors\":[]}"
+    },
+    {
+     "call": "save_plan",
+     "args": "{\"items\":[{\"id\":\"2074D\",\"reason\":\"A warm up on geometry fundamentals.\"},{\"id\":\"2074E\",\"reason\":\"A stretch problem to deepen geometry insight.\"},{\"id\":\"2190B1\",\"reason\":\"A warm up on string manipulation techniques.\"},{\"id\":\"2195E\",\"reason\":\"A step up problem to advance tree traversal skills.\"},{\"id\":\"608B\",\"reason\":\"A step up problem to sharpen combinatorial reasoning.\"}]}"
+    },
+    {
+     "result": "{\"plan_id\":1,\"items\":5}"
+    }
+   ]
+  },
+  {
+   "case": "weakest_tag_question",
+   "request": "What is my weakest tag right now?",
+   "hours": null,
+   "avoid": [],
+   "parsed": {
+    "intent": "question",
+    "count": null,
+    "hours": null,
+    "focus_tags": [],
+    "avoid_tags": [],
+    "difficulty": null
+   },
+   "parse_warnings": [],
+   "parse_tokens": 1033,
+   "outcome": "no_plan",
+   "error": null,
+   "steps": 1,
+   "input_tokens": 2416,
+   "output_tokens": 414,
+   "latency_ms": 1426,
+   "tools_called": [
+    "get_tag_profile"
+   ],
+   "rejected_calls": 0,
+   "nudges": 0,
+   "plan": null,
+   "final_text": "Your weakest tag at the moment is **geometry**.",
+   "checks": [
+    {
+     "check": "no plan saved",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "names the weakest tag",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "starts with get_tag_profile",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "no rejected calls",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "unsolved",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "no running contest",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "distinct reasons",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "no numbers in reasons",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "summary has no table",
+     "ok": true,
+     "detail": null
+    }
+   ],
+   "steps_log": [
+    {
+     "user": "What is my weakest tag right now?\n\nFixed constraints: this is a question: answer it, don't build a plan"
+    },
+    {
+     "call": "get_tag_profile",
+     "args": "{}"
+    },
+    {
+     "result": "{\"rating\":1400,\"tags\":[{\"tag\":\"geometry\",\"skill\":1392,\"attempts\":7,\"abandon_rate\":0.29},{\"tag\":\"strings\",\"skill\":1398,\"attempts\":32,\"abandon_rate\":0.0},{\"tag\":\"dfs and similar\",\"skill\":1398,\"attempts\":3,\"abandon_rate\":0.33},{\"tag\":\"flows\",\"skill\":1399,\"attempts\":1,\"abandon_rate\":0.0},{\"tag\":\"probabilities\",\"skill\":1400,\"attempts\":1,\"abandon_rate\":0.0},{\"tag\":\"matrices\",\"skill\":1401,\"attempts\":1,\"abandon_rate\":0.0},{\"tag\":\"dsu\",\"skill\":1402,\"attempts\":1,\"abandon_rate\":0.0},{\"tag\":\"ternary search\",\"skill\":1404,\"attempts\":1,\"abandon_rate\":0.0},{\"tag\":\"graphs\",\"skill\":1404,\"attempts\":3,\"abandon_rate\":0.0},{\"tag\":\"shortest paths\",\"skill\":1406,\"attempts\":2,\"abandon_rate\":0.0},{\"tag\":\"hashing\",\"skill\":1407,\"attempts\":3,\"abandon_rate\":0.0},{\"tag\":\"trees\",\"skill\":1409,\"attempts\":5,\"abandon_rate\":0.2},{\"tag\":\"combinatorics\",\"skill\":1412,\"attempts\":17,\"abandon_rate\":0.18},{\"tag\":\"dp\",\"skill\":1415,\"attempts\":26,\"abandon_rate\":0.12},{\"tag\":\"games\",\"skill\":1418,\"attempts\":9,\"abandon_rate\":0.0},{\"tag\":\"two pointers\",\"skill\":1424,\"attempts\":20,\"abandon_rate\":0.05},{\"tag\":\"binary search\",\"skill\":1434,\"attempts\":19,\"abandon_rate\":0.11},{\"tag\":\"bitmasks\",\"skill\":1438,\"attempts\":21,\"abandon_rate\":0.05},{\"tag\":\"sortings\",\"skill\":1440,\"attempts\":42,\"abandon_rate\":0.02},{\"tag\":\"number theory\",\"skill\":1441,\"attempts\":27,\"abandon_rate\":0.0},{\"tag\":\"brute force\",\"skill\":1443,\"attempts\":54,\"abandon_rate\":0.02},{\"tag\":\"implementation\",\"skill\":1454,\"attempts\":103,\"abandon_rate\":0.02},{\"tag\":\"data structures\",\"skill\":1457,\"attempts\":22,\"abandon_rate\":0.09},{\"tag\":\"constructive algorithms\",\"skill\":1464,\"attempts\":61,\"abandon_rate\":0.03},{\"tag\":\"math\",\"skill\":1471,\"attempts\":122,\"abandon_rate\":0.05},{\"tag\":\"greedy\",\"skill\":1510,\"attempts\":130,\"abandon_rate\":0.02}]}"
+    },
+    {
+     "text": "Your weakest tag at the moment is **geometry**."
+    }
+   ]
+  }
+ ]
+}

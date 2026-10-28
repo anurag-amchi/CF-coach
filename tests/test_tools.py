@@ -13,7 +13,7 @@ from cf_coach.agent.tools import (
     ToolError, all_tags, backlog_out, check_tags, effective_constraints, find_problems,
     first_solves_since, get_progress_since, get_upsolve_backlog, item_facts, plan_errors,
     plan_size, plan_summary, plan_tag, problem_id, problem_out, profile_out, progress_out,
-    save_plan, saved_items, user_constraints, validate_plan, wanted_count, week_ladder, week_quota, levels_text,
+    save_plan, saved_items, user_constraints, validate_plan, wanted_count, week_ladder, week_quota, levels_text, level_roles,
 )
 from cf_coach.analytics.attempts import SubmissionRow
 from cf_coach.analytics.selection import Candidate, ProblemRow, Profile
@@ -594,6 +594,14 @@ def test_levels_text():
     assert levels_text([0]) == "+0"
     assert levels_text([200, 0]) == "+0 and +200"
     assert levels_text([0, 100, 200]) == "+0, +100 and +200"
+
+
+def test_level_roles():
+    assert level_roles([200, 0]) == "warm-up (gap +0) and stretch (gap +200)"
+    assert level_roles([100]) == "step-up (gap +100)"
+    assert level_roles([100, 300], "harder") == "warm-up (gap +100) and stretch (gap +300)"
+    assert level_roles([-100, 0, 100], "easier") == \
+        "warm-up (gap -100), step-up (gap +0) and stretch (gap +100)"
 
 
 def ladder_errors(ids, gaps):

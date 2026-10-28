@@ -148,7 +148,8 @@ def test_a_week_with_no_tags_gets_its_tags_and_searches_from_code():
     assert ctx.tag_quota == {"geometry": 2, "strings": 1, "trees": 1}   # dfs: only 3 attempts
     assert ctx.tag_gaps == {"geometry": [0, 200], "strings": [0], "trees": [100]}
     assert "this week's tags and levels (your weakest with 5+ attempts; their problems are " \
-           "loaded; level = a problem's gap): geometry +0 and +200, strings +0, trees +100" \
+           "loaded; pick each by its gap field): geometry warm-up (gap +0) and stretch " \
+           "(gap +200), strings warm-up (gap +0), trees step-up (gap +100)" \
            in result.messages[1]["content"]
     searches = result.messages[4]["tool_calls"]
     assert [(c["id"], json.loads(c["function"]["arguments"])) for c in searches] == [

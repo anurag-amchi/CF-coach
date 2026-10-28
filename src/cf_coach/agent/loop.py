@@ -40,7 +40,7 @@ from cf_coach.agent.schemas import (
     TOOL_SCHEMAS, TOOLS, PlanConstraints, TagProfileOut, ToolArgsError, parse_args,
 )
 from cf_coach.agent.tools import (
-    MIN_ATTEMPTS, MINUTES_PER_PROBLEM, TOOL_FUNCTIONS, ToolContext, ToolError, levels_text,
+    MIN_ATTEMPTS, MINUTES_PER_PROBLEM, TOOL_FUNCTIONS, ToolContext, ToolError, level_roles,
     plan_size, plan_summary, wanted_count, week_ladder, week_quota,
 )
 from cf_coach.analytics.selection import DIFFICULTY_GAPS
@@ -66,9 +66,10 @@ Rules:
   already loaded: from each tag take one problem per listed level (a problem's level is
   its gap field), and don't search again.
 - Call validate_plan before save_plan. If it returns errors, fix all of them and validate again.
-- Each `reason` is one short sentence on why this problem suits this user and request
-  (what it trains, how it fits the week). No numbers: code shows the skill, tries,
-  abandon rate and rating next to it. Every reason must be different.
+- Each `reason` is one short sentence in words only: what the problem trains and its role
+  in the week (warm-up, step-up or stretch, as the note names it). Write no digits and no
+  gap, level, rating or count: code prints those numbers next to the reason. Every reason
+  must be different. Example: "A warm-up on string hashing before the stretch problem."
 - When validate_plan returns ok, call the save_plan tool with the same items. Saving ends
   the run: code then shows the plan to the user.
 - If the message is a question (the note says so), answer it briefly in plain sentences
@@ -121,8 +122,9 @@ def user_message(request: str, fixed: PlanConstraints, difficulty: str = "normal
         notes.append(f"focus tags: {', '.join(focus_tags)}")
     if week_tags and week_gaps:
         notes.append(f"this week's tags and levels (your weakest with {MIN_ATTEMPTS}+ "
-                     "attempts; their problems are loaded; level = a problem's gap): "
-                     + ", ".join(f"{t} {levels_text(week_gaps[t])}" for t in week_tags))
+                     "attempts; their problems are loaded; pick each by its gap field): "
+                     + ", ".join(f"{t} {level_roles(week_gaps[t], difficulty)}"
+                                 for t in week_tags))
     elif week_tags:
         notes.append(f"this week's tags (your weakest with {MIN_ATTEMPTS}+ attempts; their "
                      "problems are loaded): "
