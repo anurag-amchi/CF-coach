@@ -84,7 +84,7 @@ SAVE_NUDGE = ("validate_plan returned ok, but no plan was saved. Call the save_p
 PROFILE_CALL_ID = "code-get_tag_profile"     # the call code makes before the first step
 SEARCH_CALL_ID = "code-find_problems"        # + "-1", "-2"...: the week's searches (#43)
 SEARCH_PER_LEVEL = 2                         # problems per level in each week search (#44)
-MAX_WEEK_SEARCHES = 10                       # tags tried for the week, joined or skipped (#49)
+MAX_WEEK_SEARCHES = 15                       # tags tried for the week, joined or skipped (#49, #50)
 
 
 def allowed_tools(intent: str, tools: dict[str, Callable]) -> dict[str, Callable]:

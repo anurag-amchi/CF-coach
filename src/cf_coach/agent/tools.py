@@ -141,6 +141,11 @@ class ToolContext:
     tag_gaps: dict[str, list[int]] = field(default_factory=dict)
     # weak tags left out of the week: their search had no problem at some level (#49)
     week_skipped: list[str] = field(default_factory=list)
+    # Loaded on first use, then reused for the rest of the run (#50). Nothing in a run
+    # changes them: the sync happens before it, and save_plan writes only to plans.
+    _problems: list[ProblemRow] | None = field(default=None, repr=False)
+    _solved: set[tuple[int, str]] | None = field(default=None, repr=False)
+    _profile: Profile | None = field(default=None, repr=False)
 
     def plan_focus(self) -> list[str]:
         """The tags a plan item must practise: the asked ones, else the week's picked ones."""
@@ -151,6 +156,24 @@ class ToolContext:
         if self.running_contests is None:
             self.running_contests = running_contest_ids()
         return self.running_contests
+
+    def problems(self) -> list[ProblemRow]:
+        """The whole problemset (~11k rows), read once per run."""
+        if self._problems is None:
+            self._problems = load_problems(self.session)
+        return self._problems
+
+    def solved(self) -> set[tuple[int, str]]:
+        if self._solved is None:
+            self._solved = load_solved(self.session, self.handle)
+        return self._solved
+
+    def profile(self) -> Profile:
+        """Skills + signals, built from all the user's submissions: the slow part for big
+        histories (rainboy: 13.8k submissions, ~1 s), so built once per run."""
+        if self._profile is None:
+            self._profile = build_profile(self.session, self.handle, self.now)
+        return self._profile
 
     def offer(self, contest_id: int, idx: str, tag: str | None) -> None:
         """Remember a returned problem. A find_problems tag is never replaced by None:
@@ -224,13 +247,13 @@ def taken_by_other_tags(ctx: ToolContext, tag: str | None) -> set[tuple[int, str
 
 
 def find_problems(ctx: ToolContext, args: FindProblemsInput) -> FindProblemsOut:
-    problems = load_problems(ctx.session)
+    problems = ctx.problems()
     check_tags(([args.tag] if args.tag else []) + args.avoid_tags, all_tags(problems))
     candidates = select_candidates(
         problems,
         # skipped like solved ones: already offered under another tag
-        load_solved(ctx.session, ctx.handle) | taken_by_other_tags(ctx, args.tag),
-        build_profile(ctx.session, ctx.handle, ctx.now),
+        ctx.solved() | taken_by_other_tags(ctx, args.tag),
+        ctx.profile(),
         ctx.get_running_contests(),
         STRATEGIES[args.strategy](),
         tag=args.tag,
@@ -607,10 +630,9 @@ def check_plan(ctx: ToolContext, items: list[PlanItem],
 
     Returns (errors, the items as they would be saved); the items are [] when there are errors.
     """
-    problems = {(p.contest_id, p.idx): p for p in load_problems(ctx.session)}
-    profile = build_profile(ctx.session, ctx.handle, ctx.now)
-    errors = plan_errors(items, constraints, ctx.offered, problems,
-                         load_solved(ctx.session, ctx.handle), profile,
+    problems = {(p.contest_id, p.idx): p for p in ctx.problems()}
+    profile = ctx.profile()
+    errors = plan_errors(items, constraints, ctx.offered, problems, ctx.solved(), profile,
                          ctx.get_running_contests(), ctx.difficulty, ctx.count, ctx.focus_tags,
                          ctx.tag_quota, ctx.tag_gaps)
     return errors, [] if errors else saved_items(items, ctx.offered, problems, profile,

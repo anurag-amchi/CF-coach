@@ -307,6 +307,25 @@ def test_tools_remember_only_what_they_returned(monkeypatch):
                            "2000B": Offer(2000, "B", None), "2000C": Offer(2000, "C", None)}
 
 
+def test_the_run_loads_problems_solved_and_profile_once(monkeypatch):
+    """Many searches + validations in one run: each loader runs once (#50)."""
+    fake_plan_data(monkeypatch)
+    calls = {"problems": 0, "solved": 0, "profile": 0}
+    for name, key in [("load_problems", "problems"), ("load_solved", "solved"),
+                      ("build_profile", "profile")]:
+        real = getattr(tools, name)
+
+        def counted(*args, _real=real, _key=key):
+            calls[_key] += 1
+            return _real(*args)
+        monkeypatch.setattr(tools, name, counted)
+    ctx = ToolContext("me", session=None, now=TODAY, running_contests=set())
+    for tag in ["dp", "trees", "dp"]:
+        find_problems(ctx, FindProblemsInput(tag=tag))
+    tools.check_plan(ctx, [], PlanConstraints())
+    assert calls == {"problems": 1, "solved": 1, "profile": 1}
+
+
 def test_save_refuses_an_invalid_plan_without_touching_the_db(monkeypatch):
     monkeypatch.setattr(tools, "check_plan",
                         lambda ctx, items, c: (["item 1 (2000C): too easy"], []))
