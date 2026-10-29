@@ -4,7 +4,8 @@ A problem is a candidate for one of its tags when:
 - it is rated, not solved yet, and not from a contest that is still running (guardrail),
 - it has none of the excluded tags,
 - its rating is in the tag's band for the difficulty (band_for): the skill rounded to the
-  nearest 100, plus the difficulty's gaps. Normal for dp 1415: level 1400 to +200 = 1400-1600.
+  nearest 100 (never below 800), plus the difficulty's gaps. Normal for dp 1415: level 1400
+  to +200 = 1400-1600.
 
 How candidates are ranked is a Strategy: an object with a score() method. The caller
 picks one (WeaknessFirstStrategy, ContestPrepStrategy) and select_candidates() works
@@ -45,16 +46,26 @@ DIFFICULTY_GAPS: dict[str, tuple[int, int]] = {
 }
 
 
+MIN_PROBLEM_RATING = 800      # CF's easiest problems; nothing is rated lower
+
+
 def round_skill(skill: float) -> int:
-    """To the nearest 100, halves up: 1415 -> 1400, 1450 -> 1500 (CF ratings are 100 steps)."""
-    return int((skill + 50) // 100 * 100)
+    """A tag's level: the skill to the nearest 100, halves up, never below 800.
+
+    1415 -> 1400, 1450 -> 1500 (CF ratings are 100 steps). 407 -> 800: a level below the
+    easiest problem would give a band with no problems in it (#55).
+    """
+    return max(int((skill + 50) // 100 * 100), MIN_PROBLEM_RATING)
 
 
 def band_for(skill: float, difficulty: Difficulty = "normal") -> tuple[int, int]:
-    """The ratings to practise for this skill: 1415, normal -> (1400, 1600). Both ends inclusive."""
+    """The ratings to practise for this skill: 1415, normal -> (1400, 1600). Both ends inclusive.
+
+    The low end never goes under 800: at level 800, easier is 800-900, not 700-900.
+    """
     level = round_skill(skill)
     lo, hi = DIFFICULTY_GAPS[difficulty]
-    return level + lo, level + hi
+    return max(level + lo, MIN_PROBLEM_RATING), level + hi
 
 
 @dataclass(frozen=True)

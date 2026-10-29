@@ -508,6 +508,13 @@ def test_facts_for_a_tried_tag():
         "dp skill 1415 (level 1400) · 26 tries · 12% abandoned · 1500 = level +100")
 
 
+def test_facts_say_when_the_level_is_the_800_floor():
+    profile = Profile(400, {"greedy": 424.2}, {"greedy": TagSignals(attempts=2, given_up=0)})
+    assert item_facts("greedy", 900, profile, from_backlog=False) == (
+        "greedy skill 424 (level 800 = the easiest CF rating) · 2 tries · 0% abandoned"
+        " · 900 = level +100")
+
+
 def test_facts_for_an_untried_tag_and_a_backlog_problem():
     profile = Profile(1450, {})                      # rating 1450 rounds to level 1500
     assert item_facts("geometry", 1500, profile, from_backlog=True) == (

@@ -33,6 +33,22 @@ def test_bands_by_difficulty():
     assert band_for(1450) == (1500, 1700)              # 1450 rounds up to 1500
 
 
+def test_level_never_goes_below_the_easiest_cf_rating():
+    # rehuMachli (rating 400, skill ~407): a 400-600 band held no problems at all (#55)
+    assert [round_skill(s) for s in (407, 0, 749, 750, 851)] == [800, 800, 800, 800, 900]
+    assert band_for(407) == (800, 1000)
+    assert band_for(407, "harder") == (900, 1100)
+    assert band_for(407, "easier") == (800, 900)       # not 700-900: nothing is rated 700
+
+
+def test_a_beginner_gets_800_problems_at_gap_0():
+    beginner = Profile(rating=400, skills={"dp": 407.0}, newest_contest_id=2000)
+    problems = [prob(1990, "A", 800), prob(1990, "B", 1000), prob(1990, "C", 1100)]
+    cands = select_candidates(problems, set(), beginner, set(), WeaknessFirstStrategy())
+    assert sorted(keys(cands)) == ["1990A", "1990B"]
+    assert sorted(c.gap for c in cands) == [0, 200]    # 800 is the warm-up, not "+400"
+
+
 def test_normal_band_is_level_to_plus_200():
     problems = [prob(1990, "A", 1300), prob(1990, "B", 1400), prob(1990, "C", 1600),
                 prob(1990, "D", 1700)]

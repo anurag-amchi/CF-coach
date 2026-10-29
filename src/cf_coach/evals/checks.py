@@ -18,8 +18,9 @@ REJECTED_PREFIX = "Your last tool call was rejected"
 
 
 def round_skill(skill: float) -> int:
-    """To the nearest 100, halves up: 1415 -> 1400, 1450 -> 1500 (CF ratings are 100 steps)."""
-    return int((skill + 50) // 100 * 100)
+    """To the nearest 100, halves up, never below 800 (CF's easiest problems):
+    1415 -> 1400, 1450 -> 1500, 407 -> 800."""
+    return max(int((skill + 50) // 100 * 100), 800)
 
 
 @dataclass(frozen=True)

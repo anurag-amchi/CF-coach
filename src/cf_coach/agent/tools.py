@@ -569,13 +569,14 @@ def item_facts(tag: str, rating: int, profile: Profile, from_backlog: bool) -> s
         dp skill 1415 (level 1400) · 26 tries · 12% abandoned · 1500 = level +100
     """
     level = round_skill(tag_skill(profile, tag))
+    floor = " = the easiest CF rating" if level > tag_skill(profile, tag) + 50 else ""
     if tag in profile.skills:
-        head = f"{tag} skill {round(profile.skills[tag])} (level {level})"
+        head = f"{tag} skill {round(profile.skills[tag])} (level {level}{floor})"
         s = profile.signals.get(tag)
         if s is not None and s.attempts:
             head += f" · {s.attempts} tries · {round(s.abandon_rate * 100)}% abandoned"
     else:
-        head = f"{tag} untried (level {level}, from your rating)"
+        head = f"{tag} untried (level {level}{floor}, from your rating)"
     facts = f"{head} · {rating} = level {rating - level:+d}"
     return facts + " · in your upsolve backlog" if from_backlog else facts
 

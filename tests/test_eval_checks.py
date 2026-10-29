@@ -18,6 +18,7 @@ def view(plan=None, outcome="saved", text="Done.", **kw):
 
 def test_round_skill_is_nearest_hundred_halves_up():
     assert [round_skill(s) for s in (1415, 1449.9, 1450, 1392, 1510)] == [1400, 1400, 1500, 1400, 1500]
+    assert [round_skill(s) for s in (407, 749)] == [800, 800]      # floor: CF's easiest (#55)
 
 
 def test_gap_is_from_the_rounded_skill():
