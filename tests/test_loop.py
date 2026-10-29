@@ -13,6 +13,7 @@ from cf_coach.agent.schemas import (
 from cf_coach.agent.tools import (
     SavedConstraints, SavedItem, ToolContext, ToolError, plan_summary,
 )
+from cf_coach.analytics.selection import ProblemRow, Profile
 
 NOW = datetime(2026, 10, 25, 12, tzinfo=timezone.utc)
 
@@ -136,10 +137,17 @@ def search_returning(per_tag):
     return search
 
 
-def run_week(per_tag, count=4, focus=()):
-    llm = ScriptedLLM([scripted_reply("ok")])
+def week_ctx(count=4, focus=(), problems=()):
+    """No database: the problemset (for untried tags, #56), solved set and profile are given."""
     ctx = ToolContext("me", session=None, now=NOW, count=count, focus_tags=list(focus))
-    tools = {**FAKE_TOOLS, "get_tag_profile": week_profile, "find_problems": search_returning(per_tag)}
+    ctx._problems, ctx._solved, ctx._profile = list(problems), set(), Profile(1400, {})
+    return ctx
+
+
+def run_week(per_tag, count=4, focus=(), profile=week_profile, problems=()):
+    llm = ScriptedLLM([scripted_reply("ok")])
+    ctx = week_ctx(count, focus, problems)
+    tools = {**FAKE_TOOLS, "get_tag_profile": profile, "find_problems": search_returning(per_tag)}
     return run_agent(llm, ctx, "plan my week", tools=tools), ctx, llm
 
 
@@ -167,7 +175,7 @@ def test_a_tag_that_cant_fill_the_band_is_skipped_for_the_next_weakest():
         ctx.offer(9000, args.tag[0].upper(), args.tag)          # as the real tool records it
         return search_returning(per_tag)(ctx, args)
     llm = ScriptedLLM([scripted_reply("ok")])
-    ctx = ToolContext("me", session=None, now=NOW, count=4)
+    ctx = week_ctx(count=4)
     tools = {**FAKE_TOOLS, "get_tag_profile": week_profile, "find_problems": search}
     result = run_agent(llm, ctx, "plan my week", tools=tools)
     assert ctx.week_skipped == ["geometry"]
@@ -182,6 +190,47 @@ def test_too_few_tags_that_fill_the_band_means_no_week_rules():
     assert ctx.tag_quota == {} and ctx.tag_gaps == {}
     assert ctx.week_skipped == ["geometry", "strings", "trees", "dp"]
     assert "this week's tags" not in result.messages[1]["content"]
+
+
+# ---------- a starter week: too few measured tags -> new tags fill it (decision #56) ----------
+
+UNTRIED = [ProblemRow(1, "A", "x", 1400, ("math", "implementation")),   # rating 1400: band
+           ProblemRow(1, "B", "x", 1500, ("math",)),                     # 1400-1600
+           ProblemRow(1, "C", "x", 1600, ("bitmasks", "dfs and similar"))]  # dfs: tried
+
+
+def two_measured(ctx, args):
+    rows = [("dfs and similar", 3), ("geometry", 7), ("trees", 5)]
+    return TagProfileOut(rating=1400, tags=[
+        TagSkillOut(tag=t, skill=1400, attempts=a, abandon_rate=0.0) for t, a in rows])
+
+
+def test_too_few_measured_tags_are_topped_up_with_new_tags():
+    result, ctx, _ = run_week(per_tag=3, count=5, profile=two_measured, problems=UNTRIED)
+    assert ctx.week_new == ["math", "bitmasks", "implementation"]   # most problems first
+    assert ctx.tag_quota == {"math": 1, "bitmasks": 1, "implementation": 1, "geometry": 1,
+                             "trees": 1}                            # 1 each, new ones first
+    assert ctx.tag_gaps == {"math": [0], "bitmasks": [0], "implementation": [100],
+                            "geometry": [100], "trees": [200]}
+    note = result.messages[1]["content"]
+    assert "(new) = a tag you have never tried" in note
+    assert "math (new) warm-up (gap +0)" in note and "trees stretch (gap +200)" in note
+    assert "dfs" not in str(ctx.tag_quota)                          # 3 attempts: not new, not measured
+
+
+def test_a_user_with_no_measured_tags_gets_a_week_of_new_tags():
+    def nothing_measured(ctx, args):
+        return TagProfileOut(rating=1400, tags=[
+            TagSkillOut(tag="dfs and similar", skill=1400, attempts=2, abandon_rate=0.0)])
+    result, ctx, _ = run_week(per_tag=3, count=3, profile=nothing_measured, problems=UNTRIED)
+    assert "the others" not in result.messages[1]["content"]       # every tag is new
+    assert ctx.tag_quota == {"math": 1, "bitmasks": 1, "implementation": 1}
+    assert ctx.tag_gaps == {"math": [0], "bitmasks": [100], "implementation": [200]}
+
+
+def test_not_enough_new_tags_either_means_no_week_rules():
+    _, ctx, _ = run_week(per_tag=3, count=5, profile=two_measured, problems=UNTRIED[:1])
+    assert ctx.tag_quota == {} and ctx.week_new == []      # math + implementation: 2 of 3
 
 
 def test_focus_tags_or_questions_get_no_week_tags():

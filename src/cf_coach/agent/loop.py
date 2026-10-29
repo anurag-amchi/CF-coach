@@ -37,11 +37,11 @@ from sqlalchemy.orm import Session
 
 from cf_coach.agent.llm import LLM, ToolCall, ToolCallRejected, assistant_message
 from cf_coach.agent.schemas import (
-    TOOL_SCHEMAS, TOOLS, PlanConstraints, TagProfileOut, ToolArgsError, parse_args,
+    TOOL_SCHEMAS, TOOLS, PlanConstraints, TagProfileOut, TagSkillOut, ToolArgsError, parse_args,
 )
 from cf_coach.agent.tools import (
     MIN_ATTEMPTS, MINUTES_PER_PROBLEM, TOOL_FUNCTIONS, ToolContext, ToolError, level_roles,
-    plan_size, plan_summary, wanted_count, week_ladder, week_quota,
+    plan_size, plan_summary, untried_tags, wanted_count, week_ladder, week_quota,
 )
 from cf_coach.analytics.selection import DIFFICULTY_GAPS
 from cf_coach.db.models import AgentRun
@@ -112,7 +112,8 @@ class RunResult:
 def user_message(request: str, fixed: PlanConstraints, difficulty: str = "normal",
                  count: int | None = None, focus_tags: list[str] = (),
                  intent: str = "plan", week_tags: dict[str, int] | None = None,
-                 week_gaps: dict[str, list[int]] | None = None) -> str:
+                 week_gaps: dict[str, list[int]] | None = None,
+                 week_new: list[str] = ()) -> str:
     """The request, plus the user's fixed constraints, so the model plans inside them."""
     notes = []
     if intent == "question":
@@ -122,9 +123,17 @@ def user_message(request: str, fixed: PlanConstraints, difficulty: str = "normal
     if focus_tags:
         notes.append(f"focus tags: {', '.join(focus_tags)}")
     if week_tags and week_gaps:
-        notes.append(f"this week's tags and levels (your weakest with {MIN_ATTEMPTS}+ "
-                     "attempts; their problems are loaded; pick each by its gap field): "
-                     + ", ".join(f"{t} {level_roles(week_gaps[t], difficulty)}"
+        weakest = f"your weakest with {MIN_ATTEMPTS}+ attempts"
+        if not week_new:
+            source = weakest
+        elif set(week_tags) <= set(week_new):         # every tag is new
+            source = "(new) = a tag you have never tried, at your rating's level"
+        else:
+            source = f"(new) = a tag you have never tried, at your rating's level; the others are {weakest}"
+        notes.append(f"this week's tags and levels ({source}; their problems are loaded; "
+                     "pick each by its gap field): "
+                     + ", ".join(f"{t}{' (new)' if t in week_new else ''} "
+                                 f"{level_roles(week_gaps[t], difficulty)}"
                                  for t in week_tags))
     elif week_tags:
         notes.append(f"this week's tags (your weakest with {MIN_ATTEMPTS}+ attempts; their "
@@ -169,45 +178,73 @@ def pick_week(ctx: ToolContext, profile_json: str,
     it is skipped (its offers are forgotten) and the next weakest is tried, at most
     MAX_WEEK_SEARCHES searches. So whatever level week_ladder gives a tag, it exists.
 
-    Sets ctx.tag_quota, ctx.tag_gaps and ctx.week_skipped. Returns the calls and results
-    of the tags that joined, for the messages. If the profile can't be read or too few tags
-    fill the band, no rule is set and the model plans as before (with what was found).
+    Too few measured tags fill the band (a new user has 0-3) -> a starter week (#56): each
+    measured tag that joined gets 1 problem, and every other slot gets a tag the user has
+    never tried (untried_tags), 1 problem each, searched the same way. New tags come first
+    in the ladder, so a first look at a topic is a warm-up.
+
+    Sets ctx.tag_quota, ctx.tag_gaps, ctx.week_skipped and ctx.week_new. Returns the calls
+    and results of the tags that joined, for the messages. If the profile can't be read or
+    even new tags can't fill the week, no rule is set and the model plans freely.
     """
     try:
         tags = TagProfileOut.model_validate_json(profile_json).tags
     except ValueError:                            # the profile call returned an error
         return [], []
     size = plan_size(ctx.count, ctx.user_constraints.hours) or 0
-    avoid = ctx.user_constraints.avoid_tags
-    measured = [t for t in tags if t.attempts >= MIN_ATTEMPTS and t.tag not in avoid]
-    need = len(week_quota(measured, size))        # how many tags the week uses
-    if need == 0:
+    if size < 1:
         return [], []
+    avoid = ctx.user_constraints.avoid_tags
+    measured = [t.tag for t in tags if t.attempts >= MIN_ATTEMPTS and t.tag not in avoid]
+    need = 1 if size == 1 else size - 1           # tags a normal week uses (week_quota)
     lo, hi = DIFFICULTY_GAPS[ctx.difficulty]
     levels = set(range(lo, hi + 1, 100))
     per_tag = SEARCH_PER_LEVEL * len(levels)
-    joined, calls, results = [], [], []
-    for t in measured[:MAX_WEEK_SEARCHES]:
-        call = ToolCall(f"{SEARCH_CALL_ID}-{len(calls) + 1}", "find_problems",
-                        json.dumps({"tag": t.tag, "count": per_tag}))
-        before = set(ctx.offered)
-        content = run_tool(call.name, call.arguments, ctx, tools)
-        found = json.loads(content).get("problems", [])
-        if levels <= {p["gap"] for p in found}:
-            joined.append(t)
-            calls.append(call)
-            results.append(content)
-            if len(joined) == need:
+    calls, results = [], []
+    searches = 0
+
+    def join(candidates: list[str], want: int) -> list[str]:
+        """Search each tag in turn; keep those with a problem at every level, up to `want`."""
+        nonlocal searches
+        joined = []
+        for tag in candidates:
+            if len(joined) == want or searches == MAX_WEEK_SEARCHES:
                 break
-        else:                       # can't fill the band: not shown, not plannable
-            for pid in set(ctx.offered) - before:
-                del ctx.offered[pid]
-            ctx.week_skipped.append(t.tag)
-    if len(joined) < need:          # too few tags fill the band: no week rules
-        return calls, results
-    ctx.tag_quota = week_quota(joined, size)
+            searches += 1
+            call = ToolCall(f"{SEARCH_CALL_ID}-{len(calls) + 1}", "find_problems",
+                            json.dumps({"tag": tag, "count": per_tag}))
+            before = set(ctx.offered)
+            content = run_tool(call.name, call.arguments, ctx, tools)
+            found = json.loads(content).get("problems", [])
+            if levels <= {p["gap"] for p in found}:
+                joined.append(tag)
+                calls.append(call)
+                results.append(content)
+            else:                   # can't fill the band: not shown, not plannable
+                for pid in set(ctx.offered) - before:
+                    del ctx.offered[pid]
+                ctx.week_skipped.append(tag)
+        return joined
+
+    old = join(measured, need)
+    if len(old) == need:                          # a normal week (#43)
+        ctx.tag_quota = week_quota(tags_named(tags, old), size)
+    else:                                         # a starter week (#56)
+        tried = {t.tag for t in tags}
+        new = join(untried_tags(ctx.problems(), ctx.solved(), tried, ctx.profile().rating,
+                                ctx.difficulty, avoid), size - len(old))
+        if len(old) + len(new) < size:            # even new tags can't fill it: no rules
+            return calls, results
+        ctx.week_new = new
+        ctx.tag_quota = {t: 1 for t in new + old}
     ctx.tag_gaps = week_ladder(ctx.tag_quota, ctx.difficulty)
     return calls, results
+
+
+def tags_named(tags: list[TagSkillOut], names: list[str]) -> list[TagSkillOut]:
+    """The profile rows for these tag names, in the names' order (weakest first)."""
+    by_name = {t.tag: t for t in tags}
+    return [by_name[n] for n in names]
 
 
 def run_agent(llm: LLM, ctx: ToolContext, request: str, max_steps: int = MAX_STEPS,
@@ -245,7 +282,7 @@ def run_agent(llm: LLM, ctx: ToolContext, request: str, max_steps: int = MAX_STE
                 if ctx.tag_quota:
                     messages[1]["content"] = user_message(
                         request, ctx.user_constraints, ctx.difficulty, ctx.count,
-                        ctx.focus_tags, ctx.intent, ctx.tag_quota, ctx.tag_gaps)
+                        ctx.focus_tags, ctx.intent, ctx.tag_quota, ctx.tag_gaps, ctx.week_new)
             add(assistant_message(None, [call]))
             add({"role": "tool", "tool_call_id": call.id, "content": profile_json})
             if searches:

@@ -106,9 +106,9 @@ def run_case(case: Case, llm: LLM, session: Session, handle: str, now: datetime,
         "output_tokens": result.output_tokens, "latency_ms": result.latency_ms,
         "tools_called": view.tools_called, "rejected_calls": view.rejected_calls,
         "nudges": result.nudges,
-        # what code fixed for a no-tag week (#43, #44); empty = the rules were off
+        # what code fixed for a no-tag week (#43, #44, #56); empty = the rules were off
         "week_rules": {"quota": ctx.tag_quota, "levels": ctx.tag_gaps,
-                       "skipped": ctx.week_skipped},
+                       "skipped": ctx.week_skipped, "new": ctx.week_new},
         "plan": None if view.plan is None else [
             {**asdict(x), "id": x.id, "gap": x.gap} for x in view.plan],
         "final_text": result.final_text,

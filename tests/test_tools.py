@@ -13,7 +13,7 @@ from cf_coach.agent.tools import (
     ToolError, all_tags, backlog_out, check_tags, effective_constraints, find_problems,
     first_solves_since, get_progress_since, get_upsolve_backlog, item_facts, plan_errors,
     plan_size, plan_summary, plan_tag, problem_id, problem_out, profile_out, progress_out,
-    save_plan, saved_items, user_constraints, validate_plan, wanted_count, week_ladder, week_quota, levels_text, level_roles,
+    save_plan, saved_items, user_constraints, validate_plan, wanted_count, week_ladder, week_quota, levels_text, level_roles, untried_tags,
 )
 from cf_coach.analytics.attempts import SubmissionRow
 from cf_coach.analytics.selection import Candidate, ProblemRow, Profile
@@ -149,6 +149,7 @@ def plan_setup():
         (2000, "D"): ProblemRow(2000, "D", "unrated", None, ("dp",)),
         (2100, "A"): ProblemRow(2100, "A", "live", 1600, ("dp",)),
         (2000, "E"): ProblemRow(2000, "E", "solved", 1600, ("dp",)),
+        (2000, "S"): ProblemRow(2000, "S", "april fools", 1500, ("dp", "*special")),
     }
     return problems, {(2000, "E")}, Profile(1400, {"dp": 1400.0}), {2100}
 
@@ -172,6 +173,11 @@ def errors_for(items, constraints=None, offered=None):
 
 def test_valid_plan_has_no_errors():
     assert errors_for([item("2000A")]) == []
+
+
+def test_a_special_round_problem_is_never_planned():
+    assert errors_for([item("2000S")]) == [
+        "item 1 (2000S): from a special round (*special); never plan these"]
 
 
 def test_ids_forgive_case_and_spaces():
@@ -305,6 +311,17 @@ def test_tools_remember_only_what_they_returned(monkeypatch):
     get_upsolve_backlog(ctx, GetUpsolveBacklogInput(limit=2))       # 2000D is not shown
     assert ctx.offered == {"2000A": Offer(2000, "A", "dp"),
                            "2000B": Offer(2000, "B", None), "2000C": Offer(2000, "C", None)}
+
+
+def test_the_backlog_tool_drops_special_round_problems(monkeypatch):
+    monkeypatch.setattr(tools, "load_rows", lambda session, handle: [])
+    monkeypatch.setattr(tools, "upsolve_backlog", lambda rows: [
+        BacklogItem(2000, "B", 1600, ("dp", "*special"), NOW),
+        BacklogItem(2000, "C", 1600, ("dp",), NOW)])
+    ctx = ToolContext("me", session=None, now=TODAY)
+    out = get_upsolve_backlog(ctx, GetUpsolveBacklogInput(limit=5))
+    assert [i.id for i in out.items] == ["2000C"] and out.total == 1
+    assert list(ctx.offered) == ["2000C"]
 
 
 def test_the_run_loads_problems_solved_and_profile_once(monkeypatch):
@@ -629,6 +646,21 @@ def test_find_problems_skips_problems_offered_under_another_tag(monkeypatch):
 
 
 # ---------- the week's levels: a ladder from easy to hard (decision #44) ----------
+
+def test_untried_tags_are_ranked_by_problems_in_the_rating_band():
+    problems = [ProblemRow(1, "A", "x", 800, ("math", "greedy")),
+                ProblemRow(1, "B", "x", 900, ("math",)),
+                ProblemRow(1, "S", "x", 800, ("geometry", "*special")),   # never counted (#57)
+                ProblemRow(1, "C", "x", 1000, ("strings",)),
+                ProblemRow(1, "D", "x", 1100, ("dp",)),                 # above 800-1000
+                ProblemRow(1, "E", "x", None, ("dp",)),                 # unrated
+                ProblemRow(1, "F", "x", 900, ("sortings",))]            # solved
+    # rating 400 -> level 800 (#55); greedy tried; strings avoided
+    assert untried_tags(problems, {(1, "F")}, {"greedy"}, 400, avoid=["strings"]) == ["math"]
+    assert untried_tags(problems, set(), set(), 400) == ["math", "greedy", "sortings", "strings"]
+    assert untried_tags(problems, set(), set(), 400, "harder") == ["dp", "math", "sortings",
+                                                                   "strings"]   # 900-1100
+
 
 def test_week_ladder_spreads_the_levels_and_the_weakest_tag_climbs():
     quota = {"geometry": 2, "strings": 1, "trees": 1, "combinatorics": 1}

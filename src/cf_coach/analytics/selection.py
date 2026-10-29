@@ -35,7 +35,14 @@ from cf_coach.db.models import Problem, Submission
 from cf_coach.db.session import get_engine
 
 RECENCY_WINDOW = 500           # contest ids; ~3.5 years of CF rounds
-IGNORED_TAGS = {"*special"}    # a CF marker (April Fools etc.), not a topic
+SPECIAL_TAG = "*special"       # CF's marker for unusual rounds (April Fools, one-language...)
+IGNORED_TAGS = {SPECIAL_TAG}   # a marker, not a topic
+
+
+def is_special(tags) -> bool:
+    """A problem from an unusual round: never recommended (#57). Its rules can differ (a
+    joke statement, one allowed language), so its rating says little about practice."""
+    return SPECIAL_TAG in tags
 
 Difficulty = Literal["easier", "normal", "harder"]
 # Rating minus the rounded skill. CF ratings are multiples of 100, so each band is 3 levels.
@@ -192,7 +199,7 @@ def select_candidates(
         key = (p.contest_id, p.idx)
         if p.rating is None or key in solved or p.contest_id in running_contests:
             continue
-        if excluded_tags & set(p.tags):
+        if excluded_tags & set(p.tags) or is_special(p.tags):
             continue
         for t in p.tags:
             if t in IGNORED_TAGS or (tag is not None and t != tag):

@@ -46,7 +46,7 @@ from cf_coach.analytics.attempts import SubmissionRow, build_attempts, load_rows
 from cf_coach.analytics.elo import tag_skills
 from cf_coach.analytics.selection import (
     DIFFICULTY_GAPS, IGNORED_TAGS, Candidate, ContestPrepStrategy, Difficulty, ProblemRow, Profile,
-    WeaknessFirstStrategy, band_for, build_profile, round_skill,
+    WeaknessFirstStrategy, band_for, build_profile, is_special, round_skill,
     load_problems, load_solved, running_contest_ids, select_candidates,
 )
 from cf_coach.analytics.signals import BacklogItem, upsolve_backlog
@@ -141,6 +141,8 @@ class ToolContext:
     tag_gaps: dict[str, list[int]] = field(default_factory=dict)
     # weak tags left out of the week: their search had no problem at some level (#49)
     week_skipped: list[str] = field(default_factory=list)
+    # the week's tags the user has never tried, when too few measured tags fill it (#56)
+    week_new: list[str] = field(default_factory=list)
     # Loaded on first use, then reused for the rest of the run (#50). Nothing in a run
     # changes them: the sync happens before it, and save_plan writes only to plans.
     _problems: list[ProblemRow] | None = field(default=None, repr=False)
@@ -209,7 +211,8 @@ def backlog_out(items: list[BacklogItem], limit: int) -> BacklogOut:
 
 
 def get_upsolve_backlog(ctx: ToolContext, args: GetUpsolveBacklogInput) -> BacklogOut:
-    items = upsolve_backlog(load_rows(ctx.session, ctx.handle))
+    items = [b for b in upsolve_backlog(load_rows(ctx.session, ctx.handle))
+             if not is_special(b.tags)]    # never recommended (#57)
     for b in items[:args.limit]:           # only the ones the model is shown
         ctx.offer(b.contest_id, b.idx, None)
     return backlog_out(items, args.limit)
@@ -406,6 +409,27 @@ def week_quota(tags: list[TagSkillOut], n: int, avoid: list[str] = ()) -> dict[s
     return {measured[0]: 2} | {t: 1 for t in measured[1:n - 1]}
 
 
+def untried_tags(problems: list[ProblemRow], solved: set[tuple[int, str]], tried: set[str],
+                 rating: int, difficulty: Difficulty = "normal",
+                 avoid: list[str] = ()) -> list[str]:
+    """Tags the user has never attempted, most unsolved problems in their band first (#56).
+
+    An untried tag's level comes from the CF rating (tag_skill), so every one shares one
+    band: 400 -> 800-1000. The most common tags at that level come first (for a beginner:
+    math, greedy, implementation...), so a new tag has problems to fill the week.
+    """
+    lo, hi = band_for(rating, difficulty)
+    counts: dict[str, int] = {}
+    for p in problems:
+        if (p.rating is None or not lo <= p.rating <= hi or (p.contest_id, p.idx) in solved
+                or is_special(p.tags)):
+            continue
+        for t in topic_tags(p.tags):
+            if t not in tried and t not in avoid:
+                counts[t] = counts.get(t, 0) + 1
+    return sorted(counts, key=lambda t: (-counts[t], t))
+
+
 def week_ladder(quota: dict[str, int], difficulty: Difficulty = "normal") -> dict[str, list[int]]:
     """The level (gap) of every problem in the week, spread evenly over the band, easiest first.
 
@@ -521,6 +545,9 @@ def plan_errors(items: list[PlanItem], constraints: PlanConstraints, offered: di
         p = problems.get(key)
         if p is None:                      # a backlog problem CF left out of the problemset
             errors.append(f"{where}: no such problem in the problemset")
+            continue
+        if is_special(p.tags):
+            errors.append(f"{where}: from a special round (*special); never plan these")
             continue
         if key in solved:
             errors.append(f"{where}: already solved")

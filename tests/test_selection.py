@@ -41,6 +41,12 @@ def test_level_never_goes_below_the_easiest_cf_rating():
     assert band_for(407, "easier") == (800, 900)       # not 700-900: nothing is rated 700
 
 
+def test_special_round_problems_are_never_candidates():
+    problems = [prob(1990, "A", 1400, ("dp", "*special")), prob(1990, "B", 1400)]
+    assert keys(pick(problems)) == ["1990B"]                       # #57
+    assert keys(pick(problems, tag="dp")) == ["1990B"]
+
+
 def test_a_beginner_gets_800_problems_at_gap_0():
     beginner = Profile(rating=400, skills={"dp": 407.0}, newest_contest_id=2000)
     problems = [prob(1990, "A", 800), prob(1990, "B", 1000), prob(1990, "C", 1100)]
