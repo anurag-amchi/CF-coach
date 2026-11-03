@@ -2,9 +2,18 @@ import json
 from datetime import datetime, timezone
 
 from cf_coach.agent.llm import LLMReply, ScriptedLLM, ToolCall, ToolCallRejected, scripted_reply
-from cf_coach.agent.loop import run_agent, run_tool, user_message
-from cf_coach.agent.schemas import PlanConstraints, SavePlanOut, TagProfileOut, TOOL_SCHEMAS
-from cf_coach.agent.tools import ToolContext, ToolError
+from cf_coach.agent.loop import (
+    PROFILE_CALL_ID, READ_ONLY_TOOLS, SAVE_NUDGE, SEARCH_CALL_ID, allowed_tools, run_agent,
+    run_tool, user_message,
+)
+from cf_coach.agent.schemas import (
+    FindProblemsOut, PlanConstraints, ProblemOut, SavePlanOut, TagProfileOut, TagSkillOut,
+    TOOL_SCHEMAS, ValidationOut,
+)
+from cf_coach.agent.tools import (
+    SavedConstraints, SavedItem, ToolContext, ToolError, plan_summary,
+)
+from cf_coach.analytics.selection import ProblemRow, Profile
 
 NOW = datetime(2026, 10, 25, 12, tzinfo=timezone.utc)
 
@@ -13,8 +22,13 @@ def fake_profile(ctx, args):
     return TagProfileOut(rating=1400, tags=[])
 
 
+SAVED_ITEM = SavedItem(id="2000B", contest_id=2000, idx="B", tag="dp", rating=1500, gap=100,
+                       facts="f", reason="r")
+
+
 def fake_save(ctx, args):
     ctx.saved_plan_id = 42
+    ctx.saved_plan = (SavedConstraints(), [SAVED_ITEM])
     return SavePlanOut(plan_id=42, items=len(args.items))
 
 
@@ -28,17 +42,19 @@ def fake_crash(ctx, args):
 
 FAKE_TOOLS = {"get_tag_profile": fake_profile, "save_plan": fake_save,
               "find_problems": fake_impossible, "get_upsolve_backlog": fake_crash}
-PLAN = json.dumps({"items": [{"contest_id": 2000, "idx": "B", "tag": "dp", "reason": "r"}]})
+PLAN = json.dumps({"items": [{"id": "2000B", "reason": "r"}]})
 
 
 def call(name, args="{}", id="c1"):
     return ToolCall(id, name, args)
 
 
-def run(replies, max_steps=10):
+def run(replies, max_steps=10, start_with_profile=False, intent="plan"):
+    """Most tests switch the code-side profile call off, so the messages are only the model's."""
     llm = ScriptedLLM(replies)
-    ctx = ToolContext("me", session=None, now=NOW)
-    return run_agent(llm, ctx, "plan my week", max_steps=max_steps, tools=FAKE_TOOLS), llm
+    ctx = ToolContext("me", session=None, now=NOW, intent=intent)
+    return run_agent(llm, ctx, "plan my week", max_steps=max_steps, tools=FAKE_TOOLS,
+                     start_with_profile=start_with_profile), llm
 
 
 def test_tool_result_goes_back_paired_with_its_call():
@@ -57,9 +73,179 @@ def test_system_prompt_has_todays_date():
     assert "Today is 2026-10-25" in result.messages[0]["content"]
 
 
-def test_saving_a_plan_sets_outcome_and_plan_id():
-    result, _ = run([scripted_reply(calls=[call("save_plan", PLAN)]), scripted_reply("saved!")])
+def test_saving_a_plan_ends_the_run_with_a_code_written_summary():
+    result, llm = run([scripted_reply(calls=[call("save_plan", PLAN)]), scripted_reply("| a table |")])
     assert (result.outcome, result.plan_id) == ("saved", 42)
+    assert result.steps == 1 and len(llm.seen) == 1          # no LLM call after the save
+    assert result.final_text == plan_summary(SavedConstraints(), [SAVED_ITEM])
+    assert result.messages[-1]["role"] == "tool"              # the save result is the last message
+
+
+def fake_validate_ok(ctx, args):
+    ctx.validated_ok = True
+    return ValidationOut(ok=True, errors=[])
+
+
+def run_with_validate(replies):
+    llm = ScriptedLLM(replies)
+    ctx = ToolContext("me", session=None, now=NOW)
+    tools = {**FAKE_TOOLS, "validate_plan": fake_validate_ok}
+    return run_agent(llm, ctx, "plan my week", tools=tools, start_with_profile=False), llm
+
+
+def test_save_written_as_text_after_an_ok_validation_gets_one_nudge():
+    result, llm = run_with_validate([
+        scripted_reply(calls=[call("validate_plan", PLAN)]),
+        scripted_reply(PLAN),                                  # the slip: the save as text
+        scripted_reply(calls=[call("save_plan", PLAN, id="c2")]),
+    ])
+    assert (result.outcome, result.plan_id, result.nudges, result.steps) == ("saved", 42, 1, 3)
+    assert {"role": "user", "content": SAVE_NUDGE} in result.messages
+    assert llm.seen[2][-1] == {"role": "user", "content": SAVE_NUDGE}   # the 3rd call saw it
+
+
+def test_the_nudge_is_sent_only_once():
+    result, _ = run_with_validate([
+        scripted_reply(calls=[call("validate_plan", PLAN)]),
+        scripted_reply(PLAN),
+        scripted_reply("I won't save it."),
+    ])
+    assert (result.outcome, result.nudges, result.final_text) == ("no_plan", 1, "I won't save it.")
+
+
+def test_a_refusal_without_an_ok_validation_is_not_nudged():
+    result, _ = run_with_validate([scripted_reply("No problems are rated that high for you.")])
+    assert (result.outcome, result.nudges, result.steps) == ("no_plan", 0, 1)
+
+
+# ---------- code picks the week's tags and searches them first (decision #43) ----------
+
+def week_profile(ctx, args):
+    rows = [("dfs and similar", 3), ("geometry", 7), ("strings", 32), ("trees", 5), ("dp", 26)]
+    return TagProfileOut(rating=1400, tags=[
+        TagSkillOut(tag=t, skill=1400, attempts=a, abandon_rate=0.0) for t, a in rows])
+
+
+def search_returning(per_tag):
+    """A fake find_problems that returns `per_tag` problems for any tag."""
+    def search(ctx, args):
+        return FindProblemsOut(difficulty="normal", problems=[
+            ProblemOut(id=f"{n}{args.tag[0].upper()}", name="x", rating=1400 + 100 * n,
+                       tags=[args.tag], matched_tag=args.tag, tag_skill=1400, gap=100 * n,
+                       score=1.0)
+            for n in range(min(per_tag, args.count))])
+    return search
+
+
+def week_ctx(count=4, focus=(), problems=()):
+    """No database: the problemset (for untried tags, #56), solved set and profile are given."""
+    ctx = ToolContext("me", session=None, now=NOW, count=count, focus_tags=list(focus))
+    ctx._problems, ctx._solved, ctx._profile = list(problems), set(), Profile(1400, {})
+    return ctx
+
+
+def run_week(per_tag, count=4, focus=(), profile=week_profile, problems=()):
+    llm = ScriptedLLM([scripted_reply("ok")])
+    ctx = week_ctx(count, focus, problems)
+    tools = {**FAKE_TOOLS, "get_tag_profile": profile, "find_problems": search_returning(per_tag)}
+    return run_agent(llm, ctx, "plan my week", tools=tools), ctx, llm
+
+
+def test_a_week_with_no_tags_gets_its_tags_and_searches_from_code():
+    result, ctx, llm = run_week(per_tag=3, count=4)
+    assert ctx.tag_quota == {"geometry": 2, "strings": 1, "trees": 1}   # dfs: only 3 attempts
+    assert ctx.tag_gaps == {"geometry": [0, 200], "strings": [0], "trees": [100]}
+    assert "this week's tags and levels (your weakest with 5+ attempts; their problems are " \
+           "loaded; pick each by its gap field): geometry warm-up (gap +0) and stretch " \
+           "(gap +200), strings warm-up (gap +0), trees step-up (gap +100)" \
+           in result.messages[1]["content"]
+    searches = result.messages[4]["tool_calls"]
+    assert [(c["id"], json.loads(c["function"]["arguments"])) for c in searches] == [
+        (f"{SEARCH_CALL_ID}-1", {"tag": "geometry", "count": 6}),   # 2 per level x 3 levels
+        (f"{SEARCH_CALL_ID}-2", {"tag": "strings", "count": 6}),
+        (f"{SEARCH_CALL_ID}-3", {"tag": "trees", "count": 6})]
+    assert [m["role"] for m in result.messages[5:8]] == ["tool"] * 3
+    assert result.steps == 1 and llm.seen[0][-1] == result.messages[7]   # no LLM step spent
+
+
+def test_a_tag_that_cant_fill_the_band_is_skipped_for_the_next_weakest():
+    """geometry has nothing at +200 (a rare tag the user mostly solved): dp joins instead (#49)."""
+    def search(ctx, args):
+        per_tag = 2 if args.tag == "geometry" else 3            # geometry: +0, +100 only
+        ctx.offer(9000, args.tag[0].upper(), args.tag)          # as the real tool records it
+        return search_returning(per_tag)(ctx, args)
+    llm = ScriptedLLM([scripted_reply("ok")])
+    ctx = week_ctx(count=4)
+    tools = {**FAKE_TOOLS, "get_tag_profile": week_profile, "find_problems": search}
+    result = run_agent(llm, ctx, "plan my week", tools=tools)
+    assert ctx.week_skipped == ["geometry"]
+    assert ctx.tag_quota == {"strings": 2, "trees": 1, "dp": 1}
+    assert ctx.tag_gaps == {"strings": [0, 200], "trees": [0], "dp": [100]}
+    assert "geometry" not in str(result.messages[4]["tool_calls"])   # its search isn't shown
+    assert "9000G" not in ctx.offered and "9000S" in ctx.offered     # nor plannable
+
+
+def test_too_few_tags_that_fill_the_band_means_no_week_rules():
+    result, ctx, _ = run_week(per_tag=2, count=4)       # every tag: +0, +100 only
+    assert ctx.tag_quota == {} and ctx.tag_gaps == {}
+    assert ctx.week_skipped == ["geometry", "strings", "trees", "dp"]
+    assert "this week's tags" not in result.messages[1]["content"]
+
+
+# ---------- a starter week: too few measured tags -> new tags fill it (decision #56) ----------
+
+UNTRIED = [ProblemRow(1, "A", "x", 1400, ("math", "implementation")),   # rating 1400: band
+           ProblemRow(1, "B", "x", 1500, ("math",)),                     # 1400-1600
+           ProblemRow(1, "C", "x", 1600, ("bitmasks", "dfs and similar"))]  # dfs: tried
+
+
+def two_measured(ctx, args):
+    rows = [("dfs and similar", 3), ("geometry", 7), ("trees", 5)]
+    return TagProfileOut(rating=1400, tags=[
+        TagSkillOut(tag=t, skill=1400, attempts=a, abandon_rate=0.0) for t, a in rows])
+
+
+def test_too_few_measured_tags_are_topped_up_with_new_tags():
+    result, ctx, _ = run_week(per_tag=3, count=5, profile=two_measured, problems=UNTRIED)
+    assert ctx.week_new == ["math", "bitmasks", "implementation"]   # most problems first
+    assert ctx.tag_quota == {"math": 1, "bitmasks": 1, "implementation": 1, "geometry": 1,
+                             "trees": 1}                            # 1 each, new ones first
+    assert ctx.tag_gaps == {"math": [0], "bitmasks": [0], "implementation": [100],
+                            "geometry": [100], "trees": [200]}
+    note = result.messages[1]["content"]
+    assert "(new) = a tag you have never tried" in note
+    assert "math (new) warm-up (gap +0)" in note and "trees stretch (gap +200)" in note
+    assert "dfs" not in str(ctx.tag_quota)                          # 3 attempts: not new, not measured
+
+
+def test_a_user_with_no_measured_tags_gets_a_week_of_new_tags():
+    def nothing_measured(ctx, args):
+        return TagProfileOut(rating=1400, tags=[
+            TagSkillOut(tag="dfs and similar", skill=1400, attempts=2, abandon_rate=0.0)])
+    result, ctx, _ = run_week(per_tag=3, count=3, profile=nothing_measured, problems=UNTRIED)
+    assert "the others" not in result.messages[1]["content"]       # every tag is new
+    assert ctx.tag_quota == {"math": 1, "bitmasks": 1, "implementation": 1}
+    assert ctx.tag_gaps == {"math": [0], "bitmasks": [100], "implementation": [200]}
+
+
+def test_not_enough_new_tags_either_means_no_week_rules():
+    _, ctx, _ = run_week(per_tag=3, count=5, profile=two_measured, problems=UNTRIED[:1])
+    assert ctx.tag_quota == {} and ctx.week_new == []      # math + implementation: 2 of 3
+
+
+def test_focus_tags_or_questions_get_no_week_tags():
+    _, ctx, _ = run_week(per_tag=3, focus=["dp"])
+    assert ctx.tag_quota == {}
+
+
+def test_a_failed_save_does_not_end_the_run():
+    def refuse(ctx, args):
+        raise ToolError("plan not saved, it breaks these rules: ...")
+    llm = ScriptedLLM([scripted_reply(calls=[call("save_plan", PLAN)]), scripted_reply("sorry")])
+    ctx = ToolContext("me", session=None, now=NOW)
+    result = run_agent(llm, ctx, "plan my week", tools={**FAKE_TOOLS, "save_plan": refuse},
+                       start_with_profile=False)
+    assert (result.outcome, result.steps, result.final_text) == ("no_plan", 2, "sorry")
 
 
 def test_fixable_errors_go_back_to_the_model_and_the_run_continues():
@@ -118,6 +304,11 @@ def test_run_tool_on_real_schema_names():
 
 def test_no_fixed_constraints_leaves_the_request_alone():
     assert user_message("plan my week", PlanConstraints()) == "plan my week"
+    assert user_message("plan my week", PlanConstraints(), "harder") == (
+        "plan my week\n\nFixed constraints: difficulty: harder")
+    assert user_message("5 dp", PlanConstraints(hours=3), count=5, focus_tags=["dp"]) == (
+        "5 dp\n\nFixed constraints: problems: exactly 3; focus tags: dp; "
+        "hours: 3 (at most 3 problems)")
 
 
 def test_fixed_constraints_are_added_to_the_users_message():
@@ -128,3 +319,37 @@ def test_fixed_constraints_are_added_to_the_users_message():
     assert result.messages[1]["content"] == (
         "3 dp problems\n\nFixed constraints: hours: 4 (at most 4 problems); "
         "avoid tags: geometry, dfs and similar")
+
+
+# ---------- profile first in code, read-only tools for questions (decision #39) ----------
+
+def test_code_loads_the_profile_before_the_first_step():
+    result, llm = run([scripted_reply("done")], start_with_profile=True)
+    roles = [m["role"] for m in result.messages]
+    assert roles == ["system", "user", "assistant", "tool", "assistant"]
+    call = result.messages[2]["tool_calls"][0]
+    assert call["function"]["name"] == "get_tag_profile" and call["id"] == PROFILE_CALL_ID
+    assert result.messages[3]["tool_call_id"] == PROFILE_CALL_ID
+    assert json.loads(result.messages[3]["content"]) == {"rating": 1400, "tags": []}
+    assert result.steps == 1                       # no LLM step was spent on it
+    assert llm.seen[0][-1] == result.messages[3]   # the model's first call already sees it
+
+
+def test_a_question_gets_only_read_only_tools():
+    result, llm = run([scripted_reply(calls=[call("save_plan", PLAN)]), scripted_reply("ok")],
+                      intent="question")
+    assert "save_plan" not in llm.tool_names[0] and "get_tag_profile" in llm.tool_names[0]
+    error = json.loads(result.messages[3]["content"])["error"]
+    assert error.startswith("unknown tool 'save_plan'")       # and nothing was saved
+    assert result.outcome == "no_plan" and result.plan_id is None
+    assert "this is a question" in result.messages[1]["content"]
+
+
+def test_allowed_tools():
+    assert allowed_tools("plan", FAKE_TOOLS) == FAKE_TOOLS
+    assert set(allowed_tools("question", FAKE_TOOLS)) == {
+        "get_tag_profile", "find_problems", "get_upsolve_backlog"}
+    assert set(READ_ONLY_TOOLS) < set(TOOL_SCHEMAS_NAMES)
+
+
+TOOL_SCHEMAS_NAMES = [s["function"]["name"] for s in TOOL_SCHEMAS]

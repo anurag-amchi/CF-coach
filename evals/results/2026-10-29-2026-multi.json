@@ -1,0 +1,4138 @@
+{
+ "label": "multi",
+ "started": "2026-10-29T14:56:40.233879+00:00",
+ "model": "openai/gpt-oss-120b",
+ "commit": "286d08e",
+ "tokens": 159172,
+ "summary": {
+  "cases": 20,
+  "cases_all_passed": 15,
+  "checks": 205,
+  "checks_passed": 200,
+  "rejected_calls": 1,
+  "nudges": 0,
+  "avg_steps": 2.9,
+  "avg_input_tokens": 6946,
+  "avg_latency_s": 9.9
+ },
+ "handles": [
+  {
+   "label": "new_first_contest",
+   "handle": "rehuMachli",
+   "why": "no data: one contest, 4 submissions, rating 400",
+   "fetched": 0,
+   "tag_rows": 6,
+   "sync_s": 2.9,
+   "snapshot": {
+    "rating": 400,
+    "submissions": 4,
+    "solved": 3,
+    "tags": 6,
+    "measured_tags": 0,
+    "weakest_tag": "brute force"
+   },
+   "results": [
+    {
+     "case": "default_week",
+     "request": "Plan my practice for this week.",
+     "hours": null,
+     "avoid": [],
+     "parsed": {
+      "intent": "plan",
+      "count": null,
+      "hours": null,
+      "focus_tags": [],
+      "avoid_tags": [],
+      "difficulty": null
+     },
+     "parse_warnings": [],
+     "parse_tokens": 1037,
+     "outcome": "max_steps",
+     "error": null,
+     "steps": 10,
+     "input_tokens": 15190,
+     "output_tokens": 2148,
+     "latency_ms": 52427,
+     "tools_called": [
+      "get_tag_profile",
+      "find_problems",
+      "find_problems",
+      "find_problems",
+      "get_upsolve_backlog",
+      "find_problems",
+      "find_problems",
+      "find_problems",
+      "find_problems",
+      "find_problems",
+      "find_problems"
+     ],
+     "rejected_calls": 0,
+     "nudges": 0,
+     "week_rules": {
+      "quota": {},
+      "levels": {},
+      "skipped": []
+     },
+     "plan": null,
+     "final_text": null,
+     "checks": [
+      {
+       "check": "saved",
+       "ok": false,
+       "detail": "outcome max_steps"
+      },
+      {
+       "check": "5 problems",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "band +0..+200",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "starts with get_tag_profile",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "no rejected calls",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "unsolved",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "no running contest",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "distinct reasons",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "no numbers in reasons",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "summary has no table",
+       "ok": true,
+       "detail": null
+      }
+     ],
+     "steps_log": [
+      {
+       "user": "Plan my practice for this week.\n\nFixed constraints: problems: exactly 5"
+      },
+      {
+       "call": "get_tag_profile",
+       "args": "{}"
+      },
+      {
+       "result": "{\"rating\":400,\"tags\":[{\"tag\":\"brute force\",\"skill\":407,\"attempts\":1,\"abandon_rate\":0.0},{\"tag\":\"games\",\"skill\":407,\"attempts\":1,\"abandon_rate\":0.0},{\"tag\":\"implementation\",\"skill\":407,\"attempts\":1,\"abandon_rate\":0.0},{\"tag\":\"constructive algorithms\",\"skill\":410,\"attempts\":1,\"abandon_rate\":0.0},{\"tag\":\"greedy\",\"skill\":424,\"attempts\":2,\"abandon_rate\":0.0},{\"tag\":\"math\",\"skill\":431,\"attempts\":3,\"abandon_rate\":0.0}]}"
+      },
+      {
+       "call": "find_problems",
+       "args": "{\"count\":5}"
+      },
+      {
+       "result": "{\"difficulty\":\"normal\",\"problems\":[]}"
+      },
+      {
+       "call": "find_problems",
+       "args": "{\"count\":2,\"tag\":\"brute force\"}"
+      },
+      {
+       "result": "{\"difficulty\":\"normal\",\"problems\":[]}"
+      },
+      {
+       "call": "find_problems",
+       "args": "{\"count\":2,\"tag\":\"greedy\"}"
+      },
+      {
+       "result": "{\"difficulty\":\"normal\",\"problems\":[]}"
+      },
+      {
+       "call": "get_upsolve_backlog",
+       "args": "{\"limit\":5}"
+      },
+      {
+       "result": "{\"total\":0,\"items\":[]}"
+      },
+      {
+       "call": "find_problems",
+       "args": "{\"count\":5,\"tag\":\"implementation\"}"
+      },
+      {
+       "result": "{\"difficulty\":\"normal\",\"problems\":[]}"
+      },
+      {
+       "call": "find_problems",
+       "args": "{\"count\":5}"
+      },
+      {
+       "result": "{\"difficulty\":\"normal\",\"problems\":[]}"
+      },
+      {
+       "call": "find_problems",
+       "args": "{\"count\":20}"
+      },
+      {
+       "result": "{\"difficulty\":\"normal\",\"problems\":[]}"
+      },
+      {
+       "call": "find_problems",
+       "args": "{\"count\":5,\"strategy\":\"contest_prep\"}"
+      },
+      {
+       "result": "{\"difficulty\":\"normal\",\"problems\":[]}"
+      },
+      {
+       "call": "find_problems",
+       "args": "{\"count\":5,\"tag\":\"brute force\"}"
+      },
+      {
+       "result": "{\"difficulty\":\"normal\",\"problems\":[]}"
+      },
+      {
+       "call": "find_problems",
+       "args": "{\"count\":5,\"tag\":\"math\"}"
+      },
+      {
+       "result": "{\"difficulty\":\"normal\",\"problems\":[]}"
+      }
+     ]
+    },
+    {
+     "case": "greedy_focus",
+     "request": "Give me 3 greedy problems.",
+     "hours": null,
+     "avoid": [],
+     "parsed": {
+      "intent": "plan",
+      "count": 3,
+      "hours": null,
+      "focus_tags": [
+       "greedy"
+      ],
+      "avoid_tags": [],
+      "difficulty": null
+     },
+     "parse_warnings": [],
+     "parse_tokens": 1019,
+     "outcome": "no_plan",
+     "error": null,
+     "steps": 3,
+     "input_tokens": 4768,
+     "output_tokens": 568,
+     "latency_ms": 3120,
+     "tools_called": [
+      "get_tag_profile",
+      "find_problems",
+      "get_upsolve_backlog"
+     ],
+     "rejected_calls": 0,
+     "nudges": 0,
+     "week_rules": {
+      "quota": {},
+      "levels": {},
+      "skipped": []
+     },
+     "plan": null,
+     "final_text": "There are currently no unsolved greedy problems that match your skill level and the constraints.",
+     "checks": [
+      {
+       "check": "saved",
+       "ok": false,
+       "detail": "outcome no_plan"
+      },
+      {
+       "check": "3 problems",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "tags in {greedy}",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "band +0..+200",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "starts with get_tag_profile",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "no rejected calls",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "unsolved",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "no running contest",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "distinct reasons",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "no numbers in reasons",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "summary has no table",
+       "ok": true,
+       "detail": null
+      }
+     ],
+     "steps_log": [
+      {
+       "user": "Give me 3 greedy problems.\n\nFixed constraints: problems: exactly 3; focus tags: greedy"
+      },
+      {
+       "call": "get_tag_profile",
+       "args": "{}"
+      },
+      {
+       "result": "{\"rating\":400,\"tags\":[{\"tag\":\"brute force\",\"skill\":407,\"attempts\":1,\"abandon_rate\":0.0},{\"tag\":\"games\",\"skill\":407,\"attempts\":1,\"abandon_rate\":0.0},{\"tag\":\"implementation\",\"skill\":407,\"attempts\":1,\"abandon_rate\":0.0},{\"tag\":\"constructive algorithms\",\"skill\":410,\"attempts\":1,\"abandon_rate\":0.0},{\"tag\":\"greedy\",\"skill\":424,\"attempts\":2,\"abandon_rate\":0.0},{\"tag\":\"math\",\"skill\":431,\"attempts\":3,\"abandon_rate\":0.0}]}"
+      },
+      {
+       "call": "find_problems",
+       "args": "{\"count\":3,\"tag\":\"greedy\"}"
+      },
+      {
+       "result": "{\"difficulty\":\"normal\",\"problems\":[]}"
+      },
+      {
+       "call": "get_upsolve_backlog",
+       "args": "{\"limit\":10}"
+      },
+      {
+       "result": "{\"total\":0,\"items\":[]}"
+      },
+      {
+       "text": "There are currently no unsolved greedy problems that match your skill level and the constraints."
+      }
+     ]
+    },
+    {
+     "case": "challenge_any",
+     "request": "Challenge me: 3 hard problems.",
+     "hours": null,
+     "avoid": [],
+     "parsed": {
+      "intent": "plan",
+      "count": 3,
+      "hours": null,
+      "focus_tags": [],
+      "avoid_tags": [],
+      "difficulty": "harder"
+     },
+     "parse_warnings": [],
+     "parse_tokens": 1019,
+     "outcome": "no_plan",
+     "error": null,
+     "steps": 3,
+     "input_tokens": 4769,
+     "output_tokens": 898,
+     "latency_ms": 3830,
+     "tools_called": [
+      "get_tag_profile",
+      "get_upsolve_backlog",
+      "find_problems"
+     ],
+     "rejected_calls": 0,
+     "nudges": 0,
+     "week_rules": {
+      "quota": {},
+      "levels": {},
+      "skipped": []
+     },
+     "plan": null,
+     "final_text": "I’m sorry, but I couldn’t locate any unsolved hard‑difficulty problems that match your current skill profile. To create a plan with three hard problems, we’d need to relax the difficulty requirement or consider a different set of tags. Let me know how you’d like to adjust the constraints.",
+     "checks": [
+      {
+       "check": "saved",
+       "ok": false,
+       "detail": "outcome no_plan"
+      },
+      {
+       "check": "3 problems",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "band +100..+300",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "starts with get_tag_profile",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "no rejected calls",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "unsolved",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "no running contest",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "distinct reasons",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "no numbers in reasons",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "summary has no table",
+       "ok": true,
+       "detail": null
+      }
+     ],
+     "steps_log": [
+      {
+       "user": "Challenge me: 3 hard problems.\n\nFixed constraints: problems: exactly 3; difficulty: harder"
+      },
+      {
+       "call": "get_tag_profile",
+       "args": "{}"
+      },
+      {
+       "result": "{\"rating\":400,\"tags\":[{\"tag\":\"brute force\",\"skill\":407,\"attempts\":1,\"abandon_rate\":0.0},{\"tag\":\"games\",\"skill\":407,\"attempts\":1,\"abandon_rate\":0.0},{\"tag\":\"implementation\",\"skill\":407,\"attempts\":1,\"abandon_rate\":0.0},{\"tag\":\"constructive algorithms\",\"skill\":410,\"attempts\":1,\"abandon_rate\":0.0},{\"tag\":\"greedy\",\"skill\":424,\"attempts\":2,\"abandon_rate\":0.0},{\"tag\":\"math\",\"skill\":431,\"attempts\":3,\"abandon_rate\":0.0}]}"
+      },
+      {
+       "call": "get_upsolve_backlog",
+       "args": "{\"limit\":3}"
+      },
+      {
+       "result": "{\"total\":0,\"items\":[]}"
+      },
+      {
+       "call": "find_problems",
+       "args": "{\"count\":3,\"strategy\":\"contest_prep\"}"
+      },
+      {
+       "result": "{\"difficulty\":\"harder\",\"problems\":[]}"
+      },
+      {
+       "text": "I’m sorry, but I couldn’t locate any unsolved hard‑difficulty problems that match your current skill profile. To create a plan with three hard problems, we’d need to relax the difficulty requirement or consider a different set of tags. Let me know how you’d like to adjust the constraints."
+      }
+     ]
+    },
+    {
+     "case": "rusty",
+     "request": "I'm rusty after a break. Give me 3 easy warm-up problems.",
+     "hours": null,
+     "avoid": [],
+     "parsed": {
+      "intent": "plan",
+      "count": 3,
+      "hours": null,
+      "focus_tags": [],
+      "avoid_tags": [],
+      "difficulty": "easier"
+     },
+     "parse_warnings": [],
+     "parse_tokens": 1082,
+     "outcome": "no_plan",
+     "error": null,
+     "steps": 4,
+     "input_tokens": 6234,
+     "output_tokens": 801,
+     "latency_ms": 9793,
+     "tools_called": [
+      "get_tag_profile",
+      "find_problems",
+      "find_problems",
+      "get_upsolve_backlog"
+     ],
+     "rejected_calls": 0,
+     "nudges": 0,
+     "week_rules": {
+      "quota": {},
+      "levels": {},
+      "skipped": []
+     },
+     "plan": null,
+     "final_text": "I couldn’t find any unsolved “easier” problems for you right now. You might try widening the difficulty a bit or looking at a different tag to get some warm‑up practice.",
+     "checks": [
+      {
+       "check": "saved",
+       "ok": false,
+       "detail": "outcome no_plan"
+      },
+      {
+       "check": "3 problems",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "band -100..+100",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "starts with get_tag_profile",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "no rejected calls",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "unsolved",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "no running contest",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "distinct reasons",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "no numbers in reasons",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "summary has no table",
+       "ok": true,
+       "detail": null
+      }
+     ],
+     "steps_log": [
+      {
+       "user": "I'm rusty after a break. Give me 3 easy warm-up problems.\n\nFixed constraints: problems: exactly 3; difficulty: easier"
+      },
+      {
+       "call": "get_tag_profile",
+       "args": "{}"
+      },
+      {
+       "result": "{\"rating\":400,\"tags\":[{\"tag\":\"brute force\",\"skill\":407,\"attempts\":1,\"abandon_rate\":0.0},{\"tag\":\"games\",\"skill\":407,\"attempts\":1,\"abandon_rate\":0.0},{\"tag\":\"implementation\",\"skill\":407,\"attempts\":1,\"abandon_rate\":0.0},{\"tag\":\"constructive algorithms\",\"skill\":410,\"attempts\":1,\"abandon_rate\":0.0},{\"tag\":\"greedy\",\"skill\":424,\"attempts\":2,\"abandon_rate\":0.0},{\"tag\":\"math\",\"skill\":431,\"attempts\":3,\"abandon_rate\":0.0}]}"
+      },
+      {
+       "call": "find_problems",
+       "args": "{\"avoid_tags\":[],\"count\":3,\"strategy\":\"weakness_first\"}"
+      },
+      {
+       "result": "{\"difficulty\":\"easier\",\"problems\":[]}"
+      },
+      {
+       "call": "find_problems",
+       "args": "{\"avoid_tags\":[],\"count\":3,\"strategy\":\"weakness_first\",\"tag\":\"brute force\"}"
+      },
+      {
+       "result": "{\"difficulty\":\"easier\",\"problems\":[]}"
+      },
+      {
+       "call": "get_upsolve_backlog",
+       "args": "{\"limit\":3}"
+      },
+      {
+       "result": "{\"total\":0,\"items\":[]}"
+      },
+      {
+       "text": "I couldn’t find any unsolved “easier” problems for you right now. You might try widening the difficulty a bit or looking at a different tag to get some warm‑up practice."
+      }
+     ]
+    }
+   ],
+   "not_run": [],
+   "summary": {
+    "cases": 4,
+    "cases_all_passed": 0,
+    "checks": 41,
+    "checks_passed": 37,
+    "rejected_calls": 0,
+    "nudges": 0,
+    "avg_steps": 5.0,
+    "avg_input_tokens": 7740,
+    "avg_latency_s": 17.3
+   }
+  },
+  {
+   "label": "newbie_50",
+   "handle": "toto_the_boss",
+   "why": "bottom: newbie 1008, 37 solved; 800 floor for easier",
+   "fetched": 0,
+   "tag_rows": 20,
+   "sync_s": 4.3,
+   "snapshot": {
+    "rating": 1008,
+    "submissions": 61,
+    "solved": 37,
+    "tags": 20,
+    "measured_tags": 10,
+    "weakest_tag": "combinatorics"
+   },
+   "results": [
+    {
+     "case": "default_week",
+     "request": "Plan my practice for this week.",
+     "hours": null,
+     "avoid": [],
+     "parsed": {
+      "intent": "plan",
+      "count": null,
+      "hours": null,
+      "focus_tags": [],
+      "avoid_tags": [],
+      "difficulty": null
+     },
+     "parse_warnings": [],
+     "parse_tokens": 1043,
+     "outcome": "saved",
+     "error": null,
+     "steps": 2,
+     "input_tokens": 7209,
+     "output_tokens": 1265,
+     "latency_ms": 7216,
+     "tools_called": [
+      "get_tag_profile",
+      "find_problems",
+      "find_problems",
+      "find_problems",
+      "find_problems",
+      "validate_plan",
+      "save_plan"
+     ],
+     "rejected_calls": 0,
+     "nudges": 0,
+     "week_rules": {
+      "quota": {
+       "data structures": 2,
+       "brute force": 1,
+       "number theory": 1,
+       "sortings": 1
+      },
+      "levels": {
+       "data structures": [
+        0,
+        200
+       ],
+       "brute force": [
+        0
+       ],
+       "number theory": [
+        100
+       ],
+       "sortings": [
+        100
+       ]
+      },
+      "skipped": []
+     },
+     "plan": [
+      {
+       "contest_id": 2275,
+       "idx": "C",
+       "rating": 1000,
+       "tags": [
+        "brute force",
+        "data structures"
+       ],
+       "tag": "data structures",
+       "reason": "A warm up on data structures fundamentals.",
+       "skill": 1007.6717994526197,
+       "solved": false,
+       "running": false,
+       "facts": "data structures skill 1008 (level 1000) · 5 tries · 60% abandoned · 1000 = level +0",
+       "id": "2275C",
+       "gap": 0
+      },
+      {
+       "contest_id": 2269,
+       "idx": "B",
+       "rating": 1000,
+       "tags": [
+        "brute force",
+        "implementation"
+       ],
+       "tag": "brute force",
+       "reason": "A warm up on brute force problem solving.",
+       "skill": 1015.3598510586842,
+       "solved": false,
+       "running": false,
+       "facts": "brute force skill 1015 (level 1000) · 9 tries · 11% abandoned · 1000 = level +0",
+       "id": "2269B",
+       "gap": 0
+      },
+      {
+       "contest_id": 2125,
+       "idx": "C",
+       "rating": 1100,
+       "tags": [
+        "bitmasks",
+        "combinatorics",
+        "math",
+        "number theory"
+       ],
+       "tag": "number theory",
+       "reason": "A step up to practice number theory concepts.",
+       "skill": 1016.3421965986366,
+       "solved": false,
+       "running": false,
+       "facts": "number theory skill 1016 (level 1000) · 6 tries · 50% abandoned · 1100 = level +100",
+       "id": "2125C",
+       "gap": 100
+      },
+      {
+       "contest_id": 2197,
+       "idx": "B",
+       "rating": 1100,
+       "tags": [
+        "implementation",
+        "schedules",
+        "sortings",
+        "two pointers"
+       ],
+       "tag": "sortings",
+       "reason": "A step up to sharpen sorting algorithm skills.",
+       "skill": 1018.4962339050351,
+       "solved": false,
+       "running": false,
+       "facts": "sortings skill 1018 (level 1000) · 5 tries · 20% abandoned · 1100 = level +100",
+       "id": "2197B",
+       "gap": 100
+      },
+      {
+       "contest_id": 2148,
+       "idx": "E",
+       "rating": 1200,
+       "tags": [
+        "binary search",
+        "data structures",
+        "two pointers"
+       ],
+       "tag": "data structures",
+       "reason": "A stretch to deepen data structures techniques.",
+       "skill": 1007.6717994526197,
+       "solved": false,
+       "running": false,
+       "facts": "data structures skill 1008 (level 1000) · 5 tries · 60% abandoned · 1200 = level +200",
+       "id": "2148E",
+       "gap": 200
+      }
+     ],
+     "final_text": "Saved 5 problems, easiest first, rated 1000-1200. Tags: data structures x2, brute force x1, number theory x1, sortings x1. Difficulty: normal (+0 to +200 around each tag's level).",
+     "checks": [
+      {
+       "check": "saved",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "5 problems",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "band +0..+200",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "starts with get_tag_profile",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "no rejected calls",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "unsolved",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "no running contest",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "distinct reasons",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "no numbers in reasons",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "summary has no table",
+       "ok": true,
+       "detail": null
+      }
+     ],
+     "steps_log": [
+      {
+       "user": "Plan my practice for this week.\n\nFixed constraints: problems: exactly 5; this week's tags and levels (your weakest with 5+ attempts; their problems are loaded; pick each by its gap field): data structures warm-up (gap +0) and stretch (gap +200), brute force warm-up (gap +0), number theory step-up (gap +100), sortings step-up (gap +100)"
+      },
+      {
+       "call": "get_tag_profile",
+       "args": "{}"
+      },
+      {
+       "result": "{\"rating\":1008,\"tags\":[{\"tag\":\"combinatorics\",\"skill\":1007,\"attempts\":1,\"abandon_rate\":1.0},{\"tag\":\"data structures\",\"skill\":1008,\"attempts\":5,\"abandon_rate\":0.6},{\"tag\":\"divide and conquer\",\"skill\":1008,\"attempts\":1,\"abandon_rate\":1.0},{\"tag\":\"trees\",\"skill\":1008,\"attempts\":1,\"abandon_rate\":1.0},{\"tag\":\"bitmasks\",\"skill\":1010,\"attempts\":2,\"abandon_rate\":0.5},{\"tag\":\"dfs and similar\",\"skill\":1011,\"attempts\":1,\"abandon_rate\":0.0},{\"tag\":\"graphs\",\"skill\":1011,\"attempts\":1,\"abandon_rate\":0.0},{\"tag\":\"games\",\"skill\":1012,\"attempts\":2,\"abandon_rate\":0.0},{\"tag\":\"two pointers\",\"skill\":1015,\"attempts\":4,\"abandon_rate\":0.25},{\"tag\":\"shortest paths\",\"skill\":1015,\"attempts\":1,\"abandon_rate\":0.0},{\"tag\":\"brute force\",\"skill\":1015,\"attempts\":9,\"abandon_rate\":0.11},{\"tag\":\"number theory\",\"skill\":1016,\"attempts\":6,\"abandon_rate\":0.5},{\"tag\":\"sortings\",\"skill\":1018,\"attempts\":5,\"abandon_rate\":0.2},{\"tag\":\"dp\",\"skill\":1021,\"attempts\":6,\"abandon_rate\":0.33},{\"tag\":\"implementation\",\"skill\":1021,\"attempts\":11,\"abandon_rate\":0.27},{\"tag\":\"binary search\",\"skill\":1022,\"attempts\":3,\"abandon_rate\":0.0},{\"tag\":\"strings\",\"skill\":1029,\"attempts\":6,\"abandon_rate\":0.17},{\"tag\":\"constructive algorithms\",\"skill\":1033,\"attempts\":8,\"abandon_rate\":0.12},{\"tag\":\"math\",\"skill\":1046,\"attempts\":24,\"abandon_rate\":0.25},{\"tag\":\"greedy\",\"skill\":1086,\"attempts\":25,\"abandon_rate\":0.16}]}"
+      },
+      {
+       "call": "find_problems",
+       "args": "{\"tag\": \"data structures\", \"count\": 6}"
+      },
+      {
+       "call": "find_problems",
+       "args": "{\"tag\": \"brute force\", \"count\": 6}"
+      },
+      {
+       "call": "find_problems",
+       "args": "{\"tag\": \"number theory\", \"count\": 6}"
+      },
+      {
+       "call": "find_problems",
+       "args": "{\"tag\": \"sortings\", \"count\": 6}"
+      },
+      {
+       "result": "{\"difficulty\":\"normal\",\"problems\":[{\"id\":\"2275C\",\"name\":\"Unrequited Love\",\"rating\":1000,\"tags\":[\"brute force\",\"data structures\"],\"matched_tag\":\"data structures\",\"tag_skill\":1008,\"gap\":0,\"score\":3.79},{\"id\":\"2253B\",\"name\":\"Hypercarp and the Control Panel\",\"rating\":1100,\"tags\":[\"brute force\",\"data structures\",\"two pointers\"],\"matched_tag\":\"data structures\",\"tag_skill\":1008,\"gap\":100,\"score\":3.77},{\"id\":\"2148E\",\"name\":\"Split\",\"rating\":1200,\"tags\":[\"binary search\",\"data structures\",\"two pointers\"],\"matched_tag\":\"data structures\",\"tag_skill\":1008,\"gap\":200,\"score\":3.64},{\"id\":\"2123C\",\"name\":\"Prefix Min and Suffix Max\",\"rating\":1000,\"tags\":[\"brute force\",\"data structures\"],\"matched_tag\":\"data structures\",\"tag_skill\":1008,\"gap\":0,\"score\":3.64},{\"id\":\"2185D\",\"name\":\"OutOfMemoryError\",\"rating\":1100,\"tags\":[\"data structures\",\"implementation\",\"math\",\"two pointers\"],\"matched_tag\":\"data structures\",\"tag_skill\":1008,\"gap\":100,\"score\":3.59},{\"id\":\"2135A\",\"name\":\"Against the Difference\",\"rating\":1200,\"tags\":[\"data structures\",\"dp\"],\"matched_tag\":\"data structures\",\"tag_skill\":1008,\"gap\":200,\"score\":3.6}]}"
+      },
+      {
+       "result": "{\"difficulty\":\"normal\",\"problems\":[{\"id\":\"2269B\",\"name\":\"KiaKio and Squared Numbers\",\"rating\":1000,\"tags\":[\"brute force\",\"implementation\"],\"matched_tag\":\"brute force\",\"tag_skill\":1015,\"gap\":0,\"score\":2.19},{\"id\":\"2208B\",\"name\":\"Cyclists\",\"rating\":1100,\"tags\":[\"brute force\",\"games\",\"greedy\",\"implementation\",\"math\",\"sortings\"],\"matched_tag\":\"brute force\",\"tag_skill\":1015,\"gap\":100,\"score\":1.97},{\"id\":\"2218E\",\"name\":\"The 67th XOR Problem\",\"rating\":1200,\"tags\":[\"binary search\",\"bitmasks\",\"brute force\"],\"matched_tag\":\"brute force\",\"tag_skill\":1015,\"gap\":200,\"score\":2.19},{\"id\":\"2167D\",\"name\":\"Yet Another Array Problem\",\"rating\":1000,\"tags\":[\"brute force\",\"implementation\",\"math\",\"number theory\"],\"matched_tag\":\"brute force\",\"tag_skill\":1015,\"gap\":0,\"score\":2.02},{\"id\":\"2036C\",\"name\":\"Anya and 1100\",\"rating\":1100,\"tags\":[\"brute force\",\"implementation\"],\"matched_tag\":\"brute force\",\"tag_skill\":1015,\"gap\":100,\"score\":1.96},{\"id\":\"2182C\",\"name\":\"Production of Snowmen\",\"rating\":1200,\"tags\":[\"brute force\",\"combinatorics\",\"dp\"],\"matched_tag\":\"brute force\",\"tag_skill\":1015,\"gap\":200,\"score\":2.17}]}"
+      },
+      {
+       "result": "{\"difficulty\":\"normal\",\"problems\":[{\"id\":\"2164B\",\"name\":\"Even Modulo Pair\",\"rating\":1000,\"tags\":[\"brute force\",\"math\",\"number theory\"],\"matched_tag\":\"number theory\",\"tag_skill\":1016,\"gap\":0,\"score\":3.14},{\"id\":\"2125C\",\"name\":\"Count Good Numbers\",\"rating\":1100,\"tags\":[\"bitmasks\",\"combinatorics\",\"math\",\"number theory\"],\"matched_tag\":\"number theory\",\"tag_skill\":1016,\"gap\":100,\"score\":3.2},{\"id\":\"2181H\",\"name\":\"Honey Cake\",\"rating\":1200,\"tags\":[\"brute force\",\"math\",\"number theory\"],\"matched_tag\":\"number theory\",\"tag_skill\":1016,\"gap\":200,\"score\":3.16},{\"id\":\"2204C\",\"name\":\"Spring\",\"rating\":1000,\"tags\":[\"math\",\"number theory\"],\"matched_tag\":\"number theory\",\"tag_skill\":1016,\"gap\":0,\"score\":3.03},{\"id\":\"2244C\",\"name\":\"Stepan and Permutation\",\"rating\":1100,\"tags\":[\"constructive algorithms\",\"dfs and similar\",\"dsu\",\"greedy\",\"math\",\"number theory\",\"sortings\"],\"matched_tag\":\"number theory\",\"tag_skill\":1016,\"gap\":100,\"score\":3.19},{\"id\":\"2039C1\",\"name\":\"Shohag Loves XOR (Easy Version)\",\"rating\":1200,\"tags\":[\"bitmasks\",\"brute force\",\"math\",\"number theory\"],\"matched_tag\":\"number theory\",\"tag_skill\":1016,\"gap\":200,\"score\":3.09}]}"
+      },
+      {
+       "result": "{\"difficulty\":\"normal\",\"problems\":[{\"id\":\"2191B\",\"name\":\"MEX Reordering\",\"rating\":1000,\"tags\":[\"constructive algorithms\",\"sortings\"],\"matched_tag\":\"sortings\",\"tag_skill\":1018,\"gap\":0,\"score\":2.22},{\"id\":\"2197B\",\"name\":\"Array and Permutation\",\"rating\":1100,\"tags\":[\"implementation\",\"schedules\",\"sortings\",\"two pointers\"],\"matched_tag\":\"sortings\",\"tag_skill\":1018,\"gap\":100,\"score\":2.42},{\"id\":\"2051D\",\"name\":\"Counting Pairs\",\"rating\":1200,\"tags\":[\"binary search\",\"sortings\",\"two pointers\"],\"matched_tag\":\"sortings\",\"tag_skill\":1018,\"gap\":200,\"score\":2.23},{\"id\":\"1970A1\",\"name\":\"Balanced Shuffle (Easy)\",\"rating\":1000,\"tags\":[\"implementation\",\"sortings\"],\"matched_tag\":\"sortings\",\"tag_skill\":1018,\"gap\":0,\"score\":2.13},{\"id\":\"2193D\",\"name\":\"Monster Game\",\"rating\":1100,\"tags\":[\"binary search\",\"sortings\",\"two pointers\"],\"matched_tag\":\"sortings\",\"tag_skill\":1018,\"gap\":100,\"score\":2.37},{\"id\":\"2161C\",\"name\":\"Loyalty\",\"rating\":1200,\"tags\":[\"constructive algorithms\",\"greedy\",\"sortings\",\"two pointers\"],\"matched_tag\":\"sortings\",\"tag_skill\":1018,\"gap\":200,\"score\":2.08}]}"
+      },
+      {
+       "call": "validate_plan",
+       "args": "{\"constraints\":{},\"items\":[{\"id\":\"2275C\",\"reason\":\"A warm up on data structures fundamentals.\"},{\"id\":\"2148E\",\"reason\":\"A stretch to deepen data structures techniques.\"},{\"id\":\"2269B\",\"reason\":\"A warm up on brute force problem solving.\"},{\"id\":\"2125C\",\"reason\":\"A step up to practice number theory concepts.\"},{\"id\":\"2197B\",\"reason\":\"A step up to sharpen sorting algorithm skills.\"}]}"
+      },
+      {
+       "result": "{\"ok\":true,\"errors\":[]}"
+      },
+      {
+       "call": "save_plan",
+       "args": "{\"constraints\":{},\"items\":[{\"id\":\"2275C\",\"reason\":\"A warm up on data structures fundamentals.\"},{\"id\":\"2148E\",\"reason\":\"A stretch to deepen data structures techniques.\"},{\"id\":\"2269B\",\"reason\":\"A warm up on brute force problem solving.\"},{\"id\":\"2125C\",\"reason\":\"A step up to practice number theory concepts.\"},{\"id\":\"2197B\",\"reason\":\"A step up to sharpen sorting algorithm skills.\"}]}"
+      },
+      {
+       "result": "{\"plan_id\":1,\"items\":5}"
+      }
+     ]
+    },
+    {
+     "case": "greedy_focus",
+     "request": "Give me 3 greedy problems.",
+     "hours": null,
+     "avoid": [],
+     "parsed": {
+      "intent": "plan",
+      "count": 3,
+      "hours": null,
+      "focus_tags": [
+       "greedy"
+      ],
+      "avoid_tags": [],
+      "difficulty": null
+     },
+     "parse_warnings": [],
+     "parse_tokens": 1019,
+     "outcome": "saved",
+     "error": null,
+     "steps": 3,
+     "input_tokens": 6172,
+     "output_tokens": 535,
+     "latency_ms": 4626,
+     "tools_called": [
+      "get_tag_profile",
+      "find_problems",
+      "validate_plan",
+      "save_plan"
+     ],
+     "rejected_calls": 0,
+     "nudges": 0,
+     "week_rules": {
+      "quota": {},
+      "levels": {},
+      "skipped": []
+     },
+     "plan": [
+      {
+       "contest_id": 2171,
+       "idx": "C1",
+       "rating": 1100,
+       "tags": [
+        "bitmasks",
+        "games",
+        "greedy"
+       ],
+       "tag": "greedy",
+       "reason": "A warm‑up on bitmask greedy techniques.",
+       "skill": 1086.2918062700396,
+       "solved": false,
+       "running": false,
+       "facts": "greedy skill 1086 (level 1100) · 25 tries · 16% abandoned · 1100 = level +0",
+       "id": "2171C1",
+       "gap": 0
+      },
+      {
+       "contest_id": 2234,
+       "idx": "C",
+       "rating": 1200,
+       "tags": [
+        "dfs and similar",
+        "dsu",
+        "greedy",
+        "implementation",
+        "two pointers"
+       ],
+       "tag": "greedy",
+       "reason": "A step‑up on graph greedy construction.",
+       "skill": 1086.2918062700396,
+       "solved": false,
+       "running": false,
+       "facts": "greedy skill 1086 (level 1100) · 25 tries · 16% abandoned · 1200 = level +100",
+       "id": "2234C",
+       "gap": 100
+      },
+      {
+       "contest_id": 2260,
+       "idx": "C",
+       "rating": 1300,
+       "tags": [
+        "bitmasks",
+        "greedy"
+       ],
+       "tag": "greedy",
+       "reason": "A stretch on maximizing XOR with greedy choices.",
+       "skill": 1086.2918062700396,
+       "solved": false,
+       "running": false,
+       "facts": "greedy skill 1086 (level 1100) · 25 tries · 16% abandoned · 1300 = level +200",
+       "id": "2260C",
+       "gap": 200
+      }
+     ],
+     "final_text": "Saved 3 problems, easiest first, rated 1100-1300. Tags: greedy x3. Difficulty: normal (+0 to +200 around each tag's level).",
+     "checks": [
+      {
+       "check": "saved",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "3 problems",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "tags in {greedy}",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "band +0..+200",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "starts with get_tag_profile",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "no rejected calls",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "unsolved",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "no running contest",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "distinct reasons",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "no numbers in reasons",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "summary has no table",
+       "ok": true,
+       "detail": null
+      }
+     ],
+     "steps_log": [
+      {
+       "user": "Give me 3 greedy problems.\n\nFixed constraints: problems: exactly 3; focus tags: greedy"
+      },
+      {
+       "call": "get_tag_profile",
+       "args": "{}"
+      },
+      {
+       "result": "{\"rating\":1008,\"tags\":[{\"tag\":\"combinatorics\",\"skill\":1007,\"attempts\":1,\"abandon_rate\":1.0},{\"tag\":\"data structures\",\"skill\":1008,\"attempts\":5,\"abandon_rate\":0.6},{\"tag\":\"divide and conquer\",\"skill\":1008,\"attempts\":1,\"abandon_rate\":1.0},{\"tag\":\"trees\",\"skill\":1008,\"attempts\":1,\"abandon_rate\":1.0},{\"tag\":\"bitmasks\",\"skill\":1010,\"attempts\":2,\"abandon_rate\":0.5},{\"tag\":\"dfs and similar\",\"skill\":1011,\"attempts\":1,\"abandon_rate\":0.0},{\"tag\":\"graphs\",\"skill\":1011,\"attempts\":1,\"abandon_rate\":0.0},{\"tag\":\"games\",\"skill\":1012,\"attempts\":2,\"abandon_rate\":0.0},{\"tag\":\"two pointers\",\"skill\":1015,\"attempts\":4,\"abandon_rate\":0.25},{\"tag\":\"shortest paths\",\"skill\":1015,\"attempts\":1,\"abandon_rate\":0.0},{\"tag\":\"brute force\",\"skill\":1015,\"attempts\":9,\"abandon_rate\":0.11},{\"tag\":\"number theory\",\"skill\":1016,\"attempts\":6,\"abandon_rate\":0.5},{\"tag\":\"sortings\",\"skill\":1018,\"attempts\":5,\"abandon_rate\":0.2},{\"tag\":\"dp\",\"skill\":1021,\"attempts\":6,\"abandon_rate\":0.33},{\"tag\":\"implementation\",\"skill\":1021,\"attempts\":11,\"abandon_rate\":0.27},{\"tag\":\"binary search\",\"skill\":1022,\"attempts\":3,\"abandon_rate\":0.0},{\"tag\":\"strings\",\"skill\":1029,\"attempts\":6,\"abandon_rate\":0.17},{\"tag\":\"constructive algorithms\",\"skill\":1033,\"attempts\":8,\"abandon_rate\":0.12},{\"tag\":\"math\",\"skill\":1046,\"attempts\":24,\"abandon_rate\":0.25},{\"tag\":\"greedy\",\"skill\":1086,\"attempts\":25,\"abandon_rate\":0.16}]}"
+      },
+      {
+       "call": "find_problems",
+       "args": "{\"count\":3,\"tag\":\"greedy\"}"
+      },
+      {
+       "result": "{\"difficulty\":\"normal\",\"problems\":[{\"id\":\"2171C1\",\"name\":\"Renako Amaori and XOR Game (easy version)\",\"rating\":1100,\"tags\":[\"bitmasks\",\"games\",\"greedy\"],\"matched_tag\":\"greedy\",\"tag_skill\":1086,\"gap\":0,\"score\":1.63},{\"id\":\"2234C\",\"name\":\"Vessels, Heights and Two Versions (Easy Version)\",\"rating\":1200,\"tags\":[\"dfs and similar\",\"dsu\",\"greedy\",\"implementation\",\"two pointers\"],\"matched_tag\":\"greedy\",\"tag_skill\":1086,\"gap\":100,\"score\":1.66},{\"id\":\"2260C\",\"name\":\"Maximize XOR, Minimize Operations\",\"rating\":1300,\"tags\":[\"bitmasks\",\"greedy\"],\"matched_tag\":\"greedy\",\"tag_skill\":1086,\"gap\":200,\"score\":1.73}]}"
+      },
+      {
+       "call": "validate_plan",
+       "args": "{\"items\":[{\"id\":\"2171C1\",\"reason\":\"A warm‑up on bitmask greedy techniques.\"},{\"id\":\"2234C\",\"reason\":\"A step‑up on graph greedy construction.\"},{\"id\":\"2260C\",\"reason\":\"A stretch on maximizing XOR with greedy choices.\"}]}"
+      },
+      {
+       "result": "{\"ok\":true,\"errors\":[]}"
+      },
+      {
+       "call": "save_plan",
+       "args": "{\"items\":[{\"id\":\"2171C1\",\"reason\":\"A warm‑up on bitmask greedy techniques.\"},{\"id\":\"2234C\",\"reason\":\"A step‑up on graph greedy construction.\"},{\"id\":\"2260C\",\"reason\":\"A stretch on maximizing XOR with greedy choices.\"}]}"
+      },
+      {
+       "result": "{\"plan_id\":1,\"items\":3}"
+      }
+     ]
+    },
+    {
+     "case": "challenge_any",
+     "request": "Challenge me: 3 hard problems.",
+     "hours": null,
+     "avoid": [],
+     "parsed": {
+      "intent": "plan",
+      "count": 3,
+      "hours": null,
+      "focus_tags": [],
+      "avoid_tags": [],
+      "difficulty": "harder"
+     },
+     "parse_warnings": [],
+     "parse_tokens": 1019,
+     "outcome": "saved",
+     "error": null,
+     "steps": 2,
+     "input_tokens": 5728,
+     "output_tokens": 1238,
+     "latency_ms": 4601,
+     "tools_called": [
+      "get_tag_profile",
+      "find_problems",
+      "find_problems",
+      "validate_plan",
+      "save_plan"
+     ],
+     "rejected_calls": 0,
+     "nudges": 0,
+     "week_rules": {
+      "quota": {
+       "data structures": 2,
+       "brute force": 1
+      },
+      "levels": {
+       "data structures": [
+        100,
+        300
+       ],
+       "brute force": [
+        200
+       ]
+      },
+      "skipped": []
+     },
+     "plan": [
+      {
+       "contest_id": 2253,
+       "idx": "B",
+       "rating": 1100,
+       "tags": [
+        "brute force",
+        "data structures",
+        "two pointers"
+       ],
+       "tag": "data structures",
+       "reason": "A warm-up on data structures using brute force techniques.",
+       "skill": 1007.6717994526197,
+       "solved": false,
+       "running": false,
+       "facts": "data structures skill 1008 (level 1000) · 5 tries · 60% abandoned · 1100 = level +100",
+       "id": "2253B",
+       "gap": 100
+      },
+      {
+       "contest_id": 2218,
+       "idx": "E",
+       "rating": 1200,
+       "tags": [
+        "binary search",
+        "bitmasks",
+        "brute force"
+       ],
+       "tag": "brute force",
+       "reason": "A step-up on brute force to bridge the warm-up and stretch.",
+       "skill": 1015.3598510586842,
+       "solved": false,
+       "running": false,
+       "facts": "brute force skill 1015 (level 1000) · 9 tries · 11% abandoned · 1200 = level +200",
+       "id": "2218E",
+       "gap": 200
+      },
+      {
+       "contest_id": 2242,
+       "idx": "C",
+       "rating": 1300,
+       "tags": [
+        "brute force",
+        "data structures",
+        "implementation",
+        "sortings",
+        "two pointers"
+       ],
+       "tag": "data structures",
+       "reason": "A stretch on data structures to challenge advanced skills.",
+       "skill": 1007.6717994526197,
+       "solved": false,
+       "running": false,
+       "facts": "data structures skill 1008 (level 1000) · 5 tries · 60% abandoned · 1300 = level +300",
+       "id": "2242C",
+       "gap": 300
+      }
+     ],
+     "final_text": "Saved 3 problems, easiest first, rated 1100-1300. Tags: data structures x2, brute force x1. Difficulty: harder (+100 to +300 around each tag's level).",
+     "checks": [
+      {
+       "check": "saved",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "3 problems",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "band +100..+300",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "starts with get_tag_profile",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "no rejected calls",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "unsolved",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "no running contest",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "distinct reasons",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "no numbers in reasons",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "summary has no table",
+       "ok": true,
+       "detail": null
+      }
+     ],
+     "steps_log": [
+      {
+       "user": "Challenge me: 3 hard problems.\n\nFixed constraints: problems: exactly 3; this week's tags and levels (your weakest with 5+ attempts; their problems are loaded; pick each by its gap field): data structures warm-up (gap +100) and stretch (gap +300), brute force step-up (gap +200); difficulty: harder"
+      },
+      {
+       "call": "get_tag_profile",
+       "args": "{}"
+      },
+      {
+       "result": "{\"rating\":1008,\"tags\":[{\"tag\":\"combinatorics\",\"skill\":1007,\"attempts\":1,\"abandon_rate\":1.0},{\"tag\":\"data structures\",\"skill\":1008,\"attempts\":5,\"abandon_rate\":0.6},{\"tag\":\"divide and conquer\",\"skill\":1008,\"attempts\":1,\"abandon_rate\":1.0},{\"tag\":\"trees\",\"skill\":1008,\"attempts\":1,\"abandon_rate\":1.0},{\"tag\":\"bitmasks\",\"skill\":1010,\"attempts\":2,\"abandon_rate\":0.5},{\"tag\":\"dfs and similar\",\"skill\":1011,\"attempts\":1,\"abandon_rate\":0.0},{\"tag\":\"graphs\",\"skill\":1011,\"attempts\":1,\"abandon_rate\":0.0},{\"tag\":\"games\",\"skill\":1012,\"attempts\":2,\"abandon_rate\":0.0},{\"tag\":\"two pointers\",\"skill\":1015,\"attempts\":4,\"abandon_rate\":0.25},{\"tag\":\"shortest paths\",\"skill\":1015,\"attempts\":1,\"abandon_rate\":0.0},{\"tag\":\"brute force\",\"skill\":1015,\"attempts\":9,\"abandon_rate\":0.11},{\"tag\":\"number theory\",\"skill\":1016,\"attempts\":6,\"abandon_rate\":0.5},{\"tag\":\"sortings\",\"skill\":1018,\"attempts\":5,\"abandon_rate\":0.2},{\"tag\":\"dp\",\"skill\":1021,\"attempts\":6,\"abandon_rate\":0.33},{\"tag\":\"implementation\",\"skill\":1021,\"attempts\":11,\"abandon_rate\":0.27},{\"tag\":\"binary search\",\"skill\":1022,\"attempts\":3,\"abandon_rate\":0.0},{\"tag\":\"strings\",\"skill\":1029,\"attempts\":6,\"abandon_rate\":0.17},{\"tag\":\"constructive algorithms\",\"skill\":1033,\"attempts\":8,\"abandon_rate\":0.12},{\"tag\":\"math\",\"skill\":1046,\"attempts\":24,\"abandon_rate\":0.25},{\"tag\":\"greedy\",\"skill\":1086,\"attempts\":25,\"abandon_rate\":0.16}]}"
+      },
+      {
+       "call": "find_problems",
+       "args": "{\"tag\": \"data structures\", \"count\": 6}"
+      },
+      {
+       "call": "find_problems",
+       "args": "{\"tag\": \"brute force\", \"count\": 6}"
+      },
+      {
+       "result": "{\"difficulty\":\"harder\",\"problems\":[{\"id\":\"2253B\",\"name\":\"Hypercarp and the Control Panel\",\"rating\":1100,\"tags\":[\"brute force\",\"data structures\",\"two pointers\"],\"matched_tag\":\"data structures\",\"tag_skill\":1008,\"gap\":100,\"score\":3.77},{\"id\":\"2148E\",\"name\":\"Split\",\"rating\":1200,\"tags\":[\"binary search\",\"data structures\",\"two pointers\"],\"matched_tag\":\"data structures\",\"tag_skill\":1008,\"gap\":200,\"score\":3.64},{\"id\":\"2242C\",\"name\":\"Unstable Elements\",\"rating\":1300,\"tags\":[\"brute force\",\"data structures\",\"implementation\",\"sortings\",\"two pointers\"],\"matched_tag\":\"data structures\",\"tag_skill\":1008,\"gap\":300,\"score\":3.74},{\"id\":\"2185D\",\"name\":\"OutOfMemoryError\",\"rating\":1100,\"tags\":[\"data structures\",\"implementation\",\"math\",\"two pointers\"],\"matched_tag\":\"data structures\",\"tag_skill\":1008,\"gap\":100,\"score\":3.59},{\"id\":\"2135A\",\"name\":\"Against the Difference\",\"rating\":1200,\"tags\":[\"data structures\",\"dp\"],\"matched_tag\":\"data structures\",\"tag_skill\":1008,\"gap\":200,\"score\":3.6},{\"id\":\"2150A\",\"name\":\"Incremental Path\",\"rating\":1300,\"tags\":[\"data structures\",\"hashing\",\"implementation\"],\"matched_tag\":\"data structures\",\"tag_skill\":1008,\"gap\":300,\"score\":3.68}]}"
+      },
+      {
+       "result": "{\"difficulty\":\"harder\",\"problems\":[{\"id\":\"2208B\",\"name\":\"Cyclists\",\"rating\":1100,\"tags\":[\"brute force\",\"games\",\"greedy\",\"implementation\",\"math\",\"sortings\"],\"matched_tag\":\"brute force\",\"tag_skill\":1015,\"gap\":100,\"score\":1.97},{\"id\":\"2218E\",\"name\":\"The 67th XOR Problem\",\"rating\":1200,\"tags\":[\"binary search\",\"bitmasks\",\"brute force\"],\"matched_tag\":\"brute force\",\"tag_skill\":1015,\"gap\":200,\"score\":2.19},{\"id\":\"2194C\",\"name\":\"Secret message\",\"rating\":1300,\"tags\":[\"bitmasks\",\"brute force\",\"dp\",\"math\",\"number theory\"],\"matched_tag\":\"brute force\",\"tag_skill\":1015,\"gap\":300,\"score\":2.09},{\"id\":\"2036C\",\"name\":\"Anya and 1100\",\"rating\":1100,\"tags\":[\"brute force\",\"implementation\"],\"matched_tag\":\"brute force\",\"tag_skill\":1015,\"gap\":100,\"score\":1.96},{\"id\":\"2182C\",\"name\":\"Production of Snowmen\",\"rating\":1200,\"tags\":[\"brute force\",\"combinatorics\",\"dp\"],\"matched_tag\":\"brute force\",\"tag_skill\":1015,\"gap\":200,\"score\":2.17},{\"id\":\"2056B\",\"name\":\"Find the Permutation\",\"rating\":1300,\"tags\":[\"brute force\",\"dfs and similar\",\"graphs\",\"implementation\",\"sortings\"],\"matched_tag\":\"brute force\",\"tag_skill\":1015,\"gap\":300,\"score\":2.03}]}"
+      },
+      {
+       "call": "validate_plan",
+       "args": "{\"constraints\":{},\"items\":[{\"id\":\"2253B\",\"reason\":\"A warm-up on data structures using brute force techniques.\"},{\"id\":\"2218E\",\"reason\":\"A step-up on brute force to bridge the warm-up and stretch.\"},{\"id\":\"2242C\",\"reason\":\"A stretch on data structures to challenge advanced skills.\"}]}"
+      },
+      {
+       "result": "{\"ok\":true,\"errors\":[]}"
+      },
+      {
+       "call": "save_plan",
+       "args": "{\"constraints\":{},\"items\":[{\"id\":\"2253B\",\"reason\":\"A warm-up on data structures using brute force techniques.\"},{\"id\":\"2218E\",\"reason\":\"A step-up on brute force to bridge the warm-up and stretch.\"},{\"id\":\"2242C\",\"reason\":\"A stretch on data structures to challenge advanced skills.\"}]}"
+      },
+      {
+       "result": "{\"plan_id\":1,\"items\":3}"
+      }
+     ]
+    },
+    {
+     "case": "rusty",
+     "request": "I'm rusty after a break. Give me 3 easy warm-up problems.",
+     "hours": null,
+     "avoid": [],
+     "parsed": {
+      "intent": "plan",
+      "count": 3,
+      "hours": null,
+      "focus_tags": [],
+      "avoid_tags": [],
+      "difficulty": "easier"
+     },
+     "parse_warnings": [],
+     "parse_tokens": 1032,
+     "outcome": "saved",
+     "error": null,
+     "steps": 2,
+     "input_tokens": 5715,
+     "output_tokens": 1288,
+     "latency_ms": 5890,
+     "tools_called": [
+      "get_tag_profile",
+      "find_problems",
+      "find_problems",
+      "validate_plan",
+      "save_plan"
+     ],
+     "rejected_calls": 0,
+     "nudges": 0,
+     "week_rules": {
+      "quota": {
+       "data structures": 2,
+       "brute force": 1
+      },
+      "levels": {
+       "data structures": [
+        -100,
+        100
+       ],
+       "brute force": [
+        0
+       ]
+      },
+      "skipped": []
+     },
+     "plan": [
+      {
+       "contest_id": 1380,
+       "idx": "A",
+       "rating": 900,
+       "tags": [
+        "brute force",
+        "data structures"
+       ],
+       "tag": "data structures",
+       "reason": "A warm-up on data structures to refresh basics",
+       "skill": 1007.6717994526197,
+       "solved": false,
+       "running": false,
+       "facts": "data structures skill 1008 (level 1000) · 5 tries · 60% abandoned · 900 = level -100",
+       "id": "1380A",
+       "gap": -100
+      },
+      {
+       "contest_id": 2269,
+       "idx": "B",
+       "rating": 1000,
+       "tags": [
+        "brute force",
+        "implementation"
+       ],
+       "tag": "brute force",
+       "reason": "A step-up on brute force to bridge to harder tasks",
+       "skill": 1015.3598510586842,
+       "solved": false,
+       "running": false,
+       "facts": "brute force skill 1015 (level 1000) · 9 tries · 11% abandoned · 1000 = level +0",
+       "id": "2269B",
+       "gap": 0
+      },
+      {
+       "contest_id": 2253,
+       "idx": "B",
+       "rating": 1100,
+       "tags": [
+        "brute force",
+        "data structures",
+        "two pointers"
+       ],
+       "tag": "data structures",
+       "reason": "A stretch on data structures to push your limits",
+       "skill": 1007.6717994526197,
+       "solved": false,
+       "running": false,
+       "facts": "data structures skill 1008 (level 1000) · 5 tries · 60% abandoned · 1100 = level +100",
+       "id": "2253B",
+       "gap": 100
+      }
+     ],
+     "final_text": "Saved 3 problems, easiest first, rated 900-1100. Tags: data structures x2, brute force x1. Difficulty: easier (-100 to +100 around each tag's level).",
+     "checks": [
+      {
+       "check": "saved",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "3 problems",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "band -100..+100",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "starts with get_tag_profile",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "no rejected calls",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "unsolved",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "no running contest",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "distinct reasons",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "no numbers in reasons",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "summary has no table",
+       "ok": true,
+       "detail": null
+      }
+     ],
+     "steps_log": [
+      {
+       "user": "I'm rusty after a break. Give me 3 easy warm-up problems.\n\nFixed constraints: problems: exactly 3; this week's tags and levels (your weakest with 5+ attempts; their problems are loaded; pick each by its gap field): data structures warm-up (gap -100) and stretch (gap +100), brute force step-up (gap +0); difficulty: easier"
+      },
+      {
+       "call": "get_tag_profile",
+       "args": "{}"
+      },
+      {
+       "result": "{\"rating\":1008,\"tags\":[{\"tag\":\"combinatorics\",\"skill\":1007,\"attempts\":1,\"abandon_rate\":1.0},{\"tag\":\"data structures\",\"skill\":1008,\"attempts\":5,\"abandon_rate\":0.6},{\"tag\":\"divide and conquer\",\"skill\":1008,\"attempts\":1,\"abandon_rate\":1.0},{\"tag\":\"trees\",\"skill\":1008,\"attempts\":1,\"abandon_rate\":1.0},{\"tag\":\"bitmasks\",\"skill\":1010,\"attempts\":2,\"abandon_rate\":0.5},{\"tag\":\"dfs and similar\",\"skill\":1011,\"attempts\":1,\"abandon_rate\":0.0},{\"tag\":\"graphs\",\"skill\":1011,\"attempts\":1,\"abandon_rate\":0.0},{\"tag\":\"games\",\"skill\":1012,\"attempts\":2,\"abandon_rate\":0.0},{\"tag\":\"two pointers\",\"skill\":1015,\"attempts\":4,\"abandon_rate\":0.25},{\"tag\":\"shortest paths\",\"skill\":1015,\"attempts\":1,\"abandon_rate\":0.0},{\"tag\":\"brute force\",\"skill\":1015,\"attempts\":9,\"abandon_rate\":0.11},{\"tag\":\"number theory\",\"skill\":1016,\"attempts\":6,\"abandon_rate\":0.5},{\"tag\":\"sortings\",\"skill\":1018,\"attempts\":5,\"abandon_rate\":0.2},{\"tag\":\"dp\",\"skill\":1021,\"attempts\":6,\"abandon_rate\":0.33},{\"tag\":\"implementation\",\"skill\":1021,\"attempts\":11,\"abandon_rate\":0.27},{\"tag\":\"binary search\",\"skill\":1022,\"attempts\":3,\"abandon_rate\":0.0},{\"tag\":\"strings\",\"skill\":1029,\"attempts\":6,\"abandon_rate\":0.17},{\"tag\":\"constructive algorithms\",\"skill\":1033,\"attempts\":8,\"abandon_rate\":0.12},{\"tag\":\"math\",\"skill\":1046,\"attempts\":24,\"abandon_rate\":0.25},{\"tag\":\"greedy\",\"skill\":1086,\"attempts\":25,\"abandon_rate\":0.16}]}"
+      },
+      {
+       "call": "find_problems",
+       "args": "{\"tag\": \"data structures\", \"count\": 6}"
+      },
+      {
+       "call": "find_problems",
+       "args": "{\"tag\": \"brute force\", \"count\": 6}"
+      },
+      {
+       "result": "{\"difficulty\":\"easier\",\"problems\":[{\"id\":\"1380A\",\"name\":\"Three Indices\",\"rating\":900,\"tags\":[\"brute force\",\"data structures\"],\"matched_tag\":\"data structures\",\"tag_skill\":1008,\"gap\":-100,\"score\":3.3},{\"id\":\"2275C\",\"name\":\"Unrequited Love\",\"rating\":1000,\"tags\":[\"brute force\",\"data structures\"],\"matched_tag\":\"data structures\",\"tag_skill\":1008,\"gap\":0,\"score\":3.79},{\"id\":\"2253B\",\"name\":\"Hypercarp and the Control Panel\",\"rating\":1100,\"tags\":[\"brute force\",\"data structures\",\"two pointers\"],\"matched_tag\":\"data structures\",\"tag_skill\":1008,\"gap\":100,\"score\":3.77},{\"id\":\"1807D\",\"name\":\"Odd Queries\",\"rating\":900,\"tags\":[\"data structures\",\"implementation\"],\"matched_tag\":\"data structures\",\"tag_skill\":1008,\"gap\":-100,\"score\":3.27},{\"id\":\"2123C\",\"name\":\"Prefix Min and Suffix Max\",\"rating\":1000,\"tags\":[\"brute force\",\"data structures\"],\"matched_tag\":\"data structures\",\"tag_skill\":1008,\"gap\":0,\"score\":3.64},{\"id\":\"2185D\",\"name\":\"OutOfMemoryError\",\"rating\":1100,\"tags\":[\"data structures\",\"implementation\",\"math\",\"two pointers\"],\"matched_tag\":\"data structures\",\"tag_skill\":1008,\"gap\":100,\"score\":3.59}]}"
+      },
+      {
+       "result": "{\"difficulty\":\"easier\",\"problems\":[{\"id\":\"2258B1\",\"name\":\"Carrot Chopdown (Easy Version)\",\"rating\":900,\"tags\":[\"brute force\",\"games\",\"math\"],\"matched_tag\":\"brute force\",\"tag_skill\":1015,\"gap\":-100,\"score\":2.1},{\"id\":\"2269B\",\"name\":\"KiaKio and Squared Numbers\",\"rating\":1000,\"tags\":[\"brute force\",\"implementation\"],\"matched_tag\":\"brute force\",\"tag_skill\":1015,\"gap\":0,\"score\":2.19},{\"id\":\"2208B\",\"name\":\"Cyclists\",\"rating\":1100,\"tags\":[\"brute force\",\"games\",\"greedy\",\"implementation\",\"math\",\"sortings\"],\"matched_tag\":\"brute force\",\"tag_skill\":1015,\"gap\":100,\"score\":1.97},{\"id\":\"2260B\",\"name\":\"Monocarp and Projects\",\"rating\":900,\"tags\":[\"brute force\",\"math\",\"number theory\"],\"matched_tag\":\"brute force\",\"tag_skill\":1015,\"gap\":-100,\"score\":2.08},{\"id\":\"2167D\",\"name\":\"Yet Another Array Problem\",\"rating\":1000,\"tags\":[\"brute force\",\"implementation\",\"math\",\"number theory\"],\"matched_tag\":\"brute force\",\"tag_skill\":1015,\"gap\":0,\"score\":2.02},{\"id\":\"2036C\",\"name\":\"Anya and 1100\",\"rating\":1100,\"tags\":[\"brute force\",\"implementation\"],\"matched_tag\":\"brute force\",\"tag_skill\":1015,\"gap\":100,\"score\":1.96}]}"
+      },
+      {
+       "call": "validate_plan",
+       "args": "{\"constraints\":{},\"items\":[{\"id\":\"1380A\",\"reason\":\"A warm-up on data structures to refresh basics\"},{\"id\":\"2253B\",\"reason\":\"A stretch on data structures to push your limits\"},{\"id\":\"2269B\",\"reason\":\"A step-up on brute force to bridge to harder tasks\"}]}"
+      },
+      {
+       "result": "{\"ok\":true,\"errors\":[]}"
+      },
+      {
+       "call": "save_plan",
+       "args": "{\"constraints\":{},\"items\":[{\"id\":\"1380A\",\"reason\":\"A warm-up on data structures to refresh basics\"},{\"id\":\"2253B\",\"reason\":\"A stretch on data structures to push your limits\"},{\"id\":\"2269B\",\"reason\":\"A step-up on brute force to bridge to harder tasks\"}]}"
+      },
+      {
+       "result": "{\"plan_id\":1,\"items\":3}"
+      }
+     ]
+    }
+   ],
+   "not_run": [],
+   "summary": {
+    "cases": 4,
+    "cases_all_passed": 4,
+    "checks": 41,
+    "checks_passed": 41,
+    "rejected_calls": 0,
+    "nudges": 0,
+    "avg_steps": 2.2,
+    "avg_input_tokens": 6206,
+    "avg_latency_s": 5.6
+   }
+  },
+  {
+   "label": "grinder_5800",
+   "handle": "rainboy",
+   "why": "band runs out: rating 1702, 5,861 solved, weakest tags are rare; weird contest solving pattern",
+   "fetched": 0,
+   "tag_rows": 38,
+   "sync_s": 3.9,
+   "snapshot": {
+    "rating": 1702,
+    "submissions": 13806,
+    "solved": 5861,
+    "tags": 37,
+    "measured_tags": 36,
+    "weakest_tag": "communication"
+   },
+   "results": [
+    {
+     "case": "default_week",
+     "request": "Plan my practice for this week.",
+     "hours": null,
+     "avoid": [],
+     "parsed": {
+      "intent": "plan",
+      "count": null,
+      "hours": null,
+      "focus_tags": [],
+      "avoid_tags": [],
+      "difficulty": null
+     },
+     "parse_warnings": [],
+     "parse_tokens": 1037,
+     "outcome": "saved",
+     "error": null,
+     "steps": 2,
+     "input_tokens": 8181,
+     "output_tokens": 1162,
+     "latency_ms": 15635,
+     "tools_called": [
+      "get_tag_profile",
+      "find_problems",
+      "find_problems",
+      "find_problems",
+      "find_problems",
+      "validate_plan",
+      "save_plan"
+     ],
+     "rejected_calls": 0,
+     "nudges": 0,
+     "week_rules": {
+      "quota": {
+       "2-sat": 2,
+       "ternary search": 1,
+       "graph matchings": 1,
+       "string suffix structures": 1
+      },
+      "levels": {
+       "2-sat": [
+        0,
+        200
+       ],
+       "ternary search": [
+        0
+       ],
+       "graph matchings": [
+        100
+       ],
+       "string suffix structures": [
+        100
+       ]
+      },
+      "skipped": [
+       "schedules",
+       "expression parsing",
+       "chinese remainder theorem",
+       "meet-in-the-middle"
+      ]
+     },
+     "plan": [
+      {
+       "contest_id": 780,
+       "idx": "D",
+       "rating": 1900,
+       "tags": [
+        "2-sat",
+        "graphs",
+        "greedy",
+        "implementation",
+        "shortest paths",
+        "strings"
+       ],
+       "tag": "2-sat",
+       "reason": "A warm-up on satisfiability techniques before the stretch challenge.",
+       "skill": 1868.958247796692,
+       "solved": false,
+       "running": false,
+       "facts": "2-sat skill 1869 (level 1900) · 24 tries · 0% abandoned · 1900 = level +0",
+       "id": "780D",
+       "gap": 0
+      },
+      {
+       "contest_id": 250,
+       "idx": "D",
+       "rating": 1900,
+       "tags": [
+        "geometry",
+        "ternary search",
+        "two pointers"
+       ],
+       "tag": "ternary search",
+       "reason": "A warm-up on ternary search to sharpen divide‑and‑conquer skills.",
+       "skill": 1892.7642900427434,
+       "solved": false,
+       "running": false,
+       "facts": "ternary search skill 1893 (level 1900) · 32 tries · 0% abandoned · 1900 = level +0",
+       "id": "250D",
+       "gap": 0
+      },
+      {
+       "contest_id": 1034,
+       "idx": "B",
+       "rating": 2200,
+       "tags": [
+        "brute force",
+        "constructive algorithms",
+        "flows",
+        "graph matchings"
+       ],
+       "tag": "graph matchings",
+       "reason": "A step‑up on graph matching algorithms to raise the difficulty.",
+       "skill": 2143.8026559913883,
+       "solved": false,
+       "running": false,
+       "facts": "graph matchings skill 2144 (level 2100) · 63 tries · 0% abandoned · 2200 = level +100",
+       "id": "1034B",
+       "gap": 100
+      },
+      {
+       "contest_id": 557,
+       "idx": "E",
+       "rating": 2300,
+       "tags": [
+        "data structures",
+        "dp",
+        "graphs",
+        "string suffix structures",
+        "strings",
+        "trees"
+       ],
+       "tag": "string suffix structures",
+       "reason": "A step‑up on suffix structures for string processing.",
+       "skill": 2166.804637672356,
+       "solved": false,
+       "running": false,
+       "facts": "string suffix structures skill 2167 (level 2200) · 60 tries · 0% abandoned · 2300 = level +100",
+       "id": "557E",
+       "gap": 100
+      },
+      {
+       "contest_id": 875,
+       "idx": "C",
+       "rating": 2100,
+       "tags": [
+        "2-sat",
+        "dfs and similar",
+        "graphs",
+        "implementation"
+       ],
+       "tag": "2-sat",
+       "reason": "A stretch on advanced satisfiability constraints to push the limits.",
+       "skill": 1868.958247796692,
+       "solved": false,
+       "running": false,
+       "facts": "2-sat skill 1869 (level 1900) · 24 tries · 0% abandoned · 2100 = level +200",
+       "id": "875C",
+       "gap": 200
+      }
+     ],
+     "final_text": "Saved 5 problems, easiest first, rated 1900-2300. Tags: 2-sat x2, ternary search x1, graph matchings x1, string suffix structures x1. Difficulty: normal (+0 to +200 around each tag's level).",
+     "checks": [
+      {
+       "check": "saved",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "5 problems",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "band +0..+200",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "starts with get_tag_profile",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "no rejected calls",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "unsolved",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "no running contest",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "distinct reasons",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "no numbers in reasons",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "summary has no table",
+       "ok": true,
+       "detail": null
+      }
+     ],
+     "steps_log": [
+      {
+       "user": "Plan my practice for this week.\n\nFixed constraints: problems: exactly 5; this week's tags and levels (your weakest with 5+ attempts; their problems are loaded; pick each by its gap field): 2-sat warm-up (gap +0) and stretch (gap +200), ternary search warm-up (gap +0), graph matchings step-up (gap +100), string suffix structures step-up (gap +100)"
+      },
+      {
+       "call": "get_tag_profile",
+       "args": "{}"
+      },
+      {
+       "result": "{\"rating\":1702,\"tags\":[{\"tag\":\"communication\",\"skill\":1713,\"attempts\":2,\"abandon_rate\":0.0},{\"tag\":\"schedules\",\"skill\":1729,\"attempts\":5,\"abandon_rate\":0.0},{\"tag\":\"expression parsing\",\"skill\":1759,\"attempts\":16,\"abandon_rate\":0.0},{\"tag\":\"chinese remainder theorem\",\"skill\":1780,\"attempts\":14,\"abandon_rate\":0.0},{\"tag\":\"2-sat\",\"skill\":1869,\"attempts\":24,\"abandon_rate\":0.0},{\"tag\":\"ternary search\",\"skill\":1893,\"attempts\":32,\"abandon_rate\":0.0},{\"tag\":\"meet-in-the-middle\",\"skill\":1941,\"attempts\":34,\"abandon_rate\":0.0},{\"tag\":\"graph matchings\",\"skill\":2144,\"attempts\":63,\"abandon_rate\":0.0},{\"tag\":\"string suffix structures\",\"skill\":2167,\"attempts\":60,\"abandon_rate\":0.0},{\"tag\":\"matrices\",\"skill\":2248,\"attempts\":73,\"abandon_rate\":0.0},{\"tag\":\"fft\",\"skill\":2302,\"attempts\":81,\"abandon_rate\":0.0},{\"tag\":\"hashing\",\"skill\":2387,\"attempts\":148,\"abandon_rate\":0.0},{\"tag\":\"flows\",\"skill\":2506,\"attempts\":97,\"abandon_rate\":0.0},{\"tag\":\"shortest paths\",\"skill\":2521,\"attempts\":180,\"abandon_rate\":0.0},{\"tag\":\"games\",\"skill\":2548,\"attempts\":128,\"abandon_rate\":0.0},{\"tag\":\"probabilities\",\"skill\":2588,\"attempts\":147,\"abandon_rate\":0.0},{\"tag\":\"two pointers\",\"skill\":2594,\"attempts\":338,\"abandon_rate\":0.0},{\"tag\":\"dsu\",\"skill\":2633,\"attempts\":255,\"abandon_rate\":0.0},{\"tag\":\"sortings\",\"skill\":2776,\"attempts\":596,\"abandon_rate\":0.0},{\"tag\":\"interactive\",\"skill\":2780,\"attempts\":185,\"abandon_rate\":0.01},{\"tag\":\"divide and conquer\",\"skill\":2784,\"attempts\":236,\"abandon_rate\":0.0},{\"tag\":\"strings\",\"skill\":2787,\"attempts\":405,\"abandon_rate\":0.0},{\"tag\":\"geometry\",\"skill\":2900,\"attempts\":209,\"abandon_rate\":0.0},{\"tag\":\"number theory\",\"skill\":2942,\"attempts\":458,\"abandon_rate\":0.0},{\"tag\":\"implementation\",\"skill\":2987,\"attempts\":1491,\"abandon_rate\":0.0},{\"tag\":\"bitmasks\",\"skill\":2988,\"attempts\":395,\"abandon_rate\":0.0},{\"tag\":\"dfs and similar\",\"skill\":3013,\"attempts\":652,\"abandon_rate\":0.0},{\"tag\":\"brute force\",\"skill\":3079,\"attempts\":1004,\"abandon_rate\":0.0},{\"tag\":\"binary search\",\"skill\":3120,\"attempts\":678,\"abandon_rate\":0.0},{\"tag\":\"combinatorics\",\"skill\":3222,\"attempts\":511,\"abandon_rate\":0.0},{\"tag\":\"graphs\",\"skill\":3271,\"attempts\":737,\"abandon_rate\":0.0},{\"tag\":\"trees\",\"skill\":3301,\"attempts\":628,\"abandon_rate\":0.0},{\"tag\":\"greedy\",\"skill\":3307,\"attempts\":1570,\"abandon_rate\":0.0},{\"tag\":\"math\",\"skill\":3411,\"attempts\":1649,\"abandon_rate\":0.0},{\"tag\":\"constructive algorithms\",\"skill\":3418,\"attempts\":997,\"abandon_rate\":0.0},{\"tag\":\"data structures\",\"skill\":3479,\"attempts\":1176,\"abandon_rate\":0.0},{\"tag\":\"dp\",\"skill\":3501,\"attempts\":1415,\"abandon_rate\":0.0}]}"
+      },
+      {
+       "call": "find_problems",
+       "args": "{\"tag\": \"2-sat\", \"count\": 6}"
+      },
+      {
+       "call": "find_problems",
+       "args": "{\"tag\": \"ternary search\", \"count\": 6}"
+      },
+      {
+       "call": "find_problems",
+       "args": "{\"tag\": \"graph matchings\", \"count\": 6}"
+      },
+      {
+       "call": "find_problems",
+       "args": "{\"tag\": \"string suffix structures\", \"count\": 6}"
+      },
+      {
+       "result": "{\"difficulty\":\"normal\",\"problems\":[{\"id\":\"780D\",\"name\":\"Innokenty and a Football League\",\"rating\":1900,\"tags\":[\"2-sat\",\"graphs\",\"greedy\",\"implementation\",\"shortest paths\",\"strings\"],\"matched_tag\":\"2-sat\",\"tag_skill\":1869,\"gap\":0,\"score\":21.59},{\"id\":\"1438C\",\"name\":\"Engineer Artem\",\"rating\":2000,\"tags\":[\"2-sat\",\"chinese remainder theorem\",\"constructive algorithms\",\"fft\",\"flows\"],\"matched_tag\":\"2-sat\",\"tag_skill\":1869,\"gap\":100,\"score\":26.32},{\"id\":\"875C\",\"name\":\"National Property\",\"rating\":2100,\"tags\":[\"2-sat\",\"dfs and similar\",\"graphs\",\"implementation\"],\"matched_tag\":\"2-sat\",\"tag_skill\":1869,\"gap\":200,\"score\":20.43},{\"id\":\"2245D2\",\"name\":\"Construct an Array (Hard Version)\",\"rating\":2000,\"tags\":[\"2-sat\",\"constructive algorithms\",\"dfs and similar\",\"graphs\",\"implementation\"],\"matched_tag\":\"2-sat\",\"tag_skill\":1869,\"gap\":100,\"score\":20.08},{\"id\":\"1971H\",\"name\":\"±1\",\"rating\":2100,\"tags\":[\"2-sat\",\"dfs and similar\",\"graphs\"],\"matched_tag\":\"2-sat\",\"tag_skill\":1869,\"gap\":200,\"score\":20.11},{\"id\":\"1218I\",\"name\":\"The Light Square\",\"rating\":2100,\"tags\":[\"2-sat\",\"dfs and similar\",\"greedy\"],\"matched_tag\":\"2-sat\",\"tag_skill\":1869,\"gap\":200,\"score\":19.74}]}"
+      },
+      {
+       "result": "{\"difficulty\":\"normal\",\"problems\":[{\"id\":\"250D\",\"name\":\"Building Bridge\",\"rating\":1900,\"tags\":[\"geometry\",\"ternary search\",\"two pointers\"],\"matched_tag\":\"ternary search\",\"tag_skill\":1893,\"gap\":0,\"score\":23.63},{\"id\":\"1244E\",\"name\":\"Minimizing Difference\",\"rating\":2000,\"tags\":[\"binary search\",\"constructive algorithms\",\"greedy\",\"sortings\",\"ternary search\",\"two pointers\"],\"matched_tag\":\"ternary search\",\"tag_skill\":1893,\"gap\":100,\"score\":20.67},{\"id\":\"106E\",\"name\":\"Space Rescuers\",\"rating\":2100,\"tags\":[\"geometry\",\"ternary search\"],\"matched_tag\":\"ternary search\",\"tag_skill\":1893,\"gap\":200,\"score\":22.1},{\"id\":\"865B\",\"name\":\"Ordering Pizza\",\"rating\":1900,\"tags\":[\"binary search\",\"sortings\",\"ternary search\"],\"matched_tag\":\"ternary search\",\"tag_skill\":1893,\"gap\":0,\"score\":21.62},{\"id\":\"1599C\",\"name\":\"Bubble Strike\",\"rating\":2000,\"tags\":[\"combinatorics\",\"math\",\"probabilities\",\"ternary search\"],\"matched_tag\":\"ternary search\",\"tag_skill\":1893,\"gap\":100,\"score\":20.36},{\"id\":\"1254B2\",\"name\":\"Send Boxes to Alice (Hard Version)\",\"rating\":2100,\"tags\":[\"constructive algorithms\",\"greedy\",\"math\",\"number theory\",\"ternary search\",\"two pointers\"],\"matched_tag\":\"ternary search\",\"tag_skill\":1893,\"gap\":200,\"score\":19.76}]}"
+      },
+      {
+       "result": "{\"difficulty\":\"normal\",\"problems\":[{\"id\":\"852D\",\"name\":\"Exploration plan\",\"rating\":2100,\"tags\":[\"binary search\",\"flows\",\"graph matchings\",\"shortest paths\"],\"matched_tag\":\"graph matchings\",\"tag_skill\":2144,\"gap\":0,\"score\":21.43},{\"id\":\"1034B\",\"name\":\"Little C Loves 3 II\",\"rating\":2200,\"tags\":[\"brute force\",\"constructive algorithms\",\"flows\",\"graph matchings\"],\"matched_tag\":\"graph matchings\",\"tag_skill\":2144,\"gap\":100,\"score\":18.58},{\"id\":\"491C\",\"name\":\"Deciphering\",\"rating\":2300,\"tags\":[\"flows\",\"graph matchings\"],\"matched_tag\":\"graph matchings\",\"tag_skill\":2144,\"gap\":200,\"score\":23.52},{\"id\":\"2192E\",\"name\":\"Swap to Rearrange\",\"rating\":2100,\"tags\":[\"constructive algorithms\",\"dfs and similar\",\"graph matchings\",\"graphs\",\"greedy\",\"strings\"],\"matched_tag\":\"graph matchings\",\"tag_skill\":2144,\"gap\":0,\"score\":17.41},{\"id\":\"1470D\",\"name\":\"Strange Housing\",\"rating\":2200,\"tags\":[\"constructive algorithms\",\"dfs and similar\",\"graph matchings\",\"graphs\",\"greedy\"],\"matched_tag\":\"graph matchings\",\"tag_skill\":2144,\"gap\":100,\"score\":16.07},{\"id\":\"316C2\",\"name\":\"Tidying Up\",\"rating\":2300,\"tags\":[\"flows\",\"graph matchings\"],\"matched_tag\":\"graph matchings\",\"tag_skill\":2144,\"gap\":200,\"score\":23.52}]}"
+      },
+      {
+       "result": "{\"difficulty\":\"normal\",\"problems\":[{\"id\":\"19C\",\"name\":\"Deletion of Repeats\",\"rating\":2200,\"tags\":[\"greedy\",\"hashing\",\"string suffix structures\"],\"matched_tag\":\"string suffix structures\",\"tag_skill\":2167,\"gap\":0,\"score\":19.89},{\"id\":\"557E\",\"name\":\"Ann and Half-Palindrome\",\"rating\":2300,\"tags\":[\"data structures\",\"dp\",\"graphs\",\"string suffix structures\",\"strings\",\"trees\"],\"matched_tag\":\"string suffix structures\",\"tag_skill\":2167,\"gap\":100,\"score\":15.68},{\"id\":\"533F\",\"name\":\"Encoding\",\"rating\":2400,\"tags\":[\"hashing\",\"string suffix structures\",\"strings\"],\"matched_tag\":\"string suffix structures\",\"tag_skill\":2167,\"gap\":200,\"score\":22.49},{\"id\":\"2209E\",\"name\":\"A Trivial String Problem\",\"rating\":2200,\"tags\":[\"brute force\",\"dp\",\"hashing\",\"string suffix structures\",\"strings\"],\"matched_tag\":\"string suffix structures\",\"tag_skill\":2167,\"gap\":0,\"score\":19.41},{\"id\":\"873F\",\"name\":\"Forbidden Indices\",\"rating\":2400,\"tags\":[\"dsu\",\"string suffix structures\",\"strings\"],\"matched_tag\":\"string suffix structures\",\"tag_skill\":2167,\"gap\":200,\"score\":21.26},{\"id\":\"2045H\",\"name\":\"Missing Separators\",\"rating\":2200,\"tags\":[\"dp\",\"sortings\",\"string suffix structures\",\"strings\"],\"matched_tag\":\"string suffix structures\",\"tag_skill\":2167,\"gap\":0,\"score\":18.41}]}"
+      },
+      {
+       "call": "validate_plan",
+       "args": "{\"constraints\":{},\"items\":[{\"id\":\"780D\",\"reason\":\"A warm-up on satisfiability techniques before the stretch challenge.\"},{\"id\":\"875C\",\"reason\":\"A stretch on advanced satisfiability constraints to push the limits.\"},{\"id\":\"250D\",\"reason\":\"A warm-up on ternary search to sharpen divide‑and‑conquer skills.\"},{\"id\":\"1034B\",\"reason\":\"A step‑up on graph matching algorithms to raise the difficulty.\"},{\"id\":\"557E\",\"reason\":\"A step‑up on suffix structures for string processing.\"}]}"
+      },
+      {
+       "result": "{\"ok\":true,\"errors\":[]}"
+      },
+      {
+       "call": "save_plan",
+       "args": "{\"constraints\":{},\"items\":[{\"id\":\"780D\",\"reason\":\"A warm-up on satisfiability techniques before the stretch challenge.\"},{\"id\":\"875C\",\"reason\":\"A stretch on advanced satisfiability constraints to push the limits.\"},{\"id\":\"250D\",\"reason\":\"A warm-up on ternary search to sharpen divide‑and‑conquer skills.\"},{\"id\":\"1034B\",\"reason\":\"A step‑up on graph matching algorithms to raise the difficulty.\"},{\"id\":\"557E\",\"reason\":\"A step‑up on suffix structures for string processing.\"}]}"
+      },
+      {
+       "result": "{\"plan_id\":1,\"items\":5}"
+      }
+     ]
+    },
+    {
+     "case": "greedy_focus",
+     "request": "Give me 3 greedy problems.",
+     "hours": null,
+     "avoid": [],
+     "parsed": {
+      "intent": "plan",
+      "count": 3,
+      "hours": null,
+      "focus_tags": [
+       "greedy"
+      ],
+      "avoid_tags": [],
+      "difficulty": null
+     },
+     "parse_warnings": [],
+     "parse_tokens": 1020,
+     "outcome": "saved",
+     "error": null,
+     "steps": 3,
+     "input_tokens": 7337,
+     "output_tokens": 520,
+     "latency_ms": 5039,
+     "tools_called": [
+      "get_tag_profile",
+      "find_problems",
+      "validate_plan",
+      "save_plan"
+     ],
+     "rejected_calls": 0,
+     "nudges": 0,
+     "week_rules": {
+      "quota": {},
+      "levels": {},
+      "skipped": []
+     },
+     "plan": [
+      {
+       "contest_id": 737,
+       "idx": "E",
+       "rating": 3300,
+       "tags": [
+        "graph matchings",
+        "graphs",
+        "greedy",
+        "schedules"
+       ],
+       "tag": "greedy",
+       "reason": "A warm‑up on greedy matching before the step‑up problem.",
+       "skill": 3306.67972617246,
+       "solved": false,
+       "running": false,
+       "facts": "greedy skill 3307 (level 3300) · 1570 tries · 0% abandoned · 3300 = level +0",
+       "id": "737E",
+       "gap": 0
+      },
+      {
+       "contest_id": 2174,
+       "idx": "D",
+       "rating": 3400,
+       "tags": [
+        "data structures",
+        "dp",
+        "greedy",
+        "trees"
+       ],
+       "tag": "greedy",
+       "reason": "A step‑up on greedy DP before the stretch problem.",
+       "skill": 3306.67972617246,
+       "solved": false,
+       "running": false,
+       "facts": "greedy skill 3307 (level 3300) · 1570 tries · 0% abandoned · 3400 = level +100",
+       "id": "2174D",
+       "gap": 100
+      },
+      {
+       "contest_id": 2161,
+       "idx": "G",
+       "rating": 3500,
+       "tags": [
+        "bitmasks",
+        "greedy"
+       ],
+       "tag": "greedy",
+       "reason": "A stretch on greedy bitmask techniques after the warm‑up.",
+       "skill": 3306.67972617246,
+       "solved": false,
+       "running": false,
+       "facts": "greedy skill 3307 (level 3300) · 1570 tries · 0% abandoned · 3500 = level +200",
+       "id": "2161G",
+       "gap": 200
+      }
+     ],
+     "final_text": "Saved 3 problems, easiest first, rated 3300-3500. Tags: greedy x3. Difficulty: normal (+0 to +200 around each tag's level).",
+     "checks": [
+      {
+       "check": "saved",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "3 problems",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "tags in {greedy}",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "band +0..+200",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "starts with get_tag_profile",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "no rejected calls",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "unsolved",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "no running contest",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "distinct reasons",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "no numbers in reasons",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "summary has no table",
+       "ok": true,
+       "detail": null
+      }
+     ],
+     "steps_log": [
+      {
+       "user": "Give me 3 greedy problems.\n\nFixed constraints: problems: exactly 3; focus tags: greedy"
+      },
+      {
+       "call": "get_tag_profile",
+       "args": "{}"
+      },
+      {
+       "result": "{\"rating\":1702,\"tags\":[{\"tag\":\"communication\",\"skill\":1713,\"attempts\":2,\"abandon_rate\":0.0},{\"tag\":\"schedules\",\"skill\":1729,\"attempts\":5,\"abandon_rate\":0.0},{\"tag\":\"expression parsing\",\"skill\":1759,\"attempts\":16,\"abandon_rate\":0.0},{\"tag\":\"chinese remainder theorem\",\"skill\":1780,\"attempts\":14,\"abandon_rate\":0.0},{\"tag\":\"2-sat\",\"skill\":1869,\"attempts\":24,\"abandon_rate\":0.0},{\"tag\":\"ternary search\",\"skill\":1893,\"attempts\":32,\"abandon_rate\":0.0},{\"tag\":\"meet-in-the-middle\",\"skill\":1941,\"attempts\":34,\"abandon_rate\":0.0},{\"tag\":\"graph matchings\",\"skill\":2144,\"attempts\":63,\"abandon_rate\":0.0},{\"tag\":\"string suffix structures\",\"skill\":2167,\"attempts\":60,\"abandon_rate\":0.0},{\"tag\":\"matrices\",\"skill\":2248,\"attempts\":73,\"abandon_rate\":0.0},{\"tag\":\"fft\",\"skill\":2302,\"attempts\":81,\"abandon_rate\":0.0},{\"tag\":\"hashing\",\"skill\":2387,\"attempts\":148,\"abandon_rate\":0.0},{\"tag\":\"flows\",\"skill\":2506,\"attempts\":97,\"abandon_rate\":0.0},{\"tag\":\"shortest paths\",\"skill\":2521,\"attempts\":180,\"abandon_rate\":0.0},{\"tag\":\"games\",\"skill\":2548,\"attempts\":128,\"abandon_rate\":0.0},{\"tag\":\"probabilities\",\"skill\":2588,\"attempts\":147,\"abandon_rate\":0.0},{\"tag\":\"two pointers\",\"skill\":2594,\"attempts\":338,\"abandon_rate\":0.0},{\"tag\":\"dsu\",\"skill\":2633,\"attempts\":255,\"abandon_rate\":0.0},{\"tag\":\"sortings\",\"skill\":2776,\"attempts\":596,\"abandon_rate\":0.0},{\"tag\":\"interactive\",\"skill\":2780,\"attempts\":185,\"abandon_rate\":0.01},{\"tag\":\"divide and conquer\",\"skill\":2784,\"attempts\":236,\"abandon_rate\":0.0},{\"tag\":\"strings\",\"skill\":2787,\"attempts\":405,\"abandon_rate\":0.0},{\"tag\":\"geometry\",\"skill\":2900,\"attempts\":209,\"abandon_rate\":0.0},{\"tag\":\"number theory\",\"skill\":2942,\"attempts\":458,\"abandon_rate\":0.0},{\"tag\":\"implementation\",\"skill\":2987,\"attempts\":1491,\"abandon_rate\":0.0},{\"tag\":\"bitmasks\",\"skill\":2988,\"attempts\":395,\"abandon_rate\":0.0},{\"tag\":\"dfs and similar\",\"skill\":3013,\"attempts\":652,\"abandon_rate\":0.0},{\"tag\":\"brute force\",\"skill\":3079,\"attempts\":1004,\"abandon_rate\":0.0},{\"tag\":\"binary search\",\"skill\":3120,\"attempts\":678,\"abandon_rate\":0.0},{\"tag\":\"combinatorics\",\"skill\":3222,\"attempts\":511,\"abandon_rate\":0.0},{\"tag\":\"graphs\",\"skill\":3271,\"attempts\":737,\"abandon_rate\":0.0},{\"tag\":\"trees\",\"skill\":3301,\"attempts\":628,\"abandon_rate\":0.0},{\"tag\":\"greedy\",\"skill\":3307,\"attempts\":1570,\"abandon_rate\":0.0},{\"tag\":\"math\",\"skill\":3411,\"attempts\":1649,\"abandon_rate\":0.0},{\"tag\":\"constructive algorithms\",\"skill\":3418,\"attempts\":997,\"abandon_rate\":0.0},{\"tag\":\"data structures\",\"skill\":3479,\"attempts\":1176,\"abandon_rate\":0.0},{\"tag\":\"dp\",\"skill\":3501,\"attempts\":1415,\"abandon_rate\":0.0}]}"
+      },
+      {
+       "call": "find_problems",
+       "args": "{\"count\":3,\"tag\":\"greedy\"}"
+      },
+      {
+       "result": "{\"difficulty\":\"normal\",\"problems\":[{\"id\":\"737E\",\"name\":\"Tanya is 5!\",\"rating\":3300,\"tags\":[\"graph matchings\",\"graphs\",\"greedy\",\"schedules\"],\"matched_tag\":\"greedy\",\"tag_skill\":3307,\"gap\":0,\"score\":13.15},{\"id\":\"2174D\",\"name\":\"Secret Message\",\"rating\":3400,\"tags\":[\"data structures\",\"dp\",\"greedy\",\"trees\"],\"matched_tag\":\"greedy\",\"tag_skill\":3307,\"gap\":100,\"score\":3.09},{\"id\":\"2161G\",\"name\":\"Bitwise And Equals\",\"rating\":3500,\"tags\":[\"bitmasks\",\"greedy\"],\"matched_tag\":\"greedy\",\"tag_skill\":3307,\"gap\":200,\"score\":7.47}]}"
+      },
+      {
+       "call": "validate_plan",
+       "args": "{\"items\":[{\"id\":\"737E\",\"reason\":\"A warm‑up on greedy matching before the step‑up problem.\"},{\"id\":\"2174D\",\"reason\":\"A step‑up on greedy DP before the stretch problem.\"},{\"id\":\"2161G\",\"reason\":\"A stretch on greedy bitmask techniques after the warm‑up.\"}]}"
+      },
+      {
+       "result": "{\"ok\":true,\"errors\":[]}"
+      },
+      {
+       "call": "save_plan",
+       "args": "{\"items\":[{\"id\":\"737E\",\"reason\":\"A warm‑up on greedy matching before the step‑up problem.\"},{\"id\":\"2174D\",\"reason\":\"A step‑up on greedy DP before the stretch problem.\"},{\"id\":\"2161G\",\"reason\":\"A stretch on greedy bitmask techniques after the warm‑up.\"}]}"
+      },
+      {
+       "result": "{\"plan_id\":1,\"items\":3}"
+      }
+     ]
+    },
+    {
+     "case": "challenge_any",
+     "request": "Challenge me: 3 hard problems.",
+     "hours": null,
+     "avoid": [],
+     "parsed": {
+      "intent": "plan",
+      "count": 3,
+      "hours": null,
+      "focus_tags": [],
+      "avoid_tags": [],
+      "difficulty": "harder"
+     },
+     "parse_warnings": [],
+     "parse_tokens": 997,
+     "outcome": "saved",
+     "error": null,
+     "steps": 2,
+     "input_tokens": 6609,
+     "output_tokens": 954,
+     "latency_ms": 5344,
+     "tools_called": [
+      "get_tag_profile",
+      "find_problems",
+      "find_problems",
+      "validate_plan",
+      "save_plan"
+     ],
+     "rejected_calls": 0,
+     "nudges": 0,
+     "week_rules": {
+      "quota": {
+       "2-sat": 2,
+       "ternary search": 1
+      },
+      "levels": {
+       "2-sat": [
+        100,
+        300
+       ],
+       "ternary search": [
+        200
+       ]
+      },
+      "skipped": [
+       "schedules",
+       "expression parsing",
+       "chinese remainder theorem"
+      ]
+     },
+     "plan": [
+      {
+       "contest_id": 1438,
+       "idx": "C",
+       "rating": 2000,
+       "tags": [
+        "2-sat",
+        "chinese remainder theorem",
+        "constructive algorithms",
+        "fft",
+        "flows"
+       ],
+       "tag": "2-sat",
+       "reason": "A warm-up on 2-sat to sharpen logical reductions.",
+       "skill": 1868.958247796692,
+       "solved": false,
+       "running": false,
+       "facts": "2-sat skill 1869 (level 1900) · 24 tries · 0% abandoned · 2000 = level +100",
+       "id": "1438C",
+       "gap": 100
+      },
+      {
+       "contest_id": 106,
+       "idx": "E",
+       "rating": 2100,
+       "tags": [
+        "geometry",
+        "ternary search"
+       ],
+       "tag": "ternary search",
+       "reason": "A step‑up on ternary search to deepen optimization techniques.",
+       "skill": 1892.7642900427434,
+       "solved": false,
+       "running": false,
+       "facts": "ternary search skill 1893 (level 1900) · 32 tries · 0% abandoned · 2100 = level +200",
+       "id": "106E",
+       "gap": 200
+      },
+      {
+       "contest_id": 27,
+       "idx": "D",
+       "rating": 2200,
+       "tags": [
+        "2-sat",
+        "dfs and similar",
+        "dsu",
+        "graphs"
+       ],
+       "tag": "2-sat",
+       "reason": "A stretch on 2-sat to master complex constraints.",
+       "skill": 1868.958247796692,
+       "solved": false,
+       "running": false,
+       "facts": "2-sat skill 1869 (level 1900) · 24 tries · 0% abandoned · 2200 = level +300",
+       "id": "27D",
+       "gap": 300
+      }
+     ],
+     "final_text": "Saved 3 problems, easiest first, rated 2000-2200. Tags: 2-sat x2, ternary search x1. Difficulty: harder (+100 to +300 around each tag's level).",
+     "checks": [
+      {
+       "check": "saved",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "3 problems",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "band +100..+300",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "starts with get_tag_profile",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "no rejected calls",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "unsolved",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "no running contest",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "distinct reasons",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "no numbers in reasons",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "summary has no table",
+       "ok": true,
+       "detail": null
+      }
+     ],
+     "steps_log": [
+      {
+       "user": "Challenge me: 3 hard problems.\n\nFixed constraints: problems: exactly 3; this week's tags and levels (your weakest with 5+ attempts; their problems are loaded; pick each by its gap field): 2-sat warm-up (gap +100) and stretch (gap +300), ternary search step-up (gap +200); difficulty: harder"
+      },
+      {
+       "call": "get_tag_profile",
+       "args": "{}"
+      },
+      {
+       "result": "{\"rating\":1702,\"tags\":[{\"tag\":\"communication\",\"skill\":1713,\"attempts\":2,\"abandon_rate\":0.0},{\"tag\":\"schedules\",\"skill\":1729,\"attempts\":5,\"abandon_rate\":0.0},{\"tag\":\"expression parsing\",\"skill\":1759,\"attempts\":16,\"abandon_rate\":0.0},{\"tag\":\"chinese remainder theorem\",\"skill\":1780,\"attempts\":14,\"abandon_rate\":0.0},{\"tag\":\"2-sat\",\"skill\":1869,\"attempts\":24,\"abandon_rate\":0.0},{\"tag\":\"ternary search\",\"skill\":1893,\"attempts\":32,\"abandon_rate\":0.0},{\"tag\":\"meet-in-the-middle\",\"skill\":1941,\"attempts\":34,\"abandon_rate\":0.0},{\"tag\":\"graph matchings\",\"skill\":2144,\"attempts\":63,\"abandon_rate\":0.0},{\"tag\":\"string suffix structures\",\"skill\":2167,\"attempts\":60,\"abandon_rate\":0.0},{\"tag\":\"matrices\",\"skill\":2248,\"attempts\":73,\"abandon_rate\":0.0},{\"tag\":\"fft\",\"skill\":2302,\"attempts\":81,\"abandon_rate\":0.0},{\"tag\":\"hashing\",\"skill\":2387,\"attempts\":148,\"abandon_rate\":0.0},{\"tag\":\"flows\",\"skill\":2506,\"attempts\":97,\"abandon_rate\":0.0},{\"tag\":\"shortest paths\",\"skill\":2521,\"attempts\":180,\"abandon_rate\":0.0},{\"tag\":\"games\",\"skill\":2548,\"attempts\":128,\"abandon_rate\":0.0},{\"tag\":\"probabilities\",\"skill\":2588,\"attempts\":147,\"abandon_rate\":0.0},{\"tag\":\"two pointers\",\"skill\":2594,\"attempts\":338,\"abandon_rate\":0.0},{\"tag\":\"dsu\",\"skill\":2633,\"attempts\":255,\"abandon_rate\":0.0},{\"tag\":\"sortings\",\"skill\":2776,\"attempts\":596,\"abandon_rate\":0.0},{\"tag\":\"interactive\",\"skill\":2780,\"attempts\":185,\"abandon_rate\":0.01},{\"tag\":\"divide and conquer\",\"skill\":2784,\"attempts\":236,\"abandon_rate\":0.0},{\"tag\":\"strings\",\"skill\":2787,\"attempts\":405,\"abandon_rate\":0.0},{\"tag\":\"geometry\",\"skill\":2900,\"attempts\":209,\"abandon_rate\":0.0},{\"tag\":\"number theory\",\"skill\":2942,\"attempts\":458,\"abandon_rate\":0.0},{\"tag\":\"implementation\",\"skill\":2987,\"attempts\":1491,\"abandon_rate\":0.0},{\"tag\":\"bitmasks\",\"skill\":2988,\"attempts\":395,\"abandon_rate\":0.0},{\"tag\":\"dfs and similar\",\"skill\":3013,\"attempts\":652,\"abandon_rate\":0.0},{\"tag\":\"brute force\",\"skill\":3079,\"attempts\":1004,\"abandon_rate\":0.0},{\"tag\":\"binary search\",\"skill\":3120,\"attempts\":678,\"abandon_rate\":0.0},{\"tag\":\"combinatorics\",\"skill\":3222,\"attempts\":511,\"abandon_rate\":0.0},{\"tag\":\"graphs\",\"skill\":3271,\"attempts\":737,\"abandon_rate\":0.0},{\"tag\":\"trees\",\"skill\":3301,\"attempts\":628,\"abandon_rate\":0.0},{\"tag\":\"greedy\",\"skill\":3307,\"attempts\":1570,\"abandon_rate\":0.0},{\"tag\":\"math\",\"skill\":3411,\"attempts\":1649,\"abandon_rate\":0.0},{\"tag\":\"constructive algorithms\",\"skill\":3418,\"attempts\":997,\"abandon_rate\":0.0},{\"tag\":\"data structures\",\"skill\":3479,\"attempts\":1176,\"abandon_rate\":0.0},{\"tag\":\"dp\",\"skill\":3501,\"attempts\":1415,\"abandon_rate\":0.0}]}"
+      },
+      {
+       "call": "find_problems",
+       "args": "{\"tag\": \"2-sat\", \"count\": 6}"
+      },
+      {
+       "call": "find_problems",
+       "args": "{\"tag\": \"ternary search\", \"count\": 6}"
+      },
+      {
+       "result": "{\"difficulty\":\"harder\",\"problems\":[{\"id\":\"1438C\",\"name\":\"Engineer Artem\",\"rating\":2000,\"tags\":[\"2-sat\",\"chinese remainder theorem\",\"constructive algorithms\",\"fft\",\"flows\"],\"matched_tag\":\"2-sat\",\"tag_skill\":1869,\"gap\":100,\"score\":26.32},{\"id\":\"875C\",\"name\":\"National Property\",\"rating\":2100,\"tags\":[\"2-sat\",\"dfs and similar\",\"graphs\",\"implementation\"],\"matched_tag\":\"2-sat\",\"tag_skill\":1869,\"gap\":200,\"score\":20.43},{\"id\":\"27D\",\"name\":\"Ring Road 2\",\"rating\":2200,\"tags\":[\"2-sat\",\"dfs and similar\",\"dsu\",\"graphs\"],\"matched_tag\":\"2-sat\",\"tag_skill\":1869,\"gap\":300,\"score\":21.61},{\"id\":\"2245D2\",\"name\":\"Construct an Array (Hard Version)\",\"rating\":2000,\"tags\":[\"2-sat\",\"constructive algorithms\",\"dfs and similar\",\"graphs\",\"implementation\"],\"matched_tag\":\"2-sat\",\"tag_skill\":1869,\"gap\":100,\"score\":20.08},{\"id\":\"1971H\",\"name\":\"±1\",\"rating\":2100,\"tags\":[\"2-sat\",\"dfs and similar\",\"graphs\"],\"matched_tag\":\"2-sat\",\"tag_skill\":1869,\"gap\":200,\"score\":20.11},{\"id\":\"1218I\",\"name\":\"The Light Square\",\"rating\":2100,\"tags\":[\"2-sat\",\"dfs and similar\",\"greedy\"],\"matched_tag\":\"2-sat\",\"tag_skill\":1869,\"gap\":200,\"score\":19.74}]}"
+      },
+      {
+       "result": "{\"difficulty\":\"harder\",\"problems\":[{\"id\":\"1244E\",\"name\":\"Minimizing Difference\",\"rating\":2000,\"tags\":[\"binary search\",\"constructive algorithms\",\"greedy\",\"sortings\",\"ternary search\",\"two pointers\"],\"matched_tag\":\"ternary search\",\"tag_skill\":1893,\"gap\":100,\"score\":20.67},{\"id\":\"106E\",\"name\":\"Space Rescuers\",\"rating\":2100,\"tags\":[\"geometry\",\"ternary search\"],\"matched_tag\":\"ternary search\",\"tag_skill\":1893,\"gap\":200,\"score\":22.1},{\"id\":\"1059D\",\"name\":\"Nature Reserve\",\"rating\":2200,\"tags\":[\"binary search\",\"geometry\",\"ternary search\"],\"matched_tag\":\"ternary search\",\"tag_skill\":1893,\"gap\":300,\"score\":21.0},{\"id\":\"1599C\",\"name\":\"Bubble Strike\",\"rating\":2000,\"tags\":[\"combinatorics\",\"math\",\"probabilities\",\"ternary search\"],\"matched_tag\":\"ternary search\",\"tag_skill\":1893,\"gap\":100,\"score\":20.36},{\"id\":\"1254B2\",\"name\":\"Send Boxes to Alice (Hard Version)\",\"rating\":2100,\"tags\":[\"constructive algorithms\",\"greedy\",\"math\",\"number theory\",\"ternary search\",\"two pointers\"],\"matched_tag\":\"ternary search\",\"tag_skill\":1893,\"gap\":200,\"score\":19.76},{\"id\":\"2203E\",\"name\":\"Probabilistic Card Game\",\"rating\":2200,\"tags\":[\"binary search\",\"data structures\",\"games\",\"greedy\",\"math\",\"ternary search\"],\"matched_tag\":\"ternary search\",\"tag_skill\":1893,\"gap\":300,\"score\":19.8}]}"
+      },
+      {
+       "call": "validate_plan",
+       "args": "{\"items\":[{\"id\":\"1438C\",\"reason\":\"A warm-up on 2-sat to sharpen logical reductions.\"},{\"id\":\"27D\",\"reason\":\"A stretch on 2-sat to master complex constraints.\"},{\"id\":\"106E\",\"reason\":\"A step‑up on ternary search to deepen optimization techniques.\"}]}"
+      },
+      {
+       "result": "{\"ok\":true,\"errors\":[]}"
+      },
+      {
+       "call": "save_plan",
+       "args": "{\"items\":[{\"id\":\"1438C\",\"reason\":\"A warm-up on 2-sat to sharpen logical reductions.\"},{\"id\":\"27D\",\"reason\":\"A stretch on 2-sat to master complex constraints.\"},{\"id\":\"106E\",\"reason\":\"A step‑up on ternary search to deepen optimization techniques.\"}]}"
+      },
+      {
+       "result": "{\"plan_id\":1,\"items\":3}"
+      }
+     ]
+    },
+    {
+     "case": "rusty",
+     "request": "I'm rusty after a break. Give me 3 easy warm-up problems.",
+     "hours": null,
+     "avoid": [],
+     "parsed": {
+      "intent": "plan",
+      "count": 3,
+      "hours": null,
+      "focus_tags": [],
+      "avoid_tags": [],
+      "difficulty": "easier"
+     },
+     "parse_warnings": [],
+     "parse_tokens": 1032,
+     "outcome": "saved",
+     "error": null,
+     "steps": 2,
+     "input_tokens": 6652,
+     "output_tokens": 1241,
+     "latency_ms": 5890,
+     "tools_called": [
+      "get_tag_profile",
+      "find_problems",
+      "find_problems",
+      "validate_plan",
+      "save_plan"
+     ],
+     "rejected_calls": 0,
+     "nudges": 0,
+     "week_rules": {
+      "quota": {
+       "ternary search": 2,
+       "string suffix structures": 1
+      },
+      "levels": {
+       "ternary search": [
+        -100,
+        100
+       ],
+       "string suffix structures": [
+        0
+       ]
+      },
+      "skipped": [
+       "schedules",
+       "expression parsing",
+       "chinese remainder theorem",
+       "2-sat",
+       "meet-in-the-middle",
+       "graph matchings"
+      ]
+     },
+     "plan": [
+      {
+       "contest_id": 939,
+       "idx": "E",
+       "rating": 1800,
+       "tags": [
+        "binary search",
+        "greedy",
+        "ternary search",
+        "two pointers"
+       ],
+       "tag": "ternary search",
+       "reason": "A warm-up on ternary search to refresh basics.",
+       "skill": 1892.7642900427434,
+       "solved": false,
+       "running": false,
+       "facts": "ternary search skill 1893 (level 1900) · 32 tries · 0% abandoned · 1800 = level -100",
+       "id": "939E",
+       "gap": -100
+      },
+      {
+       "contest_id": 19,
+       "idx": "C",
+       "rating": 2200,
+       "tags": [
+        "greedy",
+        "hashing",
+        "string suffix structures"
+       ],
+       "tag": "string suffix structures",
+       "reason": "A step-up on string suffix structures to build depth.",
+       "skill": 2166.804637672356,
+       "solved": false,
+       "running": false,
+       "facts": "string suffix structures skill 2167 (level 2200) · 60 tries · 0% abandoned · 2200 = level +0",
+       "id": "19C",
+       "gap": 0
+      },
+      {
+       "contest_id": 1244,
+       "idx": "E",
+       "rating": 2000,
+       "tags": [
+        "binary search",
+        "constructive algorithms",
+        "greedy",
+        "sortings",
+        "ternary search",
+        "two pointers"
+       ],
+       "tag": "ternary search",
+       "reason": "A stretch on ternary search to push limits.",
+       "skill": 1892.7642900427434,
+       "solved": false,
+       "running": false,
+       "facts": "ternary search skill 1893 (level 1900) · 32 tries · 0% abandoned · 2000 = level +100",
+       "id": "1244E",
+       "gap": 100
+      }
+     ],
+     "final_text": "Saved 3 problems, easiest first, rated 1800-2200. Tags: ternary search x2, string suffix structures x1. Difficulty: easier (-100 to +100 around each tag's level).",
+     "checks": [
+      {
+       "check": "saved",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "3 problems",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "band -100..+100",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "starts with get_tag_profile",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "no rejected calls",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "unsolved",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "no running contest",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "distinct reasons",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "no numbers in reasons",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "summary has no table",
+       "ok": true,
+       "detail": null
+      }
+     ],
+     "steps_log": [
+      {
+       "user": "I'm rusty after a break. Give me 3 easy warm-up problems.\n\nFixed constraints: problems: exactly 3; this week's tags and levels (your weakest with 5+ attempts; their problems are loaded; pick each by its gap field): ternary search warm-up (gap -100) and stretch (gap +100), string suffix structures step-up (gap +0); difficulty: easier"
+      },
+      {
+       "call": "get_tag_profile",
+       "args": "{}"
+      },
+      {
+       "result": "{\"rating\":1702,\"tags\":[{\"tag\":\"communication\",\"skill\":1713,\"attempts\":2,\"abandon_rate\":0.0},{\"tag\":\"schedules\",\"skill\":1729,\"attempts\":5,\"abandon_rate\":0.0},{\"tag\":\"expression parsing\",\"skill\":1759,\"attempts\":16,\"abandon_rate\":0.0},{\"tag\":\"chinese remainder theorem\",\"skill\":1780,\"attempts\":14,\"abandon_rate\":0.0},{\"tag\":\"2-sat\",\"skill\":1869,\"attempts\":24,\"abandon_rate\":0.0},{\"tag\":\"ternary search\",\"skill\":1893,\"attempts\":32,\"abandon_rate\":0.0},{\"tag\":\"meet-in-the-middle\",\"skill\":1941,\"attempts\":34,\"abandon_rate\":0.0},{\"tag\":\"graph matchings\",\"skill\":2144,\"attempts\":63,\"abandon_rate\":0.0},{\"tag\":\"string suffix structures\",\"skill\":2167,\"attempts\":60,\"abandon_rate\":0.0},{\"tag\":\"matrices\",\"skill\":2248,\"attempts\":73,\"abandon_rate\":0.0},{\"tag\":\"fft\",\"skill\":2302,\"attempts\":81,\"abandon_rate\":0.0},{\"tag\":\"hashing\",\"skill\":2387,\"attempts\":148,\"abandon_rate\":0.0},{\"tag\":\"flows\",\"skill\":2506,\"attempts\":97,\"abandon_rate\":0.0},{\"tag\":\"shortest paths\",\"skill\":2521,\"attempts\":180,\"abandon_rate\":0.0},{\"tag\":\"games\",\"skill\":2548,\"attempts\":128,\"abandon_rate\":0.0},{\"tag\":\"probabilities\",\"skill\":2588,\"attempts\":147,\"abandon_rate\":0.0},{\"tag\":\"two pointers\",\"skill\":2594,\"attempts\":338,\"abandon_rate\":0.0},{\"tag\":\"dsu\",\"skill\":2633,\"attempts\":255,\"abandon_rate\":0.0},{\"tag\":\"sortings\",\"skill\":2776,\"attempts\":596,\"abandon_rate\":0.0},{\"tag\":\"interactive\",\"skill\":2780,\"attempts\":185,\"abandon_rate\":0.01},{\"tag\":\"divide and conquer\",\"skill\":2784,\"attempts\":236,\"abandon_rate\":0.0},{\"tag\":\"strings\",\"skill\":2787,\"attempts\":405,\"abandon_rate\":0.0},{\"tag\":\"geometry\",\"skill\":2900,\"attempts\":209,\"abandon_rate\":0.0},{\"tag\":\"number theory\",\"skill\":2942,\"attempts\":458,\"abandon_rate\":0.0},{\"tag\":\"implementation\",\"skill\":2987,\"attempts\":1491,\"abandon_rate\":0.0},{\"tag\":\"bitmasks\",\"skill\":2988,\"attempts\":395,\"abandon_rate\":0.0},{\"tag\":\"dfs and similar\",\"skill\":3013,\"attempts\":652,\"abandon_rate\":0.0},{\"tag\":\"brute force\",\"skill\":3079,\"attempts\":1004,\"abandon_rate\":0.0},{\"tag\":\"binary search\",\"skill\":3120,\"attempts\":678,\"abandon_rate\":0.0},{\"tag\":\"combinatorics\",\"skill\":3222,\"attempts\":511,\"abandon_rate\":0.0},{\"tag\":\"graphs\",\"skill\":3271,\"attempts\":737,\"abandon_rate\":0.0},{\"tag\":\"trees\",\"skill\":3301,\"attempts\":628,\"abandon_rate\":0.0},{\"tag\":\"greedy\",\"skill\":3307,\"attempts\":1570,\"abandon_rate\":0.0},{\"tag\":\"math\",\"skill\":3411,\"attempts\":1649,\"abandon_rate\":0.0},{\"tag\":\"constructive algorithms\",\"skill\":3418,\"attempts\":997,\"abandon_rate\":0.0},{\"tag\":\"data structures\",\"skill\":3479,\"attempts\":1176,\"abandon_rate\":0.0},{\"tag\":\"dp\",\"skill\":3501,\"attempts\":1415,\"abandon_rate\":0.0}]}"
+      },
+      {
+       "call": "find_problems",
+       "args": "{\"tag\": \"ternary search\", \"count\": 6}"
+      },
+      {
+       "call": "find_problems",
+       "args": "{\"tag\": \"string suffix structures\", \"count\": 6}"
+      },
+      {
+       "result": "{\"difficulty\":\"easier\",\"problems\":[{\"id\":\"939E\",\"name\":\"Maximize!\",\"rating\":1800,\"tags\":[\"binary search\",\"greedy\",\"ternary search\",\"two pointers\"],\"matched_tag\":\"ternary search\",\"tag_skill\":1893,\"gap\":-100,\"score\":21.03},{\"id\":\"250D\",\"name\":\"Building Bridge\",\"rating\":1900,\"tags\":[\"geometry\",\"ternary search\",\"two pointers\"],\"matched_tag\":\"ternary search\",\"tag_skill\":1893,\"gap\":0,\"score\":23.63},{\"id\":\"1244E\",\"name\":\"Minimizing Difference\",\"rating\":2000,\"tags\":[\"binary search\",\"constructive algorithms\",\"greedy\",\"sortings\",\"ternary search\",\"two pointers\"],\"matched_tag\":\"ternary search\",\"tag_skill\":1893,\"gap\":100,\"score\":20.67},{\"id\":\"1254B1\",\"name\":\"Send Boxes to Alice (Easy Version)\",\"rating\":1800,\"tags\":[\"constructive algorithms\",\"greedy\",\"math\",\"number theory\",\"ternary search\",\"two pointers\"],\"matched_tag\":\"ternary search\",\"tag_skill\":1893,\"gap\":-100,\"score\":19.76},{\"id\":\"865B\",\"name\":\"Ordering Pizza\",\"rating\":1900,\"tags\":[\"binary search\",\"sortings\",\"ternary search\"],\"matched_tag\":\"ternary search\",\"tag_skill\":1893,\"gap\":0,\"score\":21.62},{\"id\":\"1599C\",\"name\":\"Bubble Strike\",\"rating\":2000,\"tags\":[\"combinatorics\",\"math\",\"probabilities\",\"ternary search\"],\"matched_tag\":\"ternary search\",\"tag_skill\":1893,\"gap\":100,\"score\":20.36}]}"
+      },
+      {
+       "result": "{\"difficulty\":\"easier\",\"problems\":[{\"id\":\"128B\",\"name\":\"String\",\"rating\":2100,\"tags\":[\"brute force\",\"constructive algorithms\",\"hashing\",\"implementation\",\"string suffix structures\",\"strings\"],\"matched_tag\":\"string suffix structures\",\"tag_skill\":2167,\"gap\":-100,\"score\":19.04},{\"id\":\"19C\",\"name\":\"Deletion of Repeats\",\"rating\":2200,\"tags\":[\"greedy\",\"hashing\",\"string suffix structures\"],\"matched_tag\":\"string suffix structures\",\"tag_skill\":2167,\"gap\":0,\"score\":19.89},{\"id\":\"557E\",\"name\":\"Ann and Half-Palindrome\",\"rating\":2300,\"tags\":[\"data structures\",\"dp\",\"graphs\",\"string suffix structures\",\"strings\",\"trees\"],\"matched_tag\":\"string suffix structures\",\"tag_skill\":2167,\"gap\":100,\"score\":15.68},{\"id\":\"2205E\",\"name\":\"Simons and Dividing the Rhythm\",\"rating\":2100,\"tags\":[\"combinatorics\",\"data structures\",\"dp\",\"dsu\",\"math\",\"string suffix structures\",\"strings\"],\"matched_tag\":\"string suffix structures\",\"tag_skill\":2167,\"gap\":-100,\"score\":17.06},{\"id\":\"2209E\",\"name\":\"A Trivial String Problem\",\"rating\":2200,\"tags\":[\"brute force\",\"dp\",\"hashing\",\"string suffix structures\",\"strings\"],\"matched_tag\":\"string suffix structures\",\"tag_skill\":2167,\"gap\":0,\"score\":19.41},{\"id\":\"2045H\",\"name\":\"Missing Separators\",\"rating\":2200,\"tags\":[\"dp\",\"sortings\",\"string suffix structures\",\"strings\"],\"matched_tag\":\"string suffix structures\",\"tag_skill\":2167,\"gap\":0,\"score\":18.41}]}"
+      },
+      {
+       "call": "validate_plan",
+       "args": "{\"items\":[{\"id\":\"939E\",\"reason\":\"A warm-up on ternary search to refresh basics.\"},{\"id\":\"1244E\",\"reason\":\"A stretch on ternary search to push limits.\"},{\"id\":\"19C\",\"reason\":\"A step-up on string suffix structures to build depth.\"}]}"
+      },
+      {
+       "result": "{\"ok\":true,\"errors\":[]}"
+      },
+      {
+       "call": "save_plan",
+       "args": "{\"items\":[{\"id\":\"939E\",\"reason\":\"A warm-up on ternary search to refresh basics.\"},{\"id\":\"1244E\",\"reason\":\"A stretch on ternary search to push limits.\"},{\"id\":\"19C\",\"reason\":\"A step-up on string suffix structures to build depth.\"}]}"
+      },
+      {
+       "result": "{\"plan_id\":1,\"items\":3}"
+      }
+     ]
+    }
+   ],
+   "not_run": [],
+   "summary": {
+    "cases": 4,
+    "cases_all_passed": 4,
+    "checks": 41,
+    "checks_passed": 41,
+    "rejected_calls": 0,
+    "nudges": 0,
+    "avg_steps": 2.2,
+    "avg_input_tokens": 7195,
+    "avg_latency_s": 8.0
+   }
+  },
+  {
+   "label": "inactive_2y",
+   "handle": "K_StA",
+   "why": "old data: not online for 2+ years, 1488, 285 solved",
+   "fetched": 0,
+   "tag_rows": 27,
+   "sync_s": 3.1,
+   "snapshot": {
+    "rating": 1488,
+    "submissions": 487,
+    "solved": 285,
+    "tags": 27,
+    "measured_tags": 19,
+    "weakest_tag": "hashing"
+   },
+   "results": [
+    {
+     "case": "default_week",
+     "request": "Plan my practice for this week.",
+     "hours": null,
+     "avoid": [],
+     "parsed": {
+      "intent": "plan",
+      "count": null,
+      "hours": null,
+      "focus_tags": [],
+      "avoid_tags": [],
+      "difficulty": null
+     },
+     "parse_warnings": [],
+     "parse_tokens": 1037,
+     "outcome": "saved",
+     "error": null,
+     "steps": 2,
+     "input_tokens": 7650,
+     "output_tokens": 1241,
+     "latency_ms": 6690,
+     "tools_called": [
+      "get_tag_profile",
+      "find_problems",
+      "find_problems",
+      "find_problems",
+      "find_problems",
+      "validate_plan",
+      "save_plan"
+     ],
+     "rejected_calls": 0,
+     "nudges": 0,
+     "week_rules": {
+      "quota": {
+       "number theory": 2,
+       "games": 1,
+       "strings": 1,
+       "dsu": 1
+      },
+      "levels": {
+       "number theory": [
+        0,
+        200
+       ],
+       "games": [
+        0
+       ],
+       "strings": [
+        100
+       ],
+       "dsu": [
+        100
+       ]
+      },
+      "skipped": []
+     },
+     "plan": [
+      {
+       "contest_id": 2234,
+       "idx": "D",
+       "rating": 1500,
+       "tags": [
+        "bitmasks",
+        "divide and conquer",
+        "dp",
+        "math",
+        "number theory"
+       ],
+       "tag": "number theory",
+       "reason": "A warm-up on number theory fundamentals.",
+       "skill": 1490.4006638138487,
+       "solved": false,
+       "running": false,
+       "facts": "number theory skill 1490 (level 1500) · 12 tries · 8% abandoned · 1500 = level +0",
+       "id": "2234D",
+       "gap": 0
+      },
+      {
+       "contest_id": 2200,
+       "idx": "E",
+       "rating": 1500,
+       "tags": [
+        "games",
+        "greedy",
+        "math",
+        "number theory"
+       ],
+       "tag": "games",
+       "reason": "A warm-up on basic game theory concepts.",
+       "skill": 1491.3150425250817,
+       "solved": false,
+       "running": false,
+       "facts": "games skill 1491 (level 1500) · 5 tries · 0% abandoned · 1500 = level +0",
+       "id": "2200E",
+       "gap": 0
+      },
+      {
+       "contest_id": 2242,
+       "idx": "D",
+       "rating": 1600,
+       "tags": [
+        "dp",
+        "strings"
+       ],
+       "tag": "strings",
+       "reason": "A step-up on string manipulation strategies.",
+       "skill": 1496.1005812255744,
+       "solved": false,
+       "running": false,
+       "facts": "strings skill 1496 (level 1500) · 34 tries · 3% abandoned · 1600 = level +100",
+       "id": "2242D",
+       "gap": 100
+      },
+      {
+       "contest_id": 2171,
+       "idx": "F",
+       "rating": 1600,
+       "tags": [
+        "binary search",
+        "constructive algorithms",
+        "data structures",
+        "dp",
+        "dsu",
+        "greedy",
+        "implementation",
+        "trees"
+       ],
+       "tag": "dsu",
+       "reason": "A step-up on disjoint set union applications.",
+       "skill": 1499.828628620955,
+       "solved": false,
+       "running": false,
+       "facts": "dsu skill 1500 (level 1500) · 6 tries · 0% abandoned · 1600 = level +100",
+       "id": "2171F",
+       "gap": 100
+      },
+      {
+       "contest_id": 2203,
+       "idx": "D",
+       "rating": 1700,
+       "tags": [
+        "brute force",
+        "games",
+        "greedy",
+        "number theory"
+       ],
+       "tag": "number theory",
+       "reason": "A stretch problem deepening number theory techniques.",
+       "skill": 1490.4006638138487,
+       "solved": false,
+       "running": false,
+       "facts": "number theory skill 1490 (level 1500) · 12 tries · 8% abandoned · 1700 = level +200",
+       "id": "2203D",
+       "gap": 200
+      }
+     ],
+     "final_text": "Saved 5 problems, easiest first, rated 1500-1700. Tags: number theory x2, games x1, strings x1, dsu x1. Difficulty: normal (+0 to +200 around each tag's level).",
+     "checks": [
+      {
+       "check": "saved",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "5 problems",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "band +0..+200",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "starts with get_tag_profile",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "no rejected calls",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "unsolved",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "no running contest",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "distinct reasons",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "no numbers in reasons",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "summary has no table",
+       "ok": true,
+       "detail": null
+      }
+     ],
+     "steps_log": [
+      {
+       "user": "Plan my practice for this week.\n\nFixed constraints: problems: exactly 5; this week's tags and levels (your weakest with 5+ attempts; their problems are loaded; pick each by its gap field): number theory warm-up (gap +0) and stretch (gap +200), games warm-up (gap +0), strings step-up (gap +100), dsu step-up (gap +100)"
+      },
+      {
+       "call": "get_tag_profile",
+       "args": "{}"
+      },
+      {
+       "result": "{\"rating\":1488,\"tags\":[{\"tag\":\"hashing\",\"skill\":1485,\"attempts\":1,\"abandon_rate\":0.0},{\"tag\":\"2-sat\",\"skill\":1488,\"attempts\":1,\"abandon_rate\":0.0},{\"tag\":\"string suffix structures\",\"skill\":1488,\"attempts\":1,\"abandon_rate\":0.0},{\"tag\":\"probabilities\",\"skill\":1488,\"attempts\":1,\"abandon_rate\":0.0},{\"tag\":\"graph matchings\",\"skill\":1489,\"attempts\":1,\"abandon_rate\":0.0},{\"tag\":\"number theory\",\"skill\":1490,\"attempts\":12,\"abandon_rate\":0.08},{\"tag\":\"games\",\"skill\":1491,\"attempts\":5,\"abandon_rate\":0.0},{\"tag\":\"flows\",\"skill\":1492,\"attempts\":2,\"abandon_rate\":0.0},{\"tag\":\"geometry\",\"skill\":1494,\"attempts\":4,\"abandon_rate\":0.0},{\"tag\":\"strings\",\"skill\":1496,\"attempts\":34,\"abandon_rate\":0.03},{\"tag\":\"shortest paths\",\"skill\":1496,\"attempts\":2,\"abandon_rate\":0.0},{\"tag\":\"dsu\",\"skill\":1500,\"attempts\":6,\"abandon_rate\":0.0},{\"tag\":\"trees\",\"skill\":1500,\"attempts\":5,\"abandon_rate\":0.0},{\"tag\":\"dfs and similar\",\"skill\":1503,\"attempts\":10,\"abandon_rate\":0.0},{\"tag\":\"bitmasks\",\"skill\":1503,\"attempts\":9,\"abandon_rate\":0.0},{\"tag\":\"combinatorics\",\"skill\":1503,\"attempts\":10,\"abandon_rate\":0.0},{\"tag\":\"graphs\",\"skill\":1510,\"attempts\":9,\"abandon_rate\":0.0},{\"tag\":\"brute force\",\"skill\":1510,\"attempts\":48,\"abandon_rate\":0.04},{\"tag\":\"two pointers\",\"skill\":1511,\"attempts\":19,\"abandon_rate\":0.0},{\"tag\":\"constructive algorithms\",\"skill\":1514,\"attempts\":35,\"abandon_rate\":0.03},{\"tag\":\"dp\",\"skill\":1515,\"attempts\":26,\"abandon_rate\":0.04},{\"tag\":\"sortings\",\"skill\":1520,\"attempts\":39,\"abandon_rate\":0.0},{\"tag\":\"binary search\",\"skill\":1521,\"attempts\":22,\"abandon_rate\":0.0},{\"tag\":\"data structures\",\"skill\":1529,\"attempts\":23,\"abandon_rate\":0.0},{\"tag\":\"math\",\"skill\":1532,\"attempts\":128,\"abandon_rate\":0.02},{\"tag\":\"implementation\",\"skill\":1533,\"attempts\":120,\"abandon_rate\":0.0},{\"tag\":\"greedy\",\"skill\":1533,\"attempts\":105,\"abandon_rate\":0.02}]}"
+      },
+      {
+       "call": "find_problems",
+       "args": "{\"tag\": \"number theory\", \"count\": 6}"
+      },
+      {
+       "call": "find_problems",
+       "args": "{\"tag\": \"games\", \"count\": 6}"
+      },
+      {
+       "call": "find_problems",
+       "args": "{\"tag\": \"strings\", \"count\": 6}"
+      },
+      {
+       "call": "find_problems",
+       "args": "{\"tag\": \"dsu\", \"count\": 6}"
+      },
+      {
+       "result": "{\"difficulty\":\"normal\",\"problems\":[{\"id\":\"2234D\",\"name\":\"XOR, Expression and Two Binary Numbers\",\"rating\":1500,\"tags\":[\"bitmasks\",\"divide and conquer\",\"dp\",\"math\",\"number theory\"],\"matched_tag\":\"number theory\",\"tag_skill\":1490,\"gap\":0,\"score\":1.38},{\"id\":\"2241E\",\"name\":\"Fair and Square\",\"rating\":1600,\"tags\":[\"combinatorics\",\"dp\",\"graphs\",\"math\",\"number theory\",\"trees\"],\"matched_tag\":\"number theory\",\"tag_skill\":1490,\"gap\":100,\"score\":1.36},{\"id\":\"2203D\",\"name\":\"Divisibility Game\",\"rating\":1700,\"tags\":[\"brute force\",\"games\",\"greedy\",\"number theory\"],\"matched_tag\":\"number theory\",\"tag_skill\":1490,\"gap\":200,\"score\":1.32},{\"id\":\"2109C1\",\"name\":\"Hacking Numbers (Easy Version)\",\"rating\":1500,\"tags\":[\"bitmasks\",\"constructive algorithms\",\"interactive\",\"math\",\"number theory\"],\"matched_tag\":\"number theory\",\"tag_skill\":1490,\"gap\":0,\"score\":1.25},{\"id\":\"2257D\",\"name\":\"Bermuda Rectangle\",\"rating\":1600,\"tags\":[\"binary search\",\"implementation\",\"math\",\"number theory\",\"two pointers\"],\"matched_tag\":\"number theory\",\"tag_skill\":1490,\"gap\":100,\"score\":1.25},{\"id\":\"2072F\",\"name\":\"Goodbye, Banker Life\",\"rating\":1700,\"tags\":[\"2-sat\",\"bitmasks\",\"combinatorics\",\"constructive algorithms\",\"fft\",\"math\",\"number theory\"],\"matched_tag\":\"number theory\",\"tag_skill\":1490,\"gap\":200,\"score\":1.26}]}"
+      },
+      {
+       "result": "{\"difficulty\":\"normal\",\"problems\":[{\"id\":\"2200E\",\"name\":\"Divisive Battle\",\"rating\":1500,\"tags\":[\"games\",\"greedy\",\"math\",\"number theory\"],\"matched_tag\":\"games\",\"tag_skill\":1491,\"gap\":0,\"score\":0.99},{\"id\":\"2207B\",\"name\":\"One Night At Freddy's\",\"rating\":1600,\"tags\":[\"games\",\"greedy\",\"sortings\"],\"matched_tag\":\"games\",\"tag_skill\":1491,\"gap\":100,\"score\":0.91},{\"id\":\"2241F\",\"name\":\"A Bit Odd\",\"rating\":1700,\"tags\":[\"data structures\",\"games\",\"greedy\",\"math\"],\"matched_tag\":\"games\",\"tag_skill\":1491,\"gap\":200,\"score\":0.9},{\"id\":\"2140C\",\"name\":\"Ultimate Value\",\"rating\":1500,\"tags\":[\"data structures\",\"games\",\"greedy\"],\"matched_tag\":\"games\",\"tag_skill\":1491,\"gap\":0,\"score\":0.8},{\"id\":\"2181F\",\"name\":\"Fragmented Nim\",\"rating\":1600,\"tags\":[\"games\"],\"matched_tag\":\"games\",\"tag_skill\":1491,\"gap\":100,\"score\":0.82},{\"id\":\"1970C2\",\"name\":\"Game on Tree (Medium)\",\"rating\":1700,\"tags\":[\"dfs and similar\",\"dp\",\"games\",\"trees\"],\"matched_tag\":\"games\",\"tag_skill\":1491,\"gap\":200,\"score\":0.89}]}"
+      },
+      {
+       "result": "{\"difficulty\":\"normal\",\"problems\":[{\"id\":\"1326D1\",\"name\":\"Prefix-Suffix Palindrome (Easy version)\",\"rating\":1500,\"tags\":[\"hashing\",\"string suffix structures\",\"strings\"],\"matched_tag\":\"strings\",\"tag_skill\":1496,\"gap\":0,\"score\":0.92},{\"id\":\"2242D\",\"name\":\"Two Digit Strings\",\"rating\":1600,\"tags\":[\"dp\",\"strings\"],\"matched_tag\":\"strings\",\"tag_skill\":1496,\"gap\":100,\"score\":1.11},{\"id\":\"2010C2\",\"name\":\"Message Transmission Error (hard version)\",\"rating\":1700,\"tags\":[\"hashing\",\"string suffix structures\",\"strings\",\"two pointers\"],\"matched_tag\":\"strings\",\"tag_skill\":1496,\"gap\":200,\"score\":1.08},{\"id\":\"2121E\",\"name\":\"Sponsor of Your Problems\",\"rating\":1500,\"tags\":[\"dp\",\"greedy\",\"implementation\",\"strings\"],\"matched_tag\":\"strings\",\"tag_skill\":1496,\"gap\":0,\"score\":0.87},{\"id\":\"1045I\",\"name\":\"Palindrome Pairs\",\"rating\":1600,\"tags\":[\"hashing\",\"strings\"],\"matched_tag\":\"strings\",\"tag_skill\":1496,\"gap\":100,\"score\":0.94},{\"id\":\"2181M\",\"name\":\"Medical Parity\",\"rating\":1700,\"tags\":[\"dp\",\"strings\"],\"matched_tag\":\"strings\",\"tag_skill\":1496,\"gap\":200,\"score\":1.05}]}"
+      },
+      {
+       "result": "{\"difficulty\":\"normal\",\"problems\":[{\"id\":\"2001C\",\"name\":\"Guess The Tree\",\"rating\":1500,\"tags\":[\"binary search\",\"brute force\",\"dfs and similar\",\"divide and conquer\",\"dsu\",\"greedy\",\"interactive\",\"trees\"],\"matched_tag\":\"dsu\",\"tag_skill\":1500,\"gap\":0,\"score\":0.83},{\"id\":\"2171F\",\"name\":\"Rae Taylor and Trees (hard version)\",\"rating\":1600,\"tags\":[\"binary search\",\"constructive algorithms\",\"data structures\",\"dp\",\"dsu\",\"greedy\",\"implementation\",\"trees\"],\"matched_tag\":\"dsu\",\"tag_skill\":1500,\"gap\":100,\"score\":0.85},{\"id\":\"2031D\",\"name\":\"Penchick and Desert Rabbit\",\"rating\":1700,\"tags\":[\"binary search\",\"data structures\",\"dfs and similar\",\"dp\",\"dsu\",\"greedy\",\"implementation\",\"two pointers\"],\"matched_tag\":\"dsu\",\"tag_skill\":1500,\"gap\":200,\"score\":0.71},{\"id\":\"2060E\",\"name\":\"Graph Composition\",\"rating\":1500,\"tags\":[\"dfs and similar\",\"dsu\",\"graphs\",\"greedy\"],\"matched_tag\":\"dsu\",\"tag_skill\":1500,\"gap\":0,\"score\":0.8},{\"id\":\"1833E\",\"name\":\"Round Dance\",\"rating\":1600,\"tags\":[\"dfs and similar\",\"dsu\",\"graphs\",\"shortest paths\"],\"matched_tag\":\"dsu\",\"tag_skill\":1500,\"gap\":100,\"score\":0.69},{\"id\":\"1985H1\",\"name\":\"Maximize the Largest Component (Easy Version)\",\"rating\":1700,\"tags\":[\"brute force\",\"data structures\",\"dfs and similar\",\"dsu\",\"graphs\",\"implementation\"],\"matched_tag\":\"dsu\",\"tag_skill\":1500,\"gap\":200,\"score\":0.71}]}"
+      },
+      {
+       "call": "validate_plan",
+       "args": "{\"constraints\":{},\"items\":[{\"id\":\"2234D\",\"reason\":\"A warm-up on number theory fundamentals.\"},{\"id\":\"2203D\",\"reason\":\"A stretch problem deepening number theory techniques.\"},{\"id\":\"2200E\",\"reason\":\"A warm-up on basic game theory concepts.\"},{\"id\":\"2242D\",\"reason\":\"A step-up on string manipulation strategies.\"},{\"id\":\"2171F\",\"reason\":\"A step-up on disjoint set union applications.\"}]}"
+      },
+      {
+       "result": "{\"ok\":true,\"errors\":[]}"
+      },
+      {
+       "call": "save_plan",
+       "args": "{\"constraints\":{},\"items\":[{\"id\":\"2234D\",\"reason\":\"A warm-up on number theory fundamentals.\"},{\"id\":\"2203D\",\"reason\":\"A stretch problem deepening number theory techniques.\"},{\"id\":\"2200E\",\"reason\":\"A warm-up on basic game theory concepts.\"},{\"id\":\"2242D\",\"reason\":\"A step-up on string manipulation strategies.\"},{\"id\":\"2171F\",\"reason\":\"A step-up on disjoint set union applications.\"}]}"
+      },
+      {
+       "result": "{\"plan_id\":1,\"items\":5}"
+      }
+     ]
+    },
+    {
+     "case": "greedy_focus",
+     "request": "Give me 3 greedy problems.",
+     "hours": null,
+     "avoid": [],
+     "parsed": {
+      "intent": "plan",
+      "count": 3,
+      "hours": null,
+      "focus_tags": [
+       "greedy"
+      ],
+      "avoid_tags": [],
+      "difficulty": null
+     },
+     "parse_warnings": [],
+     "parse_tokens": 1019,
+     "outcome": "saved",
+     "error": null,
+     "steps": 3,
+     "input_tokens": 6613,
+     "output_tokens": 502,
+     "latency_ms": 9543,
+     "tools_called": [
+      "get_tag_profile",
+      "find_problems",
+      "validate_plan",
+      "save_plan"
+     ],
+     "rejected_calls": 0,
+     "nudges": 0,
+     "week_rules": {
+      "quota": {},
+      "levels": {},
+      "skipped": []
+     },
+     "plan": [
+      {
+       "contest_id": 2259,
+       "idx": "E",
+       "rating": 1500,
+       "tags": [
+        "2-sat",
+        "constructive algorithms",
+        "greedy"
+       ],
+       "tag": "greedy",
+       "reason": "A warm-up on greedy construction.",
+       "skill": 1533.2435104392994,
+       "solved": false,
+       "running": false,
+       "facts": "greedy skill 1533 (level 1500) · 105 tries · 2% abandoned · 1500 = level +0",
+       "id": "2259E",
+       "gap": 0
+      },
+      {
+       "contest_id": 2162,
+       "idx": "E",
+       "rating": 1600,
+       "tags": [
+        "constructive algorithms",
+        "greedy",
+        "schedules"
+       ],
+       "tag": "greedy",
+       "reason": "A step-up on greedy scheduling.",
+       "skill": 1533.2435104392994,
+       "solved": false,
+       "running": false,
+       "facts": "greedy skill 1533 (level 1500) · 105 tries · 2% abandoned · 1600 = level +100",
+       "id": "2162E",
+       "gap": 100
+      },
+      {
+       "contest_id": 2147,
+       "idx": "D",
+       "rating": 1700,
+       "tags": [
+        "games",
+        "greedy"
+       ],
+       "tag": "greedy",
+       "reason": "A stretch on greedy game strategy.",
+       "skill": 1533.2435104392994,
+       "solved": false,
+       "running": false,
+       "facts": "greedy skill 1533 (level 1500) · 105 tries · 2% abandoned · 1700 = level +200",
+       "id": "2147D",
+       "gap": 200
+      }
+     ],
+     "final_text": "Saved 3 problems, easiest first, rated 1500-1700. Tags: greedy x3. Difficulty: normal (+0 to +200 around each tag's level).",
+     "checks": [
+      {
+       "check": "saved",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "3 problems",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "tags in {greedy}",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "band +0..+200",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "starts with get_tag_profile",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "no rejected calls",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "unsolved",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "no running contest",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "distinct reasons",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "no numbers in reasons",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "summary has no table",
+       "ok": true,
+       "detail": null
+      }
+     ],
+     "steps_log": [
+      {
+       "user": "Give me 3 greedy problems.\n\nFixed constraints: problems: exactly 3; focus tags: greedy"
+      },
+      {
+       "call": "get_tag_profile",
+       "args": "{}"
+      },
+      {
+       "result": "{\"rating\":1488,\"tags\":[{\"tag\":\"hashing\",\"skill\":1485,\"attempts\":1,\"abandon_rate\":0.0},{\"tag\":\"2-sat\",\"skill\":1488,\"attempts\":1,\"abandon_rate\":0.0},{\"tag\":\"string suffix structures\",\"skill\":1488,\"attempts\":1,\"abandon_rate\":0.0},{\"tag\":\"probabilities\",\"skill\":1488,\"attempts\":1,\"abandon_rate\":0.0},{\"tag\":\"graph matchings\",\"skill\":1489,\"attempts\":1,\"abandon_rate\":0.0},{\"tag\":\"number theory\",\"skill\":1490,\"attempts\":12,\"abandon_rate\":0.08},{\"tag\":\"games\",\"skill\":1491,\"attempts\":5,\"abandon_rate\":0.0},{\"tag\":\"flows\",\"skill\":1492,\"attempts\":2,\"abandon_rate\":0.0},{\"tag\":\"geometry\",\"skill\":1494,\"attempts\":4,\"abandon_rate\":0.0},{\"tag\":\"strings\",\"skill\":1496,\"attempts\":34,\"abandon_rate\":0.03},{\"tag\":\"shortest paths\",\"skill\":1496,\"attempts\":2,\"abandon_rate\":0.0},{\"tag\":\"dsu\",\"skill\":1500,\"attempts\":6,\"abandon_rate\":0.0},{\"tag\":\"trees\",\"skill\":1500,\"attempts\":5,\"abandon_rate\":0.0},{\"tag\":\"dfs and similar\",\"skill\":1503,\"attempts\":10,\"abandon_rate\":0.0},{\"tag\":\"bitmasks\",\"skill\":1503,\"attempts\":9,\"abandon_rate\":0.0},{\"tag\":\"combinatorics\",\"skill\":1503,\"attempts\":10,\"abandon_rate\":0.0},{\"tag\":\"graphs\",\"skill\":1510,\"attempts\":9,\"abandon_rate\":0.0},{\"tag\":\"brute force\",\"skill\":1510,\"attempts\":48,\"abandon_rate\":0.04},{\"tag\":\"two pointers\",\"skill\":1511,\"attempts\":19,\"abandon_rate\":0.0},{\"tag\":\"constructive algorithms\",\"skill\":1514,\"attempts\":35,\"abandon_rate\":0.03},{\"tag\":\"dp\",\"skill\":1515,\"attempts\":26,\"abandon_rate\":0.04},{\"tag\":\"sortings\",\"skill\":1520,\"attempts\":39,\"abandon_rate\":0.0},{\"tag\":\"binary search\",\"skill\":1521,\"attempts\":22,\"abandon_rate\":0.0},{\"tag\":\"data structures\",\"skill\":1529,\"attempts\":23,\"abandon_rate\":0.0},{\"tag\":\"math\",\"skill\":1532,\"attempts\":128,\"abandon_rate\":0.02},{\"tag\":\"implementation\",\"skill\":1533,\"attempts\":120,\"abandon_rate\":0.0},{\"tag\":\"greedy\",\"skill\":1533,\"attempts\":105,\"abandon_rate\":0.02}]}"
+      },
+      {
+       "call": "find_problems",
+       "args": "{\"count\":3,\"tag\":\"greedy\"}"
+      },
+      {
+       "result": "{\"difficulty\":\"normal\",\"problems\":[{\"id\":\"2259E\",\"name\":\"Treasure Map Destruction (Constructive Version)\",\"rating\":1500,\"tags\":[\"2-sat\",\"constructive algorithms\",\"greedy\"],\"matched_tag\":\"greedy\",\"tag_skill\":1533,\"gap\":0,\"score\":0.86},{\"id\":\"2162E\",\"name\":\"Beautiful Palindromes\",\"rating\":1600,\"tags\":[\"constructive algorithms\",\"greedy\",\"schedules\"],\"matched_tag\":\"greedy\",\"tag_skill\":1533,\"gap\":100,\"score\":0.77},{\"id\":\"2147D\",\"name\":\"Game on Array\",\"rating\":1700,\"tags\":[\"games\",\"greedy\"],\"matched_tag\":\"greedy\",\"tag_skill\":1533,\"gap\":200,\"score\":0.85}]}"
+      },
+      {
+       "call": "validate_plan",
+       "args": "{\"constraints\":{},\"items\":[{\"id\":\"2259E\",\"reason\":\"A warm-up on greedy construction.\"},{\"id\":\"2162E\",\"reason\":\"A step-up on greedy scheduling.\"},{\"id\":\"2147D\",\"reason\":\"A stretch on greedy game strategy.\"}]}"
+      },
+      {
+       "result": "{\"ok\":true,\"errors\":[]}"
+      },
+      {
+       "call": "save_plan",
+       "args": "{\"constraints\":{},\"items\":[{\"id\":\"2259E\",\"reason\":\"A warm-up on greedy construction.\"},{\"id\":\"2162E\",\"reason\":\"A step-up on greedy scheduling.\"},{\"id\":\"2147D\",\"reason\":\"A stretch on greedy game strategy.\"}]}"
+      },
+      {
+       "result": "{\"plan_id\":1,\"items\":3}"
+      }
+     ]
+    },
+    {
+     "case": "challenge_any",
+     "request": "Challenge me: 3 hard problems.",
+     "hours": null,
+     "avoid": [],
+     "parsed": {
+      "intent": "plan",
+      "count": 3,
+      "hours": null,
+      "focus_tags": [],
+      "avoid_tags": [],
+      "difficulty": "harder"
+     },
+     "parse_warnings": [],
+     "parse_tokens": 1049,
+     "outcome": "saved",
+     "error": null,
+     "steps": 2,
+     "input_tokens": 6014,
+     "output_tokens": 969,
+     "latency_ms": 5966,
+     "tools_called": [
+      "get_tag_profile",
+      "find_problems",
+      "find_problems",
+      "validate_plan",
+      "save_plan"
+     ],
+     "rejected_calls": 0,
+     "nudges": 0,
+     "week_rules": {
+      "quota": {
+       "number theory": 2,
+       "games": 1
+      },
+      "levels": {
+       "number theory": [
+        100,
+        300
+       ],
+       "games": [
+        200
+       ]
+      },
+      "skipped": []
+     },
+     "plan": [
+      {
+       "contest_id": 2241,
+       "idx": "E",
+       "rating": 1600,
+       "tags": [
+        "combinatorics",
+        "dp",
+        "graphs",
+        "math",
+        "number theory",
+        "trees"
+       ],
+       "tag": "number theory",
+       "reason": "A warm-up on number theory fundamentals.",
+       "skill": 1490.4006638138487,
+       "solved": false,
+       "running": false,
+       "facts": "number theory skill 1490 (level 1500) · 12 tries · 8% abandoned · 1600 = level +100",
+       "id": "2241E",
+       "gap": 100
+      },
+      {
+       "contest_id": 2241,
+       "idx": "F",
+       "rating": 1700,
+       "tags": [
+        "data structures",
+        "games",
+        "greedy",
+        "math"
+       ],
+       "tag": "games",
+       "reason": "A step‑up on games to sharpen strategic thinking.",
+       "skill": 1491.3150425250817,
+       "solved": false,
+       "running": false,
+       "facts": "games skill 1491 (level 1500) · 5 tries · 0% abandoned · 1700 = level +200",
+       "id": "2241F",
+       "gap": 200
+      },
+      {
+       "contest_id": 2275,
+       "idx": "F",
+       "rating": 1800,
+       "tags": [
+        "hashing",
+        "math",
+        "number theory"
+       ],
+       "tag": "number theory",
+       "reason": "A stretch challenge in number theory for deeper insight.",
+       "skill": 1490.4006638138487,
+       "solved": false,
+       "running": false,
+       "facts": "number theory skill 1490 (level 1500) · 12 tries · 8% abandoned · 1800 = level +300",
+       "id": "2275F",
+       "gap": 300
+      }
+     ],
+     "final_text": "Saved 3 problems, easiest first, rated 1600-1800. Tags: number theory x2, games x1. Difficulty: harder (+100 to +300 around each tag's level).",
+     "checks": [
+      {
+       "check": "saved",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "3 problems",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "band +100..+300",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "starts with get_tag_profile",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "no rejected calls",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "unsolved",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "no running contest",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "distinct reasons",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "no numbers in reasons",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "summary has no table",
+       "ok": true,
+       "detail": null
+      }
+     ],
+     "steps_log": [
+      {
+       "user": "Challenge me: 3 hard problems.\n\nFixed constraints: problems: exactly 3; this week's tags and levels (your weakest with 5+ attempts; their problems are loaded; pick each by its gap field): number theory warm-up (gap +100) and stretch (gap +300), games step-up (gap +200); difficulty: harder"
+      },
+      {
+       "call": "get_tag_profile",
+       "args": "{}"
+      },
+      {
+       "result": "{\"rating\":1488,\"tags\":[{\"tag\":\"hashing\",\"skill\":1485,\"attempts\":1,\"abandon_rate\":0.0},{\"tag\":\"2-sat\",\"skill\":1488,\"attempts\":1,\"abandon_rate\":0.0},{\"tag\":\"string suffix structures\",\"skill\":1488,\"attempts\":1,\"abandon_rate\":0.0},{\"tag\":\"probabilities\",\"skill\":1488,\"attempts\":1,\"abandon_rate\":0.0},{\"tag\":\"graph matchings\",\"skill\":1489,\"attempts\":1,\"abandon_rate\":0.0},{\"tag\":\"number theory\",\"skill\":1490,\"attempts\":12,\"abandon_rate\":0.08},{\"tag\":\"games\",\"skill\":1491,\"attempts\":5,\"abandon_rate\":0.0},{\"tag\":\"flows\",\"skill\":1492,\"attempts\":2,\"abandon_rate\":0.0},{\"tag\":\"geometry\",\"skill\":1494,\"attempts\":4,\"abandon_rate\":0.0},{\"tag\":\"strings\",\"skill\":1496,\"attempts\":34,\"abandon_rate\":0.03},{\"tag\":\"shortest paths\",\"skill\":1496,\"attempts\":2,\"abandon_rate\":0.0},{\"tag\":\"dsu\",\"skill\":1500,\"attempts\":6,\"abandon_rate\":0.0},{\"tag\":\"trees\",\"skill\":1500,\"attempts\":5,\"abandon_rate\":0.0},{\"tag\":\"dfs and similar\",\"skill\":1503,\"attempts\":10,\"abandon_rate\":0.0},{\"tag\":\"bitmasks\",\"skill\":1503,\"attempts\":9,\"abandon_rate\":0.0},{\"tag\":\"combinatorics\",\"skill\":1503,\"attempts\":10,\"abandon_rate\":0.0},{\"tag\":\"graphs\",\"skill\":1510,\"attempts\":9,\"abandon_rate\":0.0},{\"tag\":\"brute force\",\"skill\":1510,\"attempts\":48,\"abandon_rate\":0.04},{\"tag\":\"two pointers\",\"skill\":1511,\"attempts\":19,\"abandon_rate\":0.0},{\"tag\":\"constructive algorithms\",\"skill\":1514,\"attempts\":35,\"abandon_rate\":0.03},{\"tag\":\"dp\",\"skill\":1515,\"attempts\":26,\"abandon_rate\":0.04},{\"tag\":\"sortings\",\"skill\":1520,\"attempts\":39,\"abandon_rate\":0.0},{\"tag\":\"binary search\",\"skill\":1521,\"attempts\":22,\"abandon_rate\":0.0},{\"tag\":\"data structures\",\"skill\":1529,\"attempts\":23,\"abandon_rate\":0.0},{\"tag\":\"math\",\"skill\":1532,\"attempts\":128,\"abandon_rate\":0.02},{\"tag\":\"implementation\",\"skill\":1533,\"attempts\":120,\"abandon_rate\":0.0},{\"tag\":\"greedy\",\"skill\":1533,\"attempts\":105,\"abandon_rate\":0.02}]}"
+      },
+      {
+       "call": "find_problems",
+       "args": "{\"tag\": \"number theory\", \"count\": 6}"
+      },
+      {
+       "call": "find_problems",
+       "args": "{\"tag\": \"games\", \"count\": 6}"
+      },
+      {
+       "result": "{\"difficulty\":\"harder\",\"problems\":[{\"id\":\"2241E\",\"name\":\"Fair and Square\",\"rating\":1600,\"tags\":[\"combinatorics\",\"dp\",\"graphs\",\"math\",\"number theory\",\"trees\"],\"matched_tag\":\"number theory\",\"tag_skill\":1490,\"gap\":100,\"score\":1.36},{\"id\":\"2203D\",\"name\":\"Divisibility Game\",\"rating\":1700,\"tags\":[\"brute force\",\"games\",\"greedy\",\"number theory\"],\"matched_tag\":\"number theory\",\"tag_skill\":1490,\"gap\":200,\"score\":1.32},{\"id\":\"2275F\",\"name\":\"Tea Blend\",\"rating\":1800,\"tags\":[\"hashing\",\"math\",\"number theory\"],\"matched_tag\":\"number theory\",\"tag_skill\":1490,\"gap\":300,\"score\":1.42},{\"id\":\"2257D\",\"name\":\"Bermuda Rectangle\",\"rating\":1600,\"tags\":[\"binary search\",\"implementation\",\"math\",\"number theory\",\"two pointers\"],\"matched_tag\":\"number theory\",\"tag_skill\":1490,\"gap\":100,\"score\":1.25},{\"id\":\"2072F\",\"name\":\"Goodbye, Banker Life\",\"rating\":1700,\"tags\":[\"2-sat\",\"bitmasks\",\"combinatorics\",\"constructive algorithms\",\"fft\",\"math\",\"number theory\"],\"matched_tag\":\"number theory\",\"tag_skill\":1490,\"gap\":200,\"score\":1.26},{\"id\":\"2043D\",\"name\":\"Problem about GCD\",\"rating\":1800,\"tags\":[\"brute force\",\"flows\",\"math\",\"number theory\"],\"matched_tag\":\"number theory\",\"tag_skill\":1490,\"gap\":300,\"score\":1.16}]}"
+      },
+      {
+       "result": "{\"difficulty\":\"harder\",\"problems\":[{\"id\":\"2207B\",\"name\":\"One Night At Freddy's\",\"rating\":1600,\"tags\":[\"games\",\"greedy\",\"sortings\"],\"matched_tag\":\"games\",\"tag_skill\":1491,\"gap\":100,\"score\":0.91},{\"id\":\"2241F\",\"name\":\"A Bit Odd\",\"rating\":1700,\"tags\":[\"data structures\",\"games\",\"greedy\",\"math\"],\"matched_tag\":\"games\",\"tag_skill\":1491,\"gap\":200,\"score\":0.9},{\"id\":\"1987D\",\"name\":\"World is Mine\",\"rating\":1800,\"tags\":[\"dp\",\"games\"],\"matched_tag\":\"games\",\"tag_skill\":1491,\"gap\":300,\"score\":0.81},{\"id\":\"2181F\",\"name\":\"Fragmented Nim\",\"rating\":1600,\"tags\":[\"games\"],\"matched_tag\":\"games\",\"tag_skill\":1491,\"gap\":100,\"score\":0.82},{\"id\":\"1970C2\",\"name\":\"Game on Tree (Medium)\",\"rating\":1700,\"tags\":[\"dfs and similar\",\"dp\",\"games\",\"trees\"],\"matched_tag\":\"games\",\"tag_skill\":1491,\"gap\":200,\"score\":0.89},{\"id\":\"1955F\",\"name\":\"Unfair Game\",\"rating\":1800,\"tags\":[\"dp\",\"games\",\"greedy\",\"math\",\"schedules\"],\"matched_tag\":\"games\",\"tag_skill\":1491,\"gap\":300,\"score\":0.76}]}"
+      },
+      {
+       "call": "validate_plan",
+       "args": "{\"constraints\":{},\"items\":[{\"id\":\"2241E\",\"reason\":\"A warm-up on number theory fundamentals.\"},{\"id\":\"2275F\",\"reason\":\"A stretch challenge in number theory for deeper insight.\"},{\"id\":\"2241F\",\"reason\":\"A step‑up on games to sharpen strategic thinking.\"}]}"
+      },
+      {
+       "result": "{\"ok\":true,\"errors\":[]}"
+      },
+      {
+       "call": "save_plan",
+       "args": "{\"constraints\":{},\"items\":[{\"id\":\"2241E\",\"reason\":\"A warm-up on number theory fundamentals.\"},{\"id\":\"2275F\",\"reason\":\"A stretch challenge in number theory for deeper insight.\"},{\"id\":\"2241F\",\"reason\":\"A step‑up on games to sharpen strategic thinking.\"}]}"
+      },
+      {
+       "result": "{\"plan_id\":1,\"items\":3}"
+      }
+     ]
+    },
+    {
+     "case": "rusty",
+     "request": "I'm rusty after a break. Give me 3 easy warm-up problems.",
+     "hours": null,
+     "avoid": [],
+     "parsed": {
+      "intent": "plan",
+      "count": 3,
+      "hours": null,
+      "focus_tags": [],
+      "avoid_tags": [],
+      "difficulty": "easier"
+     },
+     "parse_warnings": [],
+     "parse_tokens": 1032,
+     "outcome": "saved",
+     "error": null,
+     "steps": 2,
+     "input_tokens": 6060,
+     "output_tokens": 935,
+     "latency_ms": 4891,
+     "tools_called": [
+      "get_tag_profile",
+      "find_problems",
+      "find_problems",
+      "validate_plan",
+      "save_plan"
+     ],
+     "rejected_calls": 0,
+     "nudges": 0,
+     "week_rules": {
+      "quota": {
+       "number theory": 2,
+       "games": 1
+      },
+      "levels": {
+       "number theory": [
+        -100,
+        100
+       ],
+       "games": [
+        0
+       ]
+      },
+      "skipped": []
+     },
+     "plan": [
+      {
+       "contest_id": 2266,
+       "idx": "E",
+       "rating": 1400,
+       "tags": [
+        "brute force",
+        "dp",
+        "math",
+        "number theory"
+       ],
+       "tag": "number theory",
+       "reason": "A warm-up on prime manipulation to refresh basics.",
+       "skill": 1490.4006638138487,
+       "solved": false,
+       "running": false,
+       "facts": "number theory skill 1490 (level 1500) · 12 tries · 8% abandoned · 1400 = level -100",
+       "id": "2266E",
+       "gap": -100
+      },
+      {
+       "contest_id": 2200,
+       "idx": "E",
+       "rating": 1500,
+       "tags": [
+        "games",
+        "greedy",
+        "math",
+        "number theory"
+       ],
+       "tag": "games",
+       "reason": "A step up on game strategy using greedy techniques.",
+       "skill": 1491.3150425250817,
+       "solved": false,
+       "running": false,
+       "facts": "games skill 1491 (level 1500) · 5 tries · 0% abandoned · 1500 = level +0",
+       "id": "2200E",
+       "gap": 0
+      },
+      {
+       "contest_id": 2241,
+       "idx": "E",
+       "rating": 1600,
+       "tags": [
+        "combinatorics",
+        "dp",
+        "graphs",
+        "math",
+        "number theory",
+        "trees"
+       ],
+       "tag": "number theory",
+       "reason": "A stretch on number theory combining combinatorics and geometry.",
+       "skill": 1490.4006638138487,
+       "solved": false,
+       "running": false,
+       "facts": "number theory skill 1490 (level 1500) · 12 tries · 8% abandoned · 1600 = level +100",
+       "id": "2241E",
+       "gap": 100
+      }
+     ],
+     "final_text": "Saved 3 problems, easiest first, rated 1400-1600. Tags: number theory x2, games x1. Difficulty: easier (-100 to +100 around each tag's level).",
+     "checks": [
+      {
+       "check": "saved",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "3 problems",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "band -100..+100",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "starts with get_tag_profile",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "no rejected calls",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "unsolved",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "no running contest",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "distinct reasons",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "no numbers in reasons",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "summary has no table",
+       "ok": true,
+       "detail": null
+      }
+     ],
+     "steps_log": [
+      {
+       "user": "I'm rusty after a break. Give me 3 easy warm-up problems.\n\nFixed constraints: problems: exactly 3; this week's tags and levels (your weakest with 5+ attempts; their problems are loaded; pick each by its gap field): number theory warm-up (gap -100) and stretch (gap +100), games step-up (gap +0); difficulty: easier"
+      },
+      {
+       "call": "get_tag_profile",
+       "args": "{}"
+      },
+      {
+       "result": "{\"rating\":1488,\"tags\":[{\"tag\":\"hashing\",\"skill\":1485,\"attempts\":1,\"abandon_rate\":0.0},{\"tag\":\"2-sat\",\"skill\":1488,\"attempts\":1,\"abandon_rate\":0.0},{\"tag\":\"string suffix structures\",\"skill\":1488,\"attempts\":1,\"abandon_rate\":0.0},{\"tag\":\"probabilities\",\"skill\":1488,\"attempts\":1,\"abandon_rate\":0.0},{\"tag\":\"graph matchings\",\"skill\":1489,\"attempts\":1,\"abandon_rate\":0.0},{\"tag\":\"number theory\",\"skill\":1490,\"attempts\":12,\"abandon_rate\":0.08},{\"tag\":\"games\",\"skill\":1491,\"attempts\":5,\"abandon_rate\":0.0},{\"tag\":\"flows\",\"skill\":1492,\"attempts\":2,\"abandon_rate\":0.0},{\"tag\":\"geometry\",\"skill\":1494,\"attempts\":4,\"abandon_rate\":0.0},{\"tag\":\"strings\",\"skill\":1496,\"attempts\":34,\"abandon_rate\":0.03},{\"tag\":\"shortest paths\",\"skill\":1496,\"attempts\":2,\"abandon_rate\":0.0},{\"tag\":\"dsu\",\"skill\":1500,\"attempts\":6,\"abandon_rate\":0.0},{\"tag\":\"trees\",\"skill\":1500,\"attempts\":5,\"abandon_rate\":0.0},{\"tag\":\"dfs and similar\",\"skill\":1503,\"attempts\":10,\"abandon_rate\":0.0},{\"tag\":\"bitmasks\",\"skill\":1503,\"attempts\":9,\"abandon_rate\":0.0},{\"tag\":\"combinatorics\",\"skill\":1503,\"attempts\":10,\"abandon_rate\":0.0},{\"tag\":\"graphs\",\"skill\":1510,\"attempts\":9,\"abandon_rate\":0.0},{\"tag\":\"brute force\",\"skill\":1510,\"attempts\":48,\"abandon_rate\":0.04},{\"tag\":\"two pointers\",\"skill\":1511,\"attempts\":19,\"abandon_rate\":0.0},{\"tag\":\"constructive algorithms\",\"skill\":1514,\"attempts\":35,\"abandon_rate\":0.03},{\"tag\":\"dp\",\"skill\":1515,\"attempts\":26,\"abandon_rate\":0.04},{\"tag\":\"sortings\",\"skill\":1520,\"attempts\":39,\"abandon_rate\":0.0},{\"tag\":\"binary search\",\"skill\":1521,\"attempts\":22,\"abandon_rate\":0.0},{\"tag\":\"data structures\",\"skill\":1529,\"attempts\":23,\"abandon_rate\":0.0},{\"tag\":\"math\",\"skill\":1532,\"attempts\":128,\"abandon_rate\":0.02},{\"tag\":\"implementation\",\"skill\":1533,\"attempts\":120,\"abandon_rate\":0.0},{\"tag\":\"greedy\",\"skill\":1533,\"attempts\":105,\"abandon_rate\":0.02}]}"
+      },
+      {
+       "call": "find_problems",
+       "args": "{\"tag\": \"number theory\", \"count\": 6}"
+      },
+      {
+       "call": "find_problems",
+       "args": "{\"tag\": \"games\", \"count\": 6}"
+      },
+      {
+       "result": "{\"difficulty\":\"easier\",\"problems\":[{\"id\":\"2266E\",\"name\":\"Prime Destruction\",\"rating\":1400,\"tags\":[\"brute force\",\"dp\",\"math\",\"number theory\"],\"matched_tag\":\"number theory\",\"tag_skill\":1490,\"gap\":-100,\"score\":1.31},{\"id\":\"2234D\",\"name\":\"XOR, Expression and Two Binary Numbers\",\"rating\":1500,\"tags\":[\"bitmasks\",\"divide and conquer\",\"dp\",\"math\",\"number theory\"],\"matched_tag\":\"number theory\",\"tag_skill\":1490,\"gap\":0,\"score\":1.38},{\"id\":\"2241E\",\"name\":\"Fair and Square\",\"rating\":1600,\"tags\":[\"combinatorics\",\"dp\",\"graphs\",\"math\",\"number theory\",\"trees\"],\"matched_tag\":\"number theory\",\"tag_skill\":1490,\"gap\":100,\"score\":1.36},{\"id\":\"2219A\",\"name\":\"Grid L\",\"rating\":1400,\"tags\":[\"brute force\",\"constructive algorithms\",\"math\",\"number theory\"],\"matched_tag\":\"number theory\",\"tag_skill\":1490,\"gap\":-100,\"score\":1.27},{\"id\":\"2109C1\",\"name\":\"Hacking Numbers (Easy Version)\",\"rating\":1500,\"tags\":[\"bitmasks\",\"constructive algorithms\",\"interactive\",\"math\",\"number theory\"],\"matched_tag\":\"number theory\",\"tag_skill\":1490,\"gap\":0,\"score\":1.25},{\"id\":\"2257D\",\"name\":\"Bermuda Rectangle\",\"rating\":1600,\"tags\":[\"binary search\",\"implementation\",\"math\",\"number theory\",\"two pointers\"],\"matched_tag\":\"number theory\",\"tag_skill\":1490,\"gap\":100,\"score\":1.25}]}"
+      },
+      {
+       "result": "{\"difficulty\":\"easier\",\"problems\":[{\"id\":\"2171C2\",\"name\":\"Renako Amaori and XOR Game (hard version)\",\"rating\":1400,\"tags\":[\"bitmasks\",\"games\",\"greedy\"],\"matched_tag\":\"games\",\"tag_skill\":1491,\"gap\":-100,\"score\":0.97},{\"id\":\"2200E\",\"name\":\"Divisive Battle\",\"rating\":1500,\"tags\":[\"games\",\"greedy\",\"math\",\"number theory\"],\"matched_tag\":\"games\",\"tag_skill\":1491,\"gap\":0,\"score\":0.99},{\"id\":\"2207B\",\"name\":\"One Night At Freddy's\",\"rating\":1600,\"tags\":[\"games\",\"greedy\",\"sortings\"],\"matched_tag\":\"games\",\"tag_skill\":1491,\"gap\":100,\"score\":0.91},{\"id\":\"2158C\",\"name\":\"Annoying Game\",\"rating\":1400,\"tags\":[\"dp\",\"games\",\"greedy\"],\"matched_tag\":\"games\",\"tag_skill\":1491,\"gap\":-100,\"score\":0.89},{\"id\":\"2140C\",\"name\":\"Ultimate Value\",\"rating\":1500,\"tags\":[\"data structures\",\"games\",\"greedy\"],\"matched_tag\":\"games\",\"tag_skill\":1491,\"gap\":0,\"score\":0.8},{\"id\":\"2181F\",\"name\":\"Fragmented Nim\",\"rating\":1600,\"tags\":[\"games\"],\"matched_tag\":\"games\",\"tag_skill\":1491,\"gap\":100,\"score\":0.82}]}"
+      },
+      {
+       "call": "validate_plan",
+       "args": "{\"items\":[{\"id\":\"2266E\",\"reason\":\"A warm-up on prime manipulation to refresh basics.\"},{\"id\":\"2241E\",\"reason\":\"A stretch on number theory combining combinatorics and geometry.\"},{\"id\":\"2200E\",\"reason\":\"A step up on game strategy using greedy techniques.\"}]}"
+      },
+      {
+       "result": "{\"ok\":true,\"errors\":[]}"
+      },
+      {
+       "call": "save_plan",
+       "args": "{\"items\":[{\"id\":\"2266E\",\"reason\":\"A warm-up on prime manipulation to refresh basics.\"},{\"id\":\"2241E\",\"reason\":\"A stretch on number theory combining combinatorics and geometry.\"},{\"id\":\"2200E\",\"reason\":\"A step up on game strategy using greedy techniques.\"}]}"
+      },
+      {
+       "result": "{\"plan_id\":1,\"items\":3}"
+      }
+     ]
+    }
+   ],
+   "not_run": [],
+   "summary": {
+    "cases": 4,
+    "cases_all_passed": 4,
+    "checks": 41,
+    "checks_passed": 41,
+    "rejected_calls": 0,
+    "nudges": 0,
+    "avg_steps": 2.2,
+    "avg_input_tokens": 6584,
+    "avg_latency_s": 6.8
+   }
+  },
+  {
+   "label": "below_max",
+   "handle": "Jimanbanashi",
+   "why": "which rating counts: 1644 now, max 2528, 3,055 solved; harder hits the search cap",
+   "fetched": 0,
+   "tag_rows": 37,
+   "sync_s": 4.0,
+   "snapshot": {
+    "rating": 1644,
+    "submissions": 6427,
+    "solved": 3055,
+    "tags": 36,
+    "measured_tags": 36,
+    "weakest_tag": "schedules"
+   },
+   "results": [
+    {
+     "case": "default_week",
+     "request": "Plan my practice for this week.",
+     "hours": null,
+     "avoid": [],
+     "parsed": {
+      "intent": "plan",
+      "count": null,
+      "hours": null,
+      "focus_tags": [],
+      "avoid_tags": [],
+      "difficulty": null
+     },
+     "parse_warnings": [],
+     "parse_tokens": 1037,
+     "outcome": "saved",
+     "error": null,
+     "steps": 3,
+     "input_tokens": 7829,
+     "output_tokens": 1120,
+     "latency_ms": 31997,
+     "tools_called": [
+      "get_tag_profile",
+      "find_problems",
+      "find_problems",
+      "find_problems",
+      "find_problems",
+      "validate_plan",
+      "save_plan"
+     ],
+     "rejected_calls": 1,
+     "nudges": 0,
+     "week_rules": {
+      "quota": {
+       "meet-in-the-middle": 2,
+       "flows": 1,
+       "ternary search": 1,
+       "graph matchings": 1
+      },
+      "levels": {
+       "meet-in-the-middle": [
+        0,
+        200
+       ],
+       "flows": [
+        0
+       ],
+       "ternary search": [
+        100
+       ],
+       "graph matchings": [
+        100
+       ]
+      },
+      "skipped": [
+       "schedules",
+       "expression parsing",
+       "chinese remainder theorem",
+       "fft",
+       "string suffix structures",
+       "2-sat"
+      ]
+     },
+     "plan": [
+      {
+       "contest_id": 769,
+       "idx": "D",
+       "rating": 1700,
+       "tags": [
+        "*special",
+        "bitmasks",
+        "brute force",
+        "meet-in-the-middle"
+       ],
+       "tag": "meet-in-the-middle",
+       "reason": "A warm-up on meet-in-the-middle before the stretch problem.",
+       "skill": 1729.380583279261,
+       "solved": false,
+       "running": false,
+       "facts": "meet-in-the-middle skill 1729 (level 1700) · 13 tries · 0% abandoned · 1700 = level +0",
+       "id": "769D",
+       "gap": 0
+      },
+      {
+       "contest_id": 1525,
+       "idx": "D",
+       "rating": 1800,
+       "tags": [
+        "dp",
+        "flows",
+        "graph matchings",
+        "greedy"
+       ],
+       "tag": "flows",
+       "reason": "A warm-up on flows to build basic techniques.",
+       "skill": 1775.3474100778244,
+       "solved": false,
+       "running": false,
+       "facts": "flows skill 1775 (level 1800) · 26 tries · 8% abandoned · 1800 = level +0",
+       "id": "1525D",
+       "gap": 0
+      },
+      {
+       "contest_id": 613,
+       "idx": "A",
+       "rating": 1900,
+       "tags": [
+        "binary search",
+        "geometry",
+        "ternary search"
+       ],
+       "tag": "ternary search",
+       "reason": "A step-up on ternary search to deepen search skills.",
+       "skill": 1776.022018883259,
+       "solved": false,
+       "running": false,
+       "facts": "ternary search skill 1776 (level 1800) · 26 tries · 12% abandoned · 1900 = level +100",
+       "id": "613A",
+       "gap": 100
+      },
+      {
+       "contest_id": 1914,
+       "idx": "F",
+       "rating": 1900,
+       "tags": [
+        "dfs and similar",
+        "dp",
+        "graph matchings",
+        "greedy",
+        "trees"
+       ],
+       "tag": "graph matchings",
+       "reason": "A step-up on graph matchings to practice matching concepts.",
+       "skill": 1777.4818331580648,
+       "solved": false,
+       "running": false,
+       "facts": "graph matchings skill 1777 (level 1800) · 28 tries · 7% abandoned · 1900 = level +100",
+       "id": "1914F",
+       "gap": 100
+      },
+      {
+       "contest_id": 1800,
+       "idx": "F",
+       "rating": 1900,
+       "tags": [
+        "bitmasks",
+        "hashing",
+        "meet-in-the-middle",
+        "strings"
+       ],
+       "tag": "meet-in-the-middle",
+       "reason": "A stretch on meet-in-the-middle after the warm-up.",
+       "skill": 1729.380583279261,
+       "solved": false,
+       "running": false,
+       "facts": "meet-in-the-middle skill 1729 (level 1700) · 13 tries · 0% abandoned · 1900 = level +200",
+       "id": "1800F",
+       "gap": 200
+      }
+     ],
+     "final_text": "Saved 5 problems, easiest first, rated 1700-1900. Tags: meet-in-the-middle x2, flows x1, ternary search x1, graph matchings x1. Difficulty: normal (+0 to +200 around each tag's level).",
+     "checks": [
+      {
+       "check": "saved",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "5 problems",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "band +0..+200",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "starts with get_tag_profile",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "no rejected calls",
+       "ok": false,
+       "detail": "1 rejected"
+      },
+      {
+       "check": "unsolved",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "no running contest",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "distinct reasons",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "no numbers in reasons",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "summary has no table",
+       "ok": true,
+       "detail": null
+      }
+     ],
+     "steps_log": [
+      {
+       "user": "Plan my practice for this week.\n\nFixed constraints: problems: exactly 5; this week's tags and levels (your weakest with 5+ attempts; their problems are loaded; pick each by its gap field): meet-in-the-middle warm-up (gap +0) and stretch (gap +200), flows warm-up (gap +0), ternary search step-up (gap +100), graph matchings step-up (gap +100)"
+      },
+      {
+       "call": "get_tag_profile",
+       "args": "{}"
+      },
+      {
+       "result": "{\"rating\":1644,\"tags\":[{\"tag\":\"schedules\",\"skill\":1660,\"attempts\":5,\"abandon_rate\":0.0},{\"tag\":\"expression parsing\",\"skill\":1665,\"attempts\":6,\"abandon_rate\":0.17},{\"tag\":\"chinese remainder theorem\",\"skill\":1679,\"attempts\":10,\"abandon_rate\":0.2},{\"tag\":\"fft\",\"skill\":1709,\"attempts\":11,\"abandon_rate\":0.09},{\"tag\":\"string suffix structures\",\"skill\":1724,\"attempts\":18,\"abandon_rate\":0.11},{\"tag\":\"meet-in-the-middle\",\"skill\":1729,\"attempts\":13,\"abandon_rate\":0.0},{\"tag\":\"2-sat\",\"skill\":1737,\"attempts\":16,\"abandon_rate\":0.19},{\"tag\":\"flows\",\"skill\":1775,\"attempts\":26,\"abandon_rate\":0.08},{\"tag\":\"ternary search\",\"skill\":1776,\"attempts\":26,\"abandon_rate\":0.12},{\"tag\":\"graph matchings\",\"skill\":1777,\"attempts\":28,\"abandon_rate\":0.07},{\"tag\":\"hashing\",\"skill\":1868,\"attempts\":60,\"abandon_rate\":0.17},{\"tag\":\"matrices\",\"skill\":1877,\"attempts\":34,\"abandon_rate\":0.09},{\"tag\":\"interactive\",\"skill\":1909,\"attempts\":75,\"abandon_rate\":0.15},{\"tag\":\"games\",\"skill\":1922,\"attempts\":101,\"abandon_rate\":0.08},{\"tag\":\"divide and conquer\",\"skill\":1941,\"attempts\":75,\"abandon_rate\":0.15},{\"tag\":\"shortest paths\",\"skill\":1985,\"attempts\":80,\"abandon_rate\":0.07},{\"tag\":\"dsu\",\"skill\":1993,\"attempts\":124,\"abandon_rate\":0.15},{\"tag\":\"probabilities\",\"skill\":2000,\"attempts\":61,\"abandon_rate\":0.08},{\"tag\":\"two pointers\",\"skill\":2059,\"attempts\":199,\"abandon_rate\":0.06},{\"tag\":\"geometry\",\"skill\":2095,\"attempts\":123,\"abandon_rate\":0.11},{\"tag\":\"strings\",\"skill\":2102,\"attempts\":212,\"abandon_rate\":0.07},{\"tag\":\"number theory\",\"skill\":2143,\"attempts\":263,\"abandon_rate\":0.06},{\"tag\":\"bitmasks\",\"skill\":2182,\"attempts\":233,\"abandon_rate\":0.09},{\"tag\":\"sortings\",\"skill\":2191,\"attempts\":386,\"abandon_rate\":0.05},{\"tag\":\"brute force\",\"skill\":2229,\"attempts\":562,\"abandon_rate\":0.07},{\"tag\":\"greedy\",\"skill\":2241,\"attempts\":1137,\"abandon_rate\":0.05},{\"tag\":\"binary search\",\"skill\":2261,\"attempts\":356,\"abandon_rate\":0.07},{\"tag\":\"dfs and similar\",\"skill\":2279,\"attempts\":303,\"abandon_rate\":0.12},{\"tag\":\"constructive algorithms\",\"skill\":2286,\"attempts\":728,\"abandon_rate\":0.05},{\"tag\":\"trees\",\"skill\":2289,\"attempts\":235,\"abandon_rate\":0.1},{\"tag\":\"graphs\",\"skill\":2301,\"attempts\":332,\"abandon_rate\":0.13},{\"tag\":\"implementation\",\"skill\":2302,\"attempts\":858,\"abandon_rate\":0.03},{\"tag\":\"combinatorics\",\"skill\":2306,\"attempts\":226,\"abandon_rate\":0.07},{\"tag\":\"math\",\"skill\":2318,\"attempts\":1009,\"abandon_rate\":0.04},{\"tag\":\"data structures\",\"skill\":2390,\"attempts\":484,\"abandon_rate\":0.1},{\"tag\":\"dp\",\"skill\":2466,\"attempts\":653,\"abandon_rate\":0.08}]}"
+      },
+      {
+       "call": "find_problems",
+       "args": "{\"tag\": \"meet-in-the-middle\", \"count\": 6}"
+      },
+      {
+       "call": "find_problems",
+       "args": "{\"tag\": \"flows\", \"count\": 6}"
+      },
+      {
+       "call": "find_problems",
+       "args": "{\"tag\": \"ternary search\", \"count\": 6}"
+      },
+      {
+       "call": "find_problems",
+       "args": "{\"tag\": \"graph matchings\", \"count\": 6}"
+      },
+      {
+       "result": "{\"difficulty\":\"normal\",\"problems\":[{\"id\":\"769D\",\"name\":\"k-Interesting Pairs Of Integers\",\"rating\":1700,\"tags\":[\"bitmasks\",\"brute force\",\"meet-in-the-middle\"],\"matched_tag\":\"meet-in-the-middle\",\"tag_skill\":1729,\"gap\":0,\"score\":9.97},{\"id\":\"888E\",\"name\":\"Maximum Subsequence\",\"rating\":1800,\"tags\":[\"bitmasks\",\"divide and conquer\",\"meet-in-the-middle\"],\"matched_tag\":\"meet-in-the-middle\",\"tag_skill\":1729,\"gap\":100,\"score\":11.41},{\"id\":\"1800F\",\"name\":\"Dasha and Nightmares\",\"rating\":1900,\"tags\":[\"bitmasks\",\"hashing\",\"meet-in-the-middle\",\"strings\"],\"matched_tag\":\"meet-in-the-middle\",\"tag_skill\":1729,\"gap\":200,\"score\":11.54},{\"id\":\"457A\",\"name\":\"Golden System\",\"rating\":1700,\"tags\":[\"math\",\"meet-in-the-middle\"],\"matched_tag\":\"meet-in-the-middle\",\"tag_skill\":1729,\"gap\":0,\"score\":8.85},{\"id\":\"45D\",\"name\":\"Event Dates\",\"rating\":1900,\"tags\":[\"greedy\",\"meet-in-the-middle\",\"sortings\"],\"matched_tag\":\"meet-in-the-middle\",\"tag_skill\":1729,\"gap\":200,\"score\":9.86}]}"
+      },
+      {
+       "result": "{\"difficulty\":\"normal\",\"problems\":[{\"id\":\"1525D\",\"name\":\"Armchairs\",\"rating\":1800,\"tags\":[\"dp\",\"flows\",\"graph matchings\",\"greedy\"],\"matched_tag\":\"flows\",\"tag_skill\":1775,\"gap\":0,\"score\":10.18},{\"id\":\"965D\",\"name\":\"Single-use Stones\",\"rating\":1900,\"tags\":[\"binary search\",\"flows\",\"greedy\",\"two pointers\"],\"matched_tag\":\"flows\",\"tag_skill\":1775,\"gap\":100,\"score\":9.93},{\"id\":\"1438C\",\"name\":\"Engineer Artem\",\"rating\":2000,\"tags\":[\"2-sat\",\"chinese remainder theorem\",\"constructive algorithms\",\"fft\",\"flows\"],\"matched_tag\":\"flows\",\"tag_skill\":1775,\"gap\":200,\"score\":13.27},{\"id\":\"2043D\",\"name\":\"Problem about GCD\",\"rating\":1800,\"tags\":[\"brute force\",\"flows\",\"math\",\"number theory\"],\"matched_tag\":\"flows\",\"tag_skill\":1775,\"gap\":0,\"score\":9.76},{\"id\":\"1214D\",\"name\":\"Treasure Island\",\"rating\":1900,\"tags\":[\"dfs and similar\",\"dp\",\"flows\",\"hashing\"],\"matched_tag\":\"flows\",\"tag_skill\":1775,\"gap\":100,\"score\":9.75},{\"id\":\"730I\",\"name\":\"Olympiad in Programming and Sports\",\"rating\":2000,\"tags\":[\"dp\",\"flows\",\"graphs\",\"greedy\"],\"matched_tag\":\"flows\",\"tag_skill\":1775,\"gap\":200,\"score\":8.44}]}"
+      },
+      {
+       "result": "{\"difficulty\":\"normal\",\"problems\":[{\"id\":\"939E\",\"name\":\"Maximize!\",\"rating\":1800,\"tags\":[\"binary search\",\"greedy\",\"ternary search\",\"two pointers\"],\"matched_tag\":\"ternary search\",\"tag_skill\":1776,\"gap\":0,\"score\":10.04},{\"id\":\"613A\",\"name\":\"Peter and Snow Blower\",\"rating\":1900,\"tags\":[\"binary search\",\"geometry\",\"ternary search\"],\"matched_tag\":\"ternary search\",\"tag_skill\":1776,\"gap\":100,\"score\":10.13},{\"id\":\"1244E\",\"name\":\"Minimizing Difference\",\"rating\":2000,\"tags\":[\"binary search\",\"constructive algorithms\",\"greedy\",\"sortings\",\"ternary search\",\"two pointers\"],\"matched_tag\":\"ternary search\",\"tag_skill\":1776,\"gap\":200,\"score\":9.83},{\"id\":\"201B\",\"name\":\"Guess That Car!\",\"rating\":1800,\"tags\":[\"math\",\"ternary search\"],\"matched_tag\":\"ternary search\",\"tag_skill\":1776,\"gap\":0,\"score\":8.73},{\"id\":\"2275G\",\"name\":\"Copper Squander\",\"rating\":1900,\"tags\":[\"binary search\",\"data structures\",\"dsu\",\"graphs\",\"greedy\",\"math\",\"sortings\",\"ternary search\"],\"matched_tag\":\"ternary search\",\"tag_skill\":1776,\"gap\":100,\"score\":9.98},{\"id\":\"2063D\",\"name\":\"Game With Triangles\",\"rating\":2000,\"tags\":[\"binary search\",\"brute force\",\"data structures\",\"geometry\",\"greedy\",\"implementation\",\"math\",\"ternary search\",\"two pointers\"],\"matched_tag\":\"ternary search\",\"tag_skill\":1776,\"gap\":200,\"score\":9.82}]}"
+      },
+      {
+       "result": "{\"difficulty\":\"normal\",\"problems\":[{\"id\":\"1949I\",\"name\":\"Disks\",\"rating\":1800,\"tags\":[\"dfs and similar\",\"geometry\",\"graph matchings\",\"graphs\"],\"matched_tag\":\"graph matchings\",\"tag_skill\":1777,\"gap\":0,\"score\":9.68},{\"id\":\"1914F\",\"name\":\"Programming Competition\",\"rating\":1900,\"tags\":[\"dfs and similar\",\"dp\",\"graph matchings\",\"greedy\",\"trees\"],\"matched_tag\":\"graph matchings\",\"tag_skill\":1777,\"gap\":100,\"score\":8.71},{\"id\":\"2085D\",\"name\":\"Serval and Kaitenzushi Buffet\",\"rating\":2000,\"tags\":[\"data structures\",\"graph matchings\",\"greedy\"],\"matched_tag\":\"graph matchings\",\"tag_skill\":1777,\"gap\":200,\"score\":8.91},{\"id\":\"120H\",\"name\":\"Brevity is Soul of Wit\",\"rating\":1800,\"tags\":[\"graph matchings\"],\"matched_tag\":\"graph matchings\",\"tag_skill\":1777,\"gap\":0,\"score\":7.1}]}"
+      },
+      {
+       "call": "validate_plan",
+       "args": "{\"items\":[{\"id\":\"769D\",\"reason\":\"A warm-up on meet-in-the-middle before the stretch problem.\"},{\"id\":\"1800F\",\"reason\":\"A stretch on meet-in-the-middle after the warm-up.\"},{\"id\":\"1525D\",\"reason\":\"A warm-up on flows to build basic techniques.\"},{\"id\":\"613A\",\"reason\":\"A step-up on ternary search to deepen search skills.\"},{\"id\":\"1914F\",\"reason\":\"A step-up on graph matchings to practice matching concepts.\"}]}"
+      },
+      {
+       "result": "{\"ok\":true,\"errors\":[]}"
+      },
+      {
+       "user": "Your last tool call was rejected and not run: Tool call validation failed: tool call validation failed: parameters for tool save_plan did not match schema: errors: [`/items/3`: missing properties: 'id', `/items/3`: additionalProperties 'int' not allowed]. Fix the arguments and call again."
+      },
+      {
+       "call": "save_plan",
+       "args": "{\"items\":[{\"id\":\"769D\",\"reason\":\"A warm-up on meet-in-the-middle before the stretch problem.\"},{\"id\":\"1800F\",\"reason\":\"A stretch on meet-in-the-middle after the warm-up.\"},{\"id\":\"1525D\",\"reason\":\"A warm-up on flows to build basic techniques.\"},{\"id\":\"613A\",\"reason\":\"A step-up on ternary search to deepen search skills.\"},{\"id\":\"1914F\",\"reason\":\"A step-up on graph matchings to practice matching concepts.\"}]}"
+      },
+      {
+       "result": "{\"plan_id\":1,\"items\":5}"
+      }
+     ]
+    },
+    {
+     "case": "greedy_focus",
+     "request": "Give me 3 greedy problems.",
+     "hours": null,
+     "avoid": [],
+     "parsed": {
+      "intent": "plan",
+      "count": 3,
+      "hours": null,
+      "focus_tags": [
+       "greedy"
+      ],
+      "avoid_tags": [],
+      "difficulty": null
+     },
+     "parse_warnings": [],
+     "parse_tokens": 1023,
+     "outcome": "saved",
+     "error": null,
+     "steps": 3,
+     "input_tokens": 7258,
+     "output_tokens": 538,
+     "latency_ms": 4500,
+     "tools_called": [
+      "get_tag_profile",
+      "find_problems",
+      "validate_plan",
+      "save_plan"
+     ],
+     "rejected_calls": 0,
+     "nudges": 0,
+     "week_rules": {
+      "quota": {},
+      "levels": {},
+      "skipped": []
+     },
+     "plan": [
+      {
+       "contest_id": 19,
+       "idx": "C",
+       "rating": 2200,
+       "tags": [
+        "greedy",
+        "hashing",
+        "string suffix structures"
+       ],
+       "tag": "greedy",
+       "reason": "A warm-up on string greedy techniques",
+       "skill": 2241.1175421468415,
+       "solved": false,
+       "running": false,
+       "facts": "greedy skill 2241 (level 2200) · 1137 tries · 5% abandoned · 2200 = level +0",
+       "id": "19C",
+       "gap": 0
+      },
+      {
+       "contest_id": 1190,
+       "idx": "C",
+       "rating": 2300,
+       "tags": [
+        "brute force",
+        "games",
+        "greedy"
+       ],
+       "tag": "greedy",
+       "reason": "A step up on game based greedy strategies",
+       "skill": 2241.1175421468415,
+       "solved": false,
+       "running": false,
+       "facts": "greedy skill 2241 (level 2200) · 1137 tries · 5% abandoned · 2300 = level +100",
+       "id": "1190C",
+       "gap": 100
+      },
+      {
+       "contest_id": 1934,
+       "idx": "D2",
+       "rating": 2400,
+       "tags": [
+        "bitmasks",
+        "games",
+        "greedy",
+        "interactive"
+       ],
+       "tag": "greedy",
+       "reason": "A stretch on advanced greedy bitmask applications",
+       "skill": 2241.1175421468415,
+       "solved": false,
+       "running": false,
+       "facts": "greedy skill 2241 (level 2200) · 1137 tries · 5% abandoned · 2400 = level +200",
+       "id": "1934D2",
+       "gap": 200
+      }
+     ],
+     "final_text": "Saved 3 problems, easiest first, rated 2200-2400. Tags: greedy x3. Difficulty: normal (+0 to +200 around each tag's level).",
+     "checks": [
+      {
+       "check": "saved",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "3 problems",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "tags in {greedy}",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "band +0..+200",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "starts with get_tag_profile",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "no rejected calls",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "unsolved",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "no running contest",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "distinct reasons",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "no numbers in reasons",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "summary has no table",
+       "ok": true,
+       "detail": null
+      }
+     ],
+     "steps_log": [
+      {
+       "user": "Give me 3 greedy problems.\n\nFixed constraints: problems: exactly 3; focus tags: greedy"
+      },
+      {
+       "call": "get_tag_profile",
+       "args": "{}"
+      },
+      {
+       "result": "{\"rating\":1644,\"tags\":[{\"tag\":\"schedules\",\"skill\":1660,\"attempts\":5,\"abandon_rate\":0.0},{\"tag\":\"expression parsing\",\"skill\":1665,\"attempts\":6,\"abandon_rate\":0.17},{\"tag\":\"chinese remainder theorem\",\"skill\":1679,\"attempts\":10,\"abandon_rate\":0.2},{\"tag\":\"fft\",\"skill\":1709,\"attempts\":11,\"abandon_rate\":0.09},{\"tag\":\"string suffix structures\",\"skill\":1724,\"attempts\":18,\"abandon_rate\":0.11},{\"tag\":\"meet-in-the-middle\",\"skill\":1729,\"attempts\":13,\"abandon_rate\":0.0},{\"tag\":\"2-sat\",\"skill\":1737,\"attempts\":16,\"abandon_rate\":0.19},{\"tag\":\"flows\",\"skill\":1775,\"attempts\":26,\"abandon_rate\":0.08},{\"tag\":\"ternary search\",\"skill\":1776,\"attempts\":26,\"abandon_rate\":0.12},{\"tag\":\"graph matchings\",\"skill\":1777,\"attempts\":28,\"abandon_rate\":0.07},{\"tag\":\"hashing\",\"skill\":1868,\"attempts\":60,\"abandon_rate\":0.17},{\"tag\":\"matrices\",\"skill\":1877,\"attempts\":34,\"abandon_rate\":0.09},{\"tag\":\"interactive\",\"skill\":1909,\"attempts\":75,\"abandon_rate\":0.15},{\"tag\":\"games\",\"skill\":1922,\"attempts\":101,\"abandon_rate\":0.08},{\"tag\":\"divide and conquer\",\"skill\":1941,\"attempts\":75,\"abandon_rate\":0.15},{\"tag\":\"shortest paths\",\"skill\":1985,\"attempts\":80,\"abandon_rate\":0.07},{\"tag\":\"dsu\",\"skill\":1993,\"attempts\":124,\"abandon_rate\":0.15},{\"tag\":\"probabilities\",\"skill\":2000,\"attempts\":61,\"abandon_rate\":0.08},{\"tag\":\"two pointers\",\"skill\":2059,\"attempts\":199,\"abandon_rate\":0.06},{\"tag\":\"geometry\",\"skill\":2095,\"attempts\":123,\"abandon_rate\":0.11},{\"tag\":\"strings\",\"skill\":2102,\"attempts\":212,\"abandon_rate\":0.07},{\"tag\":\"number theory\",\"skill\":2143,\"attempts\":263,\"abandon_rate\":0.06},{\"tag\":\"bitmasks\",\"skill\":2182,\"attempts\":233,\"abandon_rate\":0.09},{\"tag\":\"sortings\",\"skill\":2191,\"attempts\":386,\"abandon_rate\":0.05},{\"tag\":\"brute force\",\"skill\":2229,\"attempts\":562,\"abandon_rate\":0.07},{\"tag\":\"greedy\",\"skill\":2241,\"attempts\":1137,\"abandon_rate\":0.05},{\"tag\":\"binary search\",\"skill\":2261,\"attempts\":356,\"abandon_rate\":0.07},{\"tag\":\"dfs and similar\",\"skill\":2279,\"attempts\":303,\"abandon_rate\":0.12},{\"tag\":\"constructive algorithms\",\"skill\":2286,\"attempts\":728,\"abandon_rate\":0.05},{\"tag\":\"trees\",\"skill\":2289,\"attempts\":235,\"abandon_rate\":0.1},{\"tag\":\"graphs\",\"skill\":2301,\"attempts\":332,\"abandon_rate\":0.13},{\"tag\":\"implementation\",\"skill\":2302,\"attempts\":858,\"abandon_rate\":0.03},{\"tag\":\"combinatorics\",\"skill\":2306,\"attempts\":226,\"abandon_rate\":0.07},{\"tag\":\"math\",\"skill\":2318,\"attempts\":1009,\"abandon_rate\":0.04},{\"tag\":\"data structures\",\"skill\":2390,\"attempts\":484,\"abandon_rate\":0.1},{\"tag\":\"dp\",\"skill\":2466,\"attempts\":653,\"abandon_rate\":0.08}]}"
+      },
+      {
+       "call": "find_problems",
+       "args": "{\"count\":3,\"tag\":\"greedy\"}"
+      },
+      {
+       "result": "{\"difficulty\":\"normal\",\"problems\":[{\"id\":\"19C\",\"name\":\"Deletion of Repeats\",\"rating\":2200,\"tags\":[\"greedy\",\"hashing\",\"string suffix structures\"],\"matched_tag\":\"greedy\",\"tag_skill\":2241,\"gap\":0,\"score\":9.09},{\"id\":\"1190C\",\"name\":\"Tokitsukaze and Duel\",\"rating\":2300,\"tags\":[\"brute force\",\"games\",\"greedy\"],\"matched_tag\":\"greedy\",\"tag_skill\":2241,\"gap\":100,\"score\":6.3},{\"id\":\"1934D2\",\"name\":\"XOR Break --- Game Version\",\"rating\":2400,\"tags\":[\"bitmasks\",\"games\",\"greedy\",\"interactive\"],\"matched_tag\":\"greedy\",\"tag_skill\":2241,\"gap\":200,\"score\":7.17}]}"
+      },
+      {
+       "call": "validate_plan",
+       "args": "{\"items\":[{\"id\":\"19C\",\"reason\":\"A warm-up on string greedy techniques\"},{\"id\":\"1190C\",\"reason\":\"A step up on game based greedy strategies\"},{\"id\":\"1934D2\",\"reason\":\"A stretch on advanced greedy bitmask applications\"}]}"
+      },
+      {
+       "result": "{\"ok\":true,\"errors\":[]}"
+      },
+      {
+       "call": "save_plan",
+       "args": "{\"items\":[{\"id\":\"19C\",\"reason\":\"A warm-up on string greedy techniques\"},{\"id\":\"1190C\",\"reason\":\"A step up on game based greedy strategies\"},{\"id\":\"1934D2\",\"reason\":\"A stretch on advanced greedy bitmask applications\"}]}"
+      },
+      {
+       "result": "{\"plan_id\":1,\"items\":3}"
+      }
+     ]
+    },
+    {
+     "case": "challenge_any",
+     "request": "Challenge me: 3 hard problems.",
+     "hours": null,
+     "avoid": [],
+     "parsed": {
+      "intent": "plan",
+      "count": 3,
+      "hours": null,
+      "focus_tags": [],
+      "avoid_tags": [],
+      "difficulty": "harder"
+     },
+     "parse_warnings": [],
+     "parse_tokens": 1019,
+     "outcome": "saved",
+     "error": null,
+     "steps": 2,
+     "input_tokens": 6520,
+     "output_tokens": 919,
+     "latency_ms": 5488,
+     "tools_called": [
+      "get_tag_profile",
+      "find_problems",
+      "find_problems",
+      "validate_plan",
+      "save_plan"
+     ],
+     "rejected_calls": 0,
+     "nudges": 0,
+     "week_rules": {
+      "quota": {
+       "flows": 2,
+       "ternary search": 1
+      },
+      "levels": {
+       "flows": [
+        100,
+        300
+       ],
+       "ternary search": [
+        200
+       ]
+      },
+      "skipped": [
+       "schedules",
+       "expression parsing",
+       "chinese remainder theorem",
+       "fft",
+       "string suffix structures",
+       "meet-in-the-middle",
+       "2-sat"
+      ]
+     },
+     "plan": [
+      {
+       "contest_id": 965,
+       "idx": "D",
+       "rating": 1900,
+       "tags": [
+        "binary search",
+        "flows",
+        "greedy",
+        "two pointers"
+       ],
+       "tag": "flows",
+       "reason": "A warm-up on flow basics to activate the network intuition.",
+       "skill": 1775.3474100778244,
+       "solved": false,
+       "running": false,
+       "facts": "flows skill 1775 (level 1800) · 26 tries · 8% abandoned · 1900 = level +100",
+       "id": "965D",
+       "gap": 100
+      },
+      {
+       "contest_id": 1244,
+       "idx": "E",
+       "rating": 2000,
+       "tags": [
+        "binary search",
+        "constructive algorithms",
+        "greedy",
+        "sortings",
+        "ternary search",
+        "two pointers"
+       ],
+       "tag": "ternary search",
+       "reason": "A step-up using ternary search to sharpen optimization skills.",
+       "skill": 1776.022018883259,
+       "solved": false,
+       "running": false,
+       "facts": "ternary search skill 1776 (level 1800) · 26 tries · 12% abandoned · 2000 = level +200",
+       "id": "1244E",
+       "gap": 200
+      },
+      {
+       "contest_id": 269,
+       "idx": "C",
+       "rating": 2100,
+       "tags": [
+        "constructive algorithms",
+        "flows",
+        "graphs",
+        "greedy"
+       ],
+       "tag": "flows",
+       "reason": "A stretch on advanced flow constructions to push the difficulty.",
+       "skill": 1775.3474100778244,
+       "solved": false,
+       "running": false,
+       "facts": "flows skill 1775 (level 1800) · 26 tries · 8% abandoned · 2100 = level +300",
+       "id": "269C",
+       "gap": 300
+      }
+     ],
+     "final_text": "Saved 3 problems, easiest first, rated 1900-2100. Tags: flows x2, ternary search x1. Difficulty: harder (+100 to +300 around each tag's level).",
+     "checks": [
+      {
+       "check": "saved",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "3 problems",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "band +100..+300",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "starts with get_tag_profile",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "no rejected calls",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "unsolved",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "no running contest",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "distinct reasons",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "no numbers in reasons",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "summary has no table",
+       "ok": true,
+       "detail": null
+      }
+     ],
+     "steps_log": [
+      {
+       "user": "Challenge me: 3 hard problems.\n\nFixed constraints: problems: exactly 3; this week's tags and levels (your weakest with 5+ attempts; their problems are loaded; pick each by its gap field): flows warm-up (gap +100) and stretch (gap +300), ternary search step-up (gap +200); difficulty: harder"
+      },
+      {
+       "call": "get_tag_profile",
+       "args": "{}"
+      },
+      {
+       "result": "{\"rating\":1644,\"tags\":[{\"tag\":\"schedules\",\"skill\":1660,\"attempts\":5,\"abandon_rate\":0.0},{\"tag\":\"expression parsing\",\"skill\":1665,\"attempts\":6,\"abandon_rate\":0.17},{\"tag\":\"chinese remainder theorem\",\"skill\":1679,\"attempts\":10,\"abandon_rate\":0.2},{\"tag\":\"fft\",\"skill\":1709,\"attempts\":11,\"abandon_rate\":0.09},{\"tag\":\"string suffix structures\",\"skill\":1724,\"attempts\":18,\"abandon_rate\":0.11},{\"tag\":\"meet-in-the-middle\",\"skill\":1729,\"attempts\":13,\"abandon_rate\":0.0},{\"tag\":\"2-sat\",\"skill\":1737,\"attempts\":16,\"abandon_rate\":0.19},{\"tag\":\"flows\",\"skill\":1775,\"attempts\":26,\"abandon_rate\":0.08},{\"tag\":\"ternary search\",\"skill\":1776,\"attempts\":26,\"abandon_rate\":0.12},{\"tag\":\"graph matchings\",\"skill\":1777,\"attempts\":28,\"abandon_rate\":0.07},{\"tag\":\"hashing\",\"skill\":1868,\"attempts\":60,\"abandon_rate\":0.17},{\"tag\":\"matrices\",\"skill\":1877,\"attempts\":34,\"abandon_rate\":0.09},{\"tag\":\"interactive\",\"skill\":1909,\"attempts\":75,\"abandon_rate\":0.15},{\"tag\":\"games\",\"skill\":1922,\"attempts\":101,\"abandon_rate\":0.08},{\"tag\":\"divide and conquer\",\"skill\":1941,\"attempts\":75,\"abandon_rate\":0.15},{\"tag\":\"shortest paths\",\"skill\":1985,\"attempts\":80,\"abandon_rate\":0.07},{\"tag\":\"dsu\",\"skill\":1993,\"attempts\":124,\"abandon_rate\":0.15},{\"tag\":\"probabilities\",\"skill\":2000,\"attempts\":61,\"abandon_rate\":0.08},{\"tag\":\"two pointers\",\"skill\":2059,\"attempts\":199,\"abandon_rate\":0.06},{\"tag\":\"geometry\",\"skill\":2095,\"attempts\":123,\"abandon_rate\":0.11},{\"tag\":\"strings\",\"skill\":2102,\"attempts\":212,\"abandon_rate\":0.07},{\"tag\":\"number theory\",\"skill\":2143,\"attempts\":263,\"abandon_rate\":0.06},{\"tag\":\"bitmasks\",\"skill\":2182,\"attempts\":233,\"abandon_rate\":0.09},{\"tag\":\"sortings\",\"skill\":2191,\"attempts\":386,\"abandon_rate\":0.05},{\"tag\":\"brute force\",\"skill\":2229,\"attempts\":562,\"abandon_rate\":0.07},{\"tag\":\"greedy\",\"skill\":2241,\"attempts\":1137,\"abandon_rate\":0.05},{\"tag\":\"binary search\",\"skill\":2261,\"attempts\":356,\"abandon_rate\":0.07},{\"tag\":\"dfs and similar\",\"skill\":2279,\"attempts\":303,\"abandon_rate\":0.12},{\"tag\":\"constructive algorithms\",\"skill\":2286,\"attempts\":728,\"abandon_rate\":0.05},{\"tag\":\"trees\",\"skill\":2289,\"attempts\":235,\"abandon_rate\":0.1},{\"tag\":\"graphs\",\"skill\":2301,\"attempts\":332,\"abandon_rate\":0.13},{\"tag\":\"implementation\",\"skill\":2302,\"attempts\":858,\"abandon_rate\":0.03},{\"tag\":\"combinatorics\",\"skill\":2306,\"attempts\":226,\"abandon_rate\":0.07},{\"tag\":\"math\",\"skill\":2318,\"attempts\":1009,\"abandon_rate\":0.04},{\"tag\":\"data structures\",\"skill\":2390,\"attempts\":484,\"abandon_rate\":0.1},{\"tag\":\"dp\",\"skill\":2466,\"attempts\":653,\"abandon_rate\":0.08}]}"
+      },
+      {
+       "call": "find_problems",
+       "args": "{\"tag\": \"flows\", \"count\": 6}"
+      },
+      {
+       "call": "find_problems",
+       "args": "{\"tag\": \"ternary search\", \"count\": 6}"
+      },
+      {
+       "result": "{\"difficulty\":\"harder\",\"problems\":[{\"id\":\"965D\",\"name\":\"Single-use Stones\",\"rating\":1900,\"tags\":[\"binary search\",\"flows\",\"greedy\",\"two pointers\"],\"matched_tag\":\"flows\",\"tag_skill\":1775,\"gap\":100,\"score\":9.93},{\"id\":\"1438C\",\"name\":\"Engineer Artem\",\"rating\":2000,\"tags\":[\"2-sat\",\"chinese remainder theorem\",\"constructive algorithms\",\"fft\",\"flows\"],\"matched_tag\":\"flows\",\"tag_skill\":1775,\"gap\":200,\"score\":13.27},{\"id\":\"269C\",\"name\":\"Flawed Flow\",\"rating\":2100,\"tags\":[\"constructive algorithms\",\"flows\",\"graphs\",\"greedy\"],\"matched_tag\":\"flows\",\"tag_skill\":1775,\"gap\":300,\"score\":9.04},{\"id\":\"1214D\",\"name\":\"Treasure Island\",\"rating\":1900,\"tags\":[\"dfs and similar\",\"dp\",\"flows\",\"hashing\"],\"matched_tag\":\"flows\",\"tag_skill\":1775,\"gap\":100,\"score\":9.75},{\"id\":\"730I\",\"name\":\"Olympiad in Programming and Sports\",\"rating\":2000,\"tags\":[\"dp\",\"flows\",\"graphs\",\"greedy\"],\"matched_tag\":\"flows\",\"tag_skill\":1775,\"gap\":200,\"score\":8.44},{\"id\":\"546E\",\"name\":\"Soldier and Traveling\",\"rating\":2100,\"tags\":[\"flows\",\"graphs\",\"math\"],\"matched_tag\":\"flows\",\"tag_skill\":1775,\"gap\":300,\"score\":8.71}]}"
+      },
+      {
+       "result": "{\"difficulty\":\"harder\",\"problems\":[{\"id\":\"613A\",\"name\":\"Peter and Snow Blower\",\"rating\":1900,\"tags\":[\"binary search\",\"geometry\",\"ternary search\"],\"matched_tag\":\"ternary search\",\"tag_skill\":1776,\"gap\":100,\"score\":10.13},{\"id\":\"1244E\",\"name\":\"Minimizing Difference\",\"rating\":2000,\"tags\":[\"binary search\",\"constructive algorithms\",\"greedy\",\"sortings\",\"ternary search\",\"two pointers\"],\"matched_tag\":\"ternary search\",\"tag_skill\":1776,\"gap\":200,\"score\":9.83},{\"id\":\"106E\",\"name\":\"Space Rescuers\",\"rating\":2100,\"tags\":[\"geometry\",\"ternary search\"],\"matched_tag\":\"ternary search\",\"tag_skill\":1776,\"gap\":300,\"score\":10.96},{\"id\":\"2275G\",\"name\":\"Copper Squander\",\"rating\":1900,\"tags\":[\"binary search\",\"data structures\",\"dsu\",\"graphs\",\"greedy\",\"math\",\"sortings\",\"ternary search\"],\"matched_tag\":\"ternary search\",\"tag_skill\":1776,\"gap\":100,\"score\":9.98},{\"id\":\"2063D\",\"name\":\"Game With Triangles\",\"rating\":2000,\"tags\":[\"binary search\",\"brute force\",\"data structures\",\"geometry\",\"greedy\",\"implementation\",\"math\",\"ternary search\",\"two pointers\"],\"matched_tag\":\"ternary search\",\"tag_skill\":1776,\"gap\":200,\"score\":9.82},{\"id\":\"2046C\",\"name\":\"Adventurers\",\"rating\":2100,\"tags\":[\"binary search\",\"data structures\",\"greedy\",\"sortings\",\"ternary search\",\"two pointers\"],\"matched_tag\":\"ternary search\",\"tag_skill\":1776,\"gap\":300,\"score\":9.89}]}"
+      },
+      {
+       "call": "validate_plan",
+       "args": "{\"constraints\":{},\"items\":[{\"id\":\"965D\",\"reason\":\"A warm-up on flow basics to activate the network intuition.\"},{\"id\":\"1244E\",\"reason\":\"A step-up using ternary search to sharpen optimization skills.\"},{\"id\":\"269C\",\"reason\":\"A stretch on advanced flow constructions to push the difficulty.\"}]}"
+      },
+      {
+       "result": "{\"ok\":true,\"errors\":[]}"
+      },
+      {
+       "call": "save_plan",
+       "args": "{\"constraints\":{},\"items\":[{\"id\":\"965D\",\"reason\":\"A warm-up on flow basics to activate the network intuition.\"},{\"id\":\"1244E\",\"reason\":\"A step-up using ternary search to sharpen optimization skills.\"},{\"id\":\"269C\",\"reason\":\"A stretch on advanced flow constructions to push the difficulty.\"}]}"
+      },
+      {
+       "result": "{\"plan_id\":1,\"items\":3}"
+      }
+     ]
+    },
+    {
+     "case": "rusty",
+     "request": "I'm rusty after a break. Give me 3 easy warm-up problems.",
+     "hours": null,
+     "avoid": [],
+     "parsed": {
+      "intent": "plan",
+      "count": 3,
+      "hours": null,
+      "focus_tags": [],
+      "avoid_tags": [],
+      "difficulty": "easier"
+     },
+     "parse_warnings": [],
+     "parse_tokens": 1029,
+     "outcome": "saved",
+     "error": null,
+     "steps": 2,
+     "input_tokens": 6404,
+     "output_tokens": 1418,
+     "latency_ms": 5977,
+     "tools_called": [
+      "get_tag_profile",
+      "find_problems",
+      "find_problems",
+      "validate_plan",
+      "save_plan"
+     ],
+     "rejected_calls": 0,
+     "nudges": 0,
+     "week_rules": {
+      "quota": {
+       "expression parsing": 2,
+       "flows": 1
+      },
+      "levels": {
+       "expression parsing": [
+        -100,
+        100
+       ],
+       "flows": [
+        0
+       ]
+      },
+      "skipped": [
+       "schedules",
+       "chinese remainder theorem",
+       "fft",
+       "string suffix structures",
+       "meet-in-the-middle",
+       "2-sat"
+      ]
+     },
+     "plan": [
+      {
+       "contest_id": 70,
+       "idx": "B",
+       "rating": 1600,
+       "tags": [
+        "expression parsing",
+        "greedy",
+        "strings"
+       ],
+       "tag": "expression parsing",
+       "reason": "A warm-up on expression parsing to refresh basics.",
+       "skill": 1664.8754465415423,
+       "solved": false,
+       "running": false,
+       "facts": "expression parsing skill 1665 (level 1700) · 6 tries · 17% abandoned · 1600 = level -100",
+       "id": "70B",
+       "gap": -100
+      },
+      {
+       "contest_id": 1525,
+       "idx": "D",
+       "rating": 1800,
+       "tags": [
+        "dp",
+        "flows",
+        "graph matchings",
+        "greedy"
+       ],
+       "tag": "flows",
+       "reason": "A step-up on flows to bridge to harder tasks.",
+       "skill": 1775.3474100778244,
+       "solved": false,
+       "running": false,
+       "facts": "flows skill 1775 (level 1800) · 26 tries · 8% abandoned · 1800 = level +0",
+       "id": "1525D",
+       "gap": 0
+      },
+      {
+       "contest_id": 778,
+       "idx": "B",
+       "rating": 1800,
+       "tags": [
+        "bitmasks",
+        "brute force",
+        "dfs and similar",
+        "expression parsing",
+        "implementation"
+       ],
+       "tag": "expression parsing",
+       "reason": "A stretch on expression parsing to push limits.",
+       "skill": 1664.8754465415423,
+       "solved": false,
+       "running": false,
+       "facts": "expression parsing skill 1665 (level 1700) · 6 tries · 17% abandoned · 1800 = level +100",
+       "id": "778B",
+       "gap": 100
+      }
+     ],
+     "final_text": "Saved 3 problems, easiest first, rated 1600-1800. Tags: expression parsing x2, flows x1. Difficulty: easier (-100 to +100 around each tag's level).",
+     "checks": [
+      {
+       "check": "saved",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "3 problems",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "band -100..+100",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "starts with get_tag_profile",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "no rejected calls",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "unsolved",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "no running contest",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "distinct reasons",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "no numbers in reasons",
+       "ok": true,
+       "detail": null
+      },
+      {
+       "check": "summary has no table",
+       "ok": true,
+       "detail": null
+      }
+     ],
+     "steps_log": [
+      {
+       "user": "I'm rusty after a break. Give me 3 easy warm-up problems.\n\nFixed constraints: problems: exactly 3; this week's tags and levels (your weakest with 5+ attempts; their problems are loaded; pick each by its gap field): expression parsing warm-up (gap -100) and stretch (gap +100), flows step-up (gap +0); difficulty: easier"
+      },
+      {
+       "call": "get_tag_profile",
+       "args": "{}"
+      },
+      {
+       "result": "{\"rating\":1644,\"tags\":[{\"tag\":\"schedules\",\"skill\":1660,\"attempts\":5,\"abandon_rate\":0.0},{\"tag\":\"expression parsing\",\"skill\":1665,\"attempts\":6,\"abandon_rate\":0.17},{\"tag\":\"chinese remainder theorem\",\"skill\":1679,\"attempts\":10,\"abandon_rate\":0.2},{\"tag\":\"fft\",\"skill\":1709,\"attempts\":11,\"abandon_rate\":0.09},{\"tag\":\"string suffix structures\",\"skill\":1724,\"attempts\":18,\"abandon_rate\":0.11},{\"tag\":\"meet-in-the-middle\",\"skill\":1729,\"attempts\":13,\"abandon_rate\":0.0},{\"tag\":\"2-sat\",\"skill\":1737,\"attempts\":16,\"abandon_rate\":0.19},{\"tag\":\"flows\",\"skill\":1775,\"attempts\":26,\"abandon_rate\":0.08},{\"tag\":\"ternary search\",\"skill\":1776,\"attempts\":26,\"abandon_rate\":0.12},{\"tag\":\"graph matchings\",\"skill\":1777,\"attempts\":28,\"abandon_rate\":0.07},{\"tag\":\"hashing\",\"skill\":1868,\"attempts\":60,\"abandon_rate\":0.17},{\"tag\":\"matrices\",\"skill\":1877,\"attempts\":34,\"abandon_rate\":0.09},{\"tag\":\"interactive\",\"skill\":1909,\"attempts\":75,\"abandon_rate\":0.15},{\"tag\":\"games\",\"skill\":1922,\"attempts\":101,\"abandon_rate\":0.08},{\"tag\":\"divide and conquer\",\"skill\":1941,\"attempts\":75,\"abandon_rate\":0.15},{\"tag\":\"shortest paths\",\"skill\":1985,\"attempts\":80,\"abandon_rate\":0.07},{\"tag\":\"dsu\",\"skill\":1993,\"attempts\":124,\"abandon_rate\":0.15},{\"tag\":\"probabilities\",\"skill\":2000,\"attempts\":61,\"abandon_rate\":0.08},{\"tag\":\"two pointers\",\"skill\":2059,\"attempts\":199,\"abandon_rate\":0.06},{\"tag\":\"geometry\",\"skill\":2095,\"attempts\":123,\"abandon_rate\":0.11},{\"tag\":\"strings\",\"skill\":2102,\"attempts\":212,\"abandon_rate\":0.07},{\"tag\":\"number theory\",\"skill\":2143,\"attempts\":263,\"abandon_rate\":0.06},{\"tag\":\"bitmasks\",\"skill\":2182,\"attempts\":233,\"abandon_rate\":0.09},{\"tag\":\"sortings\",\"skill\":2191,\"attempts\":386,\"abandon_rate\":0.05},{\"tag\":\"brute force\",\"skill\":2229,\"attempts\":562,\"abandon_rate\":0.07},{\"tag\":\"greedy\",\"skill\":2241,\"attempts\":1137,\"abandon_rate\":0.05},{\"tag\":\"binary search\",\"skill\":2261,\"attempts\":356,\"abandon_rate\":0.07},{\"tag\":\"dfs and similar\",\"skill\":2279,\"attempts\":303,\"abandon_rate\":0.12},{\"tag\":\"constructive algorithms\",\"skill\":2286,\"attempts\":728,\"abandon_rate\":0.05},{\"tag\":\"trees\",\"skill\":2289,\"attempts\":235,\"abandon_rate\":0.1},{\"tag\":\"graphs\",\"skill\":2301,\"attempts\":332,\"abandon_rate\":0.13},{\"tag\":\"implementation\",\"skill\":2302,\"attempts\":858,\"abandon_rate\":0.03},{\"tag\":\"combinatorics\",\"skill\":2306,\"attempts\":226,\"abandon_rate\":0.07},{\"tag\":\"math\",\"skill\":2318,\"attempts\":1009,\"abandon_rate\":0.04},{\"tag\":\"data structures\",\"skill\":2390,\"attempts\":484,\"abandon_rate\":0.1},{\"tag\":\"dp\",\"skill\":2466,\"attempts\":653,\"abandon_rate\":0.08}]}"
+      },
+      {
+       "call": "find_problems",
+       "args": "{\"tag\": \"expression parsing\", \"count\": 6}"
+      },
+      {
+       "call": "find_problems",
+       "args": "{\"tag\": \"flows\", \"count\": 6}"
+      },
+      {
+       "result": "{\"difficulty\":\"easier\",\"problems\":[{\"id\":\"70B\",\"name\":\"Text Messaging\",\"rating\":1600,\"tags\":[\"expression parsing\",\"greedy\",\"strings\"],\"matched_tag\":\"expression parsing\",\"tag_skill\":1665,\"gap\":-100,\"score\":11.46},{\"id\":\"747E\",\"name\":\"Comments\",\"rating\":1700,\"tags\":[\"dfs and similar\",\"expression parsing\",\"implementation\",\"strings\"],\"matched_tag\":\"expression parsing\",\"tag_skill\":1665,\"gap\":0,\"score\":10.9},{\"id\":\"778B\",\"name\":\"Bitwise Formula\",\"rating\":1800,\"tags\":[\"bitmasks\",\"brute force\",\"dfs and similar\",\"expression parsing\",\"implementation\"],\"matched_tag\":\"expression parsing\",\"tag_skill\":1665,\"gap\":100,\"score\":10.69},{\"id\":\"727B\",\"name\":\"Bill Total Value\",\"rating\":1600,\"tags\":[\"expression parsing\",\"implementation\",\"strings\"],\"matched_tag\":\"expression parsing\",\"tag_skill\":1665,\"gap\":-100,\"score\":11.15},{\"id\":\"223A\",\"name\":\"Bracket Sequence\",\"rating\":1700,\"tags\":[\"data structures\",\"expression parsing\",\"implementation\"],\"matched_tag\":\"expression parsing\",\"tag_skill\":1665,\"gap\":0,\"score\":9.71},{\"id\":\"195C\",\"name\":\"Try and Catch\",\"rating\":1800,\"tags\":[\"expression parsing\",\"implementation\"],\"matched_tag\":\"expression parsing\",\"tag_skill\":1665,\"gap\":100,\"score\":10.15}]}"
+      },
+      {
+       "result": "{\"difficulty\":\"easier\",\"problems\":[{\"id\":\"2009F\",\"name\":\"Firefly's Queries\",\"rating\":1700,\"tags\":[\"bitmasks\",\"data structures\",\"flows\",\"math\"],\"matched_tag\":\"flows\",\"tag_skill\":1775,\"gap\":-100,\"score\":9.06},{\"id\":\"1525D\",\"name\":\"Armchairs\",\"rating\":1800,\"tags\":[\"dp\",\"flows\",\"graph matchings\",\"greedy\"],\"matched_tag\":\"flows\",\"tag_skill\":1775,\"gap\":0,\"score\":10.18},{\"id\":\"965D\",\"name\":\"Single-use Stones\",\"rating\":1900,\"tags\":[\"binary search\",\"flows\",\"greedy\",\"two pointers\"],\"matched_tag\":\"flows\",\"tag_skill\":1775,\"gap\":100,\"score\":9.93},{\"id\":\"2043D\",\"name\":\"Problem about GCD\",\"rating\":1800,\"tags\":[\"brute force\",\"flows\",\"math\",\"number theory\"],\"matched_tag\":\"flows\",\"tag_skill\":1775,\"gap\":0,\"score\":9.76},{\"id\":\"1214D\",\"name\":\"Treasure Island\",\"rating\":1900,\"tags\":[\"dfs and similar\",\"dp\",\"flows\",\"hashing\"],\"matched_tag\":\"flows\",\"tag_skill\":1775,\"gap\":100,\"score\":9.75},{\"id\":\"727D\",\"name\":\"T-shirts Distribution\",\"rating\":1800,\"tags\":[\"constructive algorithms\",\"flows\",\"greedy\"],\"matched_tag\":\"flows\",\"tag_skill\":1775,\"gap\":0,\"score\":9.16}]}"
+      },
+      {
+       "call": "validate_plan",
+       "args": "{\"constraints\":{},\"items\":[{\"id\":\"70B\",\"reason\":\"A warm-up on expression parsing to refresh basics.\"},{\"id\":\"778B\",\"reason\":\"A stretch on expression parsing to push limits.\"},{\"id\":\"1525D\",\"reason\":\"A step-up on flows to bridge to harder tasks.\"}]}"
+      },
+      {
+       "result": "{\"ok\":true,\"errors\":[]}"
+      },
+      {
+       "call": "save_plan",
+       "args": "{\"constraints\":{},\"items\":[{\"id\":\"70B\",\"reason\":\"A warm-up on expression parsing to refresh basics.\"},{\"id\":\"778B\",\"reason\":\"A stretch on expression parsing to push limits.\"},{\"id\":\"1525D\",\"reason\":\"A step-up on flows to bridge to harder tasks.\"}]}"
+      },
+      {
+       "result": "{\"plan_id\":1,\"items\":3}"
+      }
+     ]
+    }
+   ],
+   "not_run": [],
+   "summary": {
+    "cases": 4,
+    "cases_all_passed": 3,
+    "checks": 41,
+    "checks_passed": 40,
+    "rejected_calls": 1,
+    "nudges": 0,
+    "avg_steps": 2.5,
+    "avg_input_tokens": 7003,
+    "avg_latency_s": 12.0
+   }
+  },
+  {
+   "label": "missing",
+   "handle": "zz_no_such_user_404",
+   "why": "error path: handle does not exist",
+   "error": "CFError: user.info: HTTP 400 handles: User with handle zz_no_such_user_404 not found",
+   "snapshot": null,
+   "results": [],
+   "not_run": []
+  }
+ ]
+}

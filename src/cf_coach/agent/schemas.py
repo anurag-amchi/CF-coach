@@ -56,11 +56,14 @@ class GetProgressSinceInput(ToolInput):
 
 
 class PlanItem(ToolInput):
-    contest_id: int = Field(gt=0)
-    idx: str = Field(min_length=1, max_length=10, description="Problem index, e.g. 'B' or 'C1'.")
-    tag: str = Field(description="The tag this problem is meant to practise.")
+    # Only 2 fields: the tag and the contest/index split come from the tool that offered
+    # the id (ToolContext.offered), so the model can't get them wrong. Decision #35.
+    id: str = Field(min_length=2, max_length=12,
+                    description="The problem id exactly as a tool returned it, e.g. '2242D'.")
+    # The numbers (skill, tries, abandon rate, gap) are written by code next to it (#40).
     reason: str = Field(min_length=1, max_length=300,
-                        description="One sentence, shown to the user.")
+                        description="One sentence, shown to the user: why this problem. No "
+                                    "numbers (code adds them). Different for every item.")
 
 
 class PlanConstraints(ToolInput):
@@ -93,8 +96,7 @@ class TagProfileOut(BaseModel):
 
 
 class BacklogItemOut(BaseModel):
-    contest_id: int
-    idx: str
+    id: str                        # e.g. "2242D": what a plan item names
     rating: int | None
     tags: list[str]
     last_tried: date
@@ -106,23 +108,23 @@ class BacklogOut(BaseModel):
 
 
 class ProblemOut(BaseModel):
-    contest_id: int
-    idx: str
+    id: str
     name: str
     rating: int
     tags: list[str]
     matched_tag: str               # the tag whose band it fell in
     tag_skill: int
+    gap: int                       # rating above the rounded tag skill: its ladder level
     score: float
 
 
 class FindProblemsOut(BaseModel):
-    problems: list[ProblemOut]
+    difficulty: str                # the band used: easier / normal / harder
+    problems: list[ProblemOut]     # in ladder order: +0, +100, +200, +0, ...
 
 
 class SolvedOut(BaseModel):
-    contest_id: int
-    idx: str
+    id: str                        # same id format as the other tools
     rating: int | None
     tags: list[str]
     solved_on: date
@@ -162,15 +164,18 @@ TOOLS: dict[str, tuple[str, type[ToolInput]]] = {
         "Contest problems the user submitted to and never solved, newest first.",
         GetUpsolveBacklogInput),
     "find_problems": (
-        "Unsolved problems rated 100-300 above the user's skill on their tag, ranked by "
-        "a strategy. Never returns problems from contests that are still running.",
+        "Unsolved problems at the user's level on a tag (skill rounded to 100; the band "
+        "comes from the requested difficulty), in ladder order: one per level, easiest "
+        "first, then repeating. Taking the first N gives a plan that climbs evenly. Never "
+        "returns problems from contests that are still running.",
         FindProblemsInput),
     "get_progress_since": (
         "Problems the user solved since a date, and how their tag skills changed.",
         GetProgressSinceInput),
     "validate_plan": (
-        "Check a weekly plan against the rules (problem exists, unsolved, in the skill "
-        "band, not from a running contest, no avoided tags). Returns every broken rule.",
+        "Check a weekly plan against the rules (every id was returned by find_problems or "
+        "get_upsolve_backlog in this conversation, unsolved, in the skill band, not from a "
+        "running contest, no avoided tags). Returns every broken rule.",
         ValidatePlanInput),
     "save_plan": (
         "Save the plan for the user. Call only after validate_plan returned ok=true.",
@@ -197,7 +202,7 @@ class ToolArgsError(ValueError):
 def parse_args[T: ToolInput](model: type[T], raw: str) -> T:
     """Raw JSON string from the model -> a checked input object, or ToolArgsError.
 
-    One error line per problem, e.g. "items.0.contest_id: Input should be greater than 0".
+    One error line per problem, e.g. "items.0.reason: Field required".
     """
     try:
         return model.model_validate_json(raw.strip() or "{}")
@@ -219,7 +224,8 @@ if __name__ == "__main__":
         ("find_problems", '{"count": 50, "handle": "tourist"}'),
         ("find_problems", '{"strategy": "easiest"}'),
         ("get_progress_since", '{"since": "last week"}'),
-        ("validate_plan", '{"items": [{"contest_id": 0, "idx": "B", "tag": "dp"}]}'),
+        ("validate_plan", '{"items": [{"id": "B"}]}'),
+        ("validate_plan", '{"items": [{"contest_id": 2000, "idx": "B", "reason": "x"}]}'),
         ("get_tag_profile", ""),
         ("get_upsolve_backlog", '{"limit": 5'),
     ]

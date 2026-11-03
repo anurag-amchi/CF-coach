@@ -1,0 +1,1305 @@
+{
+ "label": "baseline",
+ "started": "2026-10-26T15:08:34.251313+00:00",
+ "model": "openai/gpt-oss-120b",
+ "commit": "2242b00",
+ "handle": "TitanCoder1258",
+ "summary": {
+  "cases": 11,
+  "cases_all_passed": 2,
+  "checks": 101,
+  "checks_passed": 79,
+  "rejected_calls": 9,
+  "avg_steps": 5.4,
+  "avg_input_tokens": 7800,
+  "avg_latency_s": 28.3
+ },
+ "results": [
+  {
+   "case": "dp_upskill",
+   "request": "Give me 3 problems of DP according to my skill level so that I can upskill",
+   "hours": null,
+   "avoid": [],
+   "outcome": "saved",
+   "error": null,
+   "steps": 6,
+   "input_tokens": 8321,
+   "output_tokens": 1059,
+   "latency_ms": 14266,
+   "tools_called": [
+    "get_tag_profile",
+    "find_problems",
+    "validate_plan",
+    "save_plan"
+   ],
+   "rejected_calls": 1,
+   "plan": [
+    {
+     "contest_id": 2260,
+     "idx": "D",
+     "rating": 1700,
+     "tags": [
+      "brute force",
+      "constructive algorithms",
+      "dfs and similar",
+      "dp",
+      "implementation"
+     ],
+     "tag": "dp",
+     "reason": "Your dp skill is 1415 with a 12% abandon rate, so the 1700‑rated problem will push you 285 points above your skill.",
+     "skill": 1414.7214530598392,
+     "solved": false,
+     "running": false,
+     "id": "2260D",
+     "gap": 300
+    },
+    {
+     "contest_id": 2244,
+     "idx": "F",
+     "rating": 1700,
+     "tags": [
+      "dfs and similar",
+      "dp",
+      "greedy",
+      "trees"
+     ],
+     "tag": "dp",
+     "reason": "Your dp skill is 1415 and you have a 12% abandon rate, making the 1700‑rated problem a good challenge.",
+     "skill": 1414.7214530598392,
+     "solved": false,
+     "running": false,
+     "id": "2244F",
+     "gap": 300
+    },
+    {
+     "contest_id": 2242,
+     "idx": "D",
+     "rating": 1600,
+     "tags": [
+      "dp",
+      "strings"
+     ],
+     "tag": "dp",
+     "reason": "With dp skill 1415 and a 12% abandon rate, the 1600‑rated problem is within the 100‑300 above‑skill range.",
+     "skill": 1414.7214530598392,
+     "solved": false,
+     "running": false,
+     "id": "2242D",
+     "gap": 200
+    }
+   ],
+   "final_text": "Here’s a short DP‑focused plan for you:\n\n| Contest | Problem | Rating | Reason |\n|---------|---------|--------|--------|\n| 2260 | D – **Signs of Prefix Sums** | 1700 | Your DP skill is 1415 with a 12 % abandon rate, so the 1700‑rated problem will push you about 285 points above your skill. |\n| 2244 | F – **Anya Loves Trees!** | 1700 | Your DP skill is 1415 and you have a 12 % abandon rate, making the 1700‑rated problem a good challenge. |\n| 2242 | D – **Two Digit Strings** | 1600 | With DP skill 1415 and a 12 % abandon rate, the 1600‑rated problem is within the 100‑300‑point above‑skill range. |\n\nThese three problems are all 100‑300 points above your current DP skill, matching your up‑skill goal. Good luck!",
+   "checks": [
+    {
+     "check": "saved",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "3 problems",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "tags in {dp}",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "ladder +0/+100/+200",
+     "ok": false,
+     "detail": "gaps [300, 300, 200], want [0, 100, 200]"
+    },
+    {
+     "check": "starts with get_tag_profile",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "no rejected calls",
+     "ok": false,
+     "detail": "1 rejected"
+    },
+    {
+     "check": "unsolved",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "no running contest",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "distinct reasons",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "summary has no table",
+     "ok": false,
+     "detail": "summary has a table"
+    }
+   ]
+  },
+  {
+   "case": "hours_in_text",
+   "request": "I have 4 hours this week. No geometry please.",
+   "hours": null,
+   "avoid": [],
+   "outcome": "saved",
+   "error": null,
+   "steps": 6,
+   "input_tokens": 8696,
+   "output_tokens": 1499,
+   "latency_ms": 34427,
+   "tools_called": [
+    "get_tag_profile",
+    "find_problems",
+    "validate_plan",
+    "save_plan"
+   ],
+   "rejected_calls": 1,
+   "plan": [
+    {
+     "contest_id": 2228,
+     "idx": "C2",
+     "rating": 1600,
+     "tags": [
+      "binary search",
+      "dfs and similar",
+      "dp",
+      "greedy",
+      "implementation"
+     ],
+     "tag": "dfs and similar",
+     "reason": "Your dfs and similar skill is 1398 and you have a high abandon rate (0.33), so this 1600‑rated problem targets that weakness.",
+     "skill": 1398.4927302276055,
+     "solved": false,
+     "running": false,
+     "id": "2228C2",
+     "gap": 200
+    },
+    {
+     "contest_id": 2195,
+     "idx": "E",
+     "rating": 1500,
+     "tags": [
+      "dfs and similar",
+      "dp",
+      "trees"
+     ],
+     "tag": "dfs and similar",
+     "reason": "Your dfs and similar skill is 1398 and you attempted few times, making this 1500‑rated problem a good step up.",
+     "skill": 1398.4927302276055,
+     "solved": false,
+     "running": false,
+     "id": "2195E",
+     "gap": 100
+    },
+    {
+     "contest_id": 2183,
+     "idx": "D1",
+     "rating": 1500,
+     "tags": [
+      "constructive algorithms",
+      "dfs and similar",
+      "greedy",
+      "trees"
+     ],
+     "tag": "dfs and similar",
+     "reason": "With dfs and similar skill 1398, this 1500‑rated constructive problem helps improve your low attempt count.",
+     "skill": 1398.4927302276055,
+     "solved": false,
+     "running": false,
+     "id": "2183D1",
+     "gap": 100
+    },
+    {
+     "contest_id": 2167,
+     "idx": "F",
+     "rating": 1600,
+     "tags": [
+      "dfs and similar",
+      "dp",
+      "math",
+      "trees"
+     ],
+     "tag": "dfs and similar",
+     "reason": "At skill 1398, tackling this 1600‑rated dfs and similar problem will boost your dp and tree abilities.",
+     "skill": 1398.4927302276055,
+     "solved": false,
+     "running": false,
+     "id": "2167F",
+     "gap": 200
+    }
+   ],
+   "final_text": "Here’s your weekly practice plan (≈4 hours total, no geometry):\n\n| Contest | Problem | Rating | Tag | Reason |\n|---------|---------|--------|-----|--------|\n| 2228 | C2 – *Cirno and Number (Hard Version)* | 1600 | dfs and similar | Your dfs skill is 1398 and you have a high abandon rate (0.33), so this 1600‑rated problem targets that weakness. |\n| 2195 | E – *Idiot First Search* | 1500 | dfs and similar | Your dfs skill is 1398 and you’ve attempted few times, making this 1500‑rated problem a good step up. |\n| 2183 | D1 – *Tree Coloring (Easy Version)* | 1500 | dfs and similar | With dfs skill 1398, this 1500‑rated constructive problem helps improve your low attempt count. |\n| 2167 | F – *Tree, TREE!!!* | 1600 | dfs and similar | At skill 1398, tackling this 1600‑rated dfs problem will boost your dp and tree abilities. |\n\nThese four problems should fit comfortably within your 4‑hour window and respect your “no geometry” constraint. Good luck!",
+   "checks": [
+    {
+     "check": "saved",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "at most 4 problems",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "avoids geometry",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "saved hours = 4",
+     "ok": false,
+     "detail": "saved hours = None"
+    },
+    {
+     "check": "band +0..+200",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "starts with get_tag_profile",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "no rejected calls",
+     "ok": false,
+     "detail": "1 rejected"
+    },
+    {
+     "check": "unsolved",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "no running contest",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "distinct reasons",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "summary has no table",
+     "ok": false,
+     "detail": "summary has a table"
+    }
+   ]
+  },
+  {
+   "case": "hours_as_flags",
+   "request": "Plan my week.",
+   "hours": 4,
+   "avoid": [
+    "geometry"
+   ],
+   "outcome": "saved",
+   "error": null,
+   "steps": 6,
+   "input_tokens": 8812,
+   "output_tokens": 1138,
+   "latency_ms": 30407,
+   "tools_called": [
+    "get_tag_profile",
+    "find_problems",
+    "validate_plan",
+    "save_plan"
+   ],
+   "rejected_calls": 1,
+   "plan": [
+    {
+     "contest_id": 2228,
+     "idx": "C2",
+     "rating": 1600,
+     "tags": [
+      "binary search",
+      "dfs and similar",
+      "dp",
+      "greedy",
+      "implementation"
+     ],
+     "tag": "dfs and similar",
+     "reason": "Your skill in dfs and similar is 1398, so a 1600 rating problem is 202 points above your skill.",
+     "skill": 1398.4927302276055,
+     "solved": false,
+     "running": false,
+     "id": "2228C2",
+     "gap": 200
+    },
+    {
+     "contest_id": 2195,
+     "idx": "E",
+     "rating": 1500,
+     "tags": [
+      "dfs and similar",
+      "dp",
+      "trees"
+     ],
+     "tag": "dfs and similar",
+     "reason": "Your skill in dfs and similar is 1398, so a 1500 rating problem is 102 points above your skill.",
+     "skill": 1398.4927302276055,
+     "solved": false,
+     "running": false,
+     "id": "2195E",
+     "gap": 100
+    },
+    {
+     "contest_id": 2183,
+     "idx": "D1",
+     "rating": 1500,
+     "tags": [
+      "constructive algorithms",
+      "dfs and similar",
+      "greedy",
+      "trees"
+     ],
+     "tag": "dfs and similar",
+     "reason": "Your skill in dfs and similar is 1398, so a 1500 rating problem is 102 points above your skill.",
+     "skill": 1398.4927302276055,
+     "solved": false,
+     "running": false,
+     "id": "2183D1",
+     "gap": 100
+    },
+    {
+     "contest_id": 2167,
+     "idx": "F",
+     "rating": 1600,
+     "tags": [
+      "dfs and similar",
+      "dp",
+      "math",
+      "trees"
+     ],
+     "tag": "dfs and similar",
+     "reason": "Your skill in dfs and similar is 1398, so a 1600 rating problem is 202 points above your skill.",
+     "skill": 1398.4927302276055,
+     "solved": false,
+     "running": false,
+     "id": "2167F",
+     "gap": 200
+    }
+   ],
+   "final_text": "Your weekly plan (up to 4 hours) includes four problems, all targeting your “dfs and similar” tag where you’re weakest:\n\n1. **2228 C2 – “Cirno and Number (Hard Version)”** (rating 1600) – 202 pts above your skill.  \n2. **2195 E – “Idiot First Search”** (rating 1500) – 102 pts above your skill.  \n3. **2183 D1 – “Tree Coloring (Easy Version)”** (rating 1500) – 102 pts above your skill.  \n4. **2167 F – “Tree, TREE!!!”** (rating 1600) – 202 pts above your skill.  \n\nAll problems avoid geometry and fit within your 4‑hour limit. Good luck!",
+   "checks": [
+    {
+     "check": "saved",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "at most 4 problems",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "avoids geometry",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "saved hours = 4",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "band +0..+200",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "starts with get_tag_profile",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "no rejected calls",
+     "ok": false,
+     "detail": "1 rejected"
+    },
+    {
+     "check": "unsolved",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "no running contest",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "distinct reasons",
+     "ok": false,
+     "detail": "some reasons are the same"
+    },
+    {
+     "check": "summary has no table",
+     "ok": true,
+     "detail": null
+    }
+   ]
+  },
+  {
+   "case": "count_above_hours",
+   "request": "Give me 5 dp problems this week",
+   "hours": 3,
+   "avoid": [],
+   "outcome": "saved",
+   "error": null,
+   "steps": 6,
+   "input_tokens": 8079,
+   "output_tokens": 1014,
+   "latency_ms": 19973,
+   "tools_called": [
+    "get_tag_profile",
+    "find_problems",
+    "validate_plan",
+    "save_plan"
+   ],
+   "rejected_calls": 1,
+   "plan": [
+    {
+     "contest_id": 2260,
+     "idx": "D",
+     "rating": 1700,
+     "tags": [
+      "brute force",
+      "constructive algorithms",
+      "dfs and similar",
+      "dp",
+      "implementation"
+     ],
+     "tag": "dp",
+     "reason": "Your dp skill is 1415, so a 1700-rated problem is within the required 100-300 range.",
+     "skill": 1414.7214530598392,
+     "solved": false,
+     "running": false,
+     "id": "2260D",
+     "gap": 300
+    },
+    {
+     "contest_id": 2244,
+     "idx": "F",
+     "rating": 1700,
+     "tags": [
+      "dfs and similar",
+      "dp",
+      "greedy",
+      "trees"
+     ],
+     "tag": "dp",
+     "reason": "Your dp skill is 1415, making this 1700-rated problem a suitable challenge.",
+     "skill": 1414.7214530598392,
+     "solved": false,
+     "running": false,
+     "id": "2244F",
+     "gap": 300
+    },
+    {
+     "contest_id": 2242,
+     "idx": "D",
+     "rating": 1600,
+     "tags": [
+      "dp",
+      "strings"
+     ],
+     "tag": "dp",
+     "reason": "Your dp skill is 1415, and this 1600-rated problem fits the 100-300 above skill band.",
+     "skill": 1414.7214530598392,
+     "solved": false,
+     "running": false,
+     "id": "2242D",
+     "gap": 200
+    }
+   ],
+   "final_text": "Here’s your DP practice plan for the week (max 3 hours, 3 problems):\n\n| Contest | Problem | Rating | Reason |\n|---------|---------|--------|--------|\n| 2260 | **D – Signs of Prefix Sums** | 1700 | Your DP skill is 1415, so a 1700‑rated problem is within the required 100‑300 range. |\n| 2244 | **F – Anya Loves Trees!** | 1700 | Your DP skill is 1415, making this 1700‑rated problem a suitable challenge. |\n| 2242 | **D – Two Digit Strings** | 1600 | Your DP skill is 1415, and this 1600‑rated problem fits the 100‑300‑above‑skill band. |\n\nGood luck, and enjoy the practice!",
+   "checks": [
+    {
+     "check": "saved",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "3 problems",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "tags in {dp}",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "band +0..+200",
+     "ok": false,
+     "detail": "outside: 2260D +300, 2244F +300"
+    },
+    {
+     "check": "starts with get_tag_profile",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "no rejected calls",
+     "ok": false,
+     "detail": "1 rejected"
+    },
+    {
+     "check": "unsolved",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "no running contest",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "distinct reasons",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "summary has no table",
+     "ok": false,
+     "detail": "summary has a table"
+    }
+   ]
+  },
+  {
+   "case": "default_week",
+   "request": "Plan my practice for this week.",
+   "hours": null,
+   "avoid": [],
+   "outcome": "saved",
+   "error": null,
+   "steps": 7,
+   "input_tokens": 9646,
+   "output_tokens": 1155,
+   "latency_ms": 52717,
+   "tools_called": [
+    "get_tag_profile",
+    "find_problems",
+    "validate_plan",
+    "save_plan"
+   ],
+   "rejected_calls": 2,
+   "plan": [
+    {
+     "contest_id": 2228,
+     "idx": "C2",
+     "rating": 1600,
+     "tags": [
+      "binary search",
+      "dfs and similar",
+      "dp",
+      "greedy",
+      "implementation"
+     ],
+     "tag": "dfs and similar",
+     "reason": "Your skill in dfs and similar is 1398, so a 1600 problem is 202 points above your level, targeting improvement.",
+     "skill": 1398.4927302276055,
+     "solved": false,
+     "running": false,
+     "id": "2228C2",
+     "gap": 200
+    },
+    {
+     "contest_id": 2195,
+     "idx": "E",
+     "rating": 1500,
+     "tags": [
+      "dfs and similar",
+      "dp",
+      "trees"
+     ],
+     "tag": "dfs and similar",
+     "reason": "Your dfs and similar skill is 1398, and this 1500 problem is within the 100-300 range to challenge you.",
+     "skill": 1398.4927302276055,
+     "solved": false,
+     "running": false,
+     "id": "2195E",
+     "gap": 100
+    },
+    {
+     "contest_id": 2183,
+     "idx": "D1",
+     "rating": 1500,
+     "tags": [
+      "constructive algorithms",
+      "dfs and similar",
+      "greedy",
+      "trees"
+     ],
+     "tag": "dfs and similar",
+     "reason": "At 1398 skill, a 1500 rating problem helps address your high abandon rate (0.33) in this tag.",
+     "skill": 1398.4927302276055,
+     "solved": false,
+     "running": false,
+     "id": "2183D1",
+     "gap": 100
+    },
+    {
+     "contest_id": 2167,
+     "idx": "F",
+     "rating": 1600,
+     "tags": [
+      "dfs and similar",
+      "dp",
+      "math",
+      "trees"
+     ],
+     "tag": "dfs and similar",
+     "reason": "With dfs skill 1398, a 1600 problem pushes you 202 points higher, targeting your weak tag.",
+     "skill": 1398.4927302276055,
+     "solved": false,
+     "running": false,
+     "id": "2167F",
+     "gap": 200
+    },
+    {
+     "contest_id": 2167,
+     "idx": "E",
+     "rating": 1600,
+     "tags": [
+      "binary search",
+      "data structures",
+      "geometry",
+      "greedy",
+      "implementation"
+     ],
+     "tag": "geometry",
+     "reason": "Your geometry skill is 1392, so this 1600 problem is 208 points above, ideal for growth.",
+     "skill": 1391.611078493303,
+     "solved": false,
+     "running": false,
+     "id": "2167E",
+     "gap": 200
+    }
+   ],
+   "final_text": "Your weekly practice plan includes five problems:\n\n1. **2228 C2 – “Cirno and Number (Hard Version)”** (rating 1600, tag *dfs and similar*) – your skill is 1398, so this is 202 points above your level.  \n2. **2195 E – “Idiot First Search”** (rating 1500, tag *dfs and similar*) – 102 points above your skill, perfect for improvement.  \n3. **2183 D1 – “Tree Coloring (Easy Version)”** (rating 1500, tag *dfs and similar*) – targets your higher abandon rate in this tag.  \n4. **2167 F – “Tree, TREE!!!”** (rating 1600, tag *dfs and similar*) – pushes you 202 points higher in a weak area.  \n5. **2167 E – “khba Loves to Sleep!”** (rating 1600, tag *geometry*) – 208 points above your geometry skill, ideal for growth.  \n\nGood luck this week!",
+   "checks": [
+    {
+     "check": "saved",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "5 problems",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "band +0..+200",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "starts with get_tag_profile",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "no rejected calls",
+     "ok": false,
+     "detail": "2 rejected"
+    },
+    {
+     "check": "unsolved",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "no running contest",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "distinct reasons",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "summary has no table",
+     "ok": true,
+     "detail": null
+    }
+   ]
+  },
+  {
+   "case": "two_tags",
+   "request": "I want to practise greedy and binary search. 4 problems.",
+   "hours": null,
+   "avoid": [],
+   "outcome": "saved",
+   "error": null,
+   "steps": 10,
+   "input_tokens": 18786,
+   "output_tokens": 2727,
+   "latency_ms": 97618,
+   "tools_called": [
+    "get_tag_profile",
+    "find_problems",
+    "find_problems",
+    "get_upsolve_backlog",
+    "find_problems",
+    "find_problems",
+    "validate_plan",
+    "save_plan"
+   ],
+   "rejected_calls": 1,
+   "plan": [
+    {
+     "contest_id": 2276,
+     "idx": "E",
+     "rating": 1800,
+     "tags": [
+      "combinatorics",
+      "data structures",
+      "dp",
+      "greedy",
+      "strings"
+     ],
+     "tag": "greedy",
+     "reason": "Your greedy skill is 1510; this 1800-rated problem is 290 above, fitting the 100-300 range.",
+     "skill": 1510.279377671619,
+     "solved": false,
+     "running": false,
+     "id": "2276E",
+     "gap": 300
+    },
+    {
+     "contest_id": 2271,
+     "idx": "D",
+     "rating": 1700,
+     "tags": [
+      "binary search",
+      "brute force",
+      "greedy",
+      "implementation",
+      "two pointers"
+     ],
+     "tag": "binary search",
+     "reason": "Your binary search skill is 1434; this 1700-rated problem is 266 above, within the required band.",
+     "skill": 1434.1431530529405,
+     "solved": false,
+     "running": false,
+     "id": "2271D",
+     "gap": 300
+    },
+    {
+     "contest_id": 2257,
+     "idx": "D",
+     "rating": 1600,
+     "tags": [
+      "binary search",
+      "implementation",
+      "math",
+      "number theory",
+      "two pointers"
+     ],
+     "tag": "binary search",
+     "reason": "Your binary search skill is 1434; this 1600-rated problem is 166 above, satisfying the 100-300 range.",
+     "skill": 1434.1431530529405,
+     "solved": false,
+     "running": false,
+     "id": "2257D",
+     "gap": 200
+    },
+    {
+     "contest_id": 2261,
+     "idx": "E",
+     "rating": 1800,
+     "tags": [
+      "binary search",
+      "data structures",
+      "dfs and similar",
+      "greedy",
+      "trees"
+     ],
+     "tag": "greedy",
+     "reason": "Your greedy skill is 1510; this 1800-rated problem is 290 above, meeting the 100-300 requirement.",
+     "skill": 1510.279377671619,
+     "solved": false,
+     "running": false,
+     "id": "2261E",
+     "gap": 300
+    }
+   ],
+   "final_text": "Here’s your weekly practice plan (4 problems, focusing on greedy and binary search):\n\n| # | Contest | Problem | Rating | Tag | Reason |\n|---|---------|---------|--------|-----|--------|\n| 1 | 2276 | **E – Good Substrings** | 1800 | greedy | Your greedy skill is 1510; this 1800‑rated problem is 290 above, fitting the 100‑300 range. |\n| 2 | 2271 | **D – Target Infection** | 1700 | binary search | Your binary‑search skill is 1434; this 1700‑rated problem is 266 above, within the required band. |\n| 3 | 2257 | **D – Bermuda Rectangle** | 1600 | binary search | Your binary‑search skill is 1434; this 1600‑rated problem is 166 above, satisfying the 100‑300 range. |\n| 4 | 2261 | **E – What Does the Cow Say?** | 1800 | greedy | Your greedy skill is 1510; this 1800‑rated problem is 290 above, meeting the 100‑300 requirement. |\n\nAll problems are unsolved, lie 100‑300 points above your current tag skill, and respect your requested tags. Happy solving!",
+   "checks": [
+    {
+     "check": "saved",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "4 problems",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "tags in {greedy, binary search}",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "band +0..+200",
+     "ok": false,
+     "detail": "outside: 2276E +300, 2271D +300, 2261E +300"
+    },
+    {
+     "check": "starts with get_tag_profile",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "no rejected calls",
+     "ok": false,
+     "detail": "1 rejected"
+    },
+    {
+     "check": "unsolved",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "no running contest",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "distinct reasons",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "summary has no table",
+     "ok": false,
+     "detail": "summary has a table"
+    }
+   ]
+  },
+  {
+   "case": "challenge",
+   "request": "Challenge me: 3 hard dp problems.",
+   "hours": null,
+   "avoid": [],
+   "outcome": "saved",
+   "error": null,
+   "steps": 6,
+   "input_tokens": 7991,
+   "output_tokens": 1408,
+   "latency_ms": 25778,
+   "tools_called": [
+    "get_tag_profile",
+    "find_problems",
+    "validate_plan",
+    "save_plan"
+   ],
+   "rejected_calls": 1,
+   "plan": [
+    {
+     "contest_id": 2260,
+     "idx": "D",
+     "rating": 1700,
+     "tags": [
+      "brute force",
+      "constructive algorithms",
+      "dfs and similar",
+      "dp",
+      "implementation"
+     ],
+     "tag": "dp",
+     "reason": "Your dp skill is 1415, and this 1700 problem is 285 above, fitting the challenge.",
+     "skill": 1414.7214530598392,
+     "solved": false,
+     "running": false,
+     "id": "2260D",
+     "gap": 300
+    },
+    {
+     "contest_id": 2244,
+     "idx": "F",
+     "rating": 1700,
+     "tags": [
+      "dfs and similar",
+      "dp",
+      "greedy",
+      "trees"
+     ],
+     "tag": "dp",
+     "reason": "Your dp skill is 1415, and this 1700 problem is 285 above, fitting the challenge.",
+     "skill": 1414.7214530598392,
+     "solved": false,
+     "running": false,
+     "id": "2244F",
+     "gap": 300
+    },
+    {
+     "contest_id": 2242,
+     "idx": "D",
+     "rating": 1600,
+     "tags": [
+      "dp",
+      "strings"
+     ],
+     "tag": "dp",
+     "reason": "Your dp skill is 1415, and this 1600 problem is 185 above, fitting the challenge.",
+     "skill": 1414.7214530598392,
+     "solved": false,
+     "running": false,
+     "id": "2242D",
+     "gap": 200
+    }
+   ],
+   "final_text": "Here’s a focused DP challenge for you this week:\n\n| Contest | Problem | Rating | Reason |\n|---------|---------|--------|--------|\n| 2260 | **D – Signs of Prefix Sums** | 1700 | Your DP skill is 1415, and this 1700 problem is 285 above, fitting the challenge. |\n| 2244 | **F – Anya Loves Trees!** | 1700 | Your DP skill is 1415, and this 1700 problem is 285 above, fitting the challenge. |\n| 2242 | **D – Two Digit Strings** | 1600 | Your DP skill is 1415, and this 1600 problem is 185 above, fitting the challenge. |\n\nAll three are 100‑300 rating points above your current DP skill, giving you a solid “hard” practice set. Good luck!",
+   "checks": [
+    {
+     "check": "saved",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "3 problems",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "tags in {dp}",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "band +100..+300",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "starts with get_tag_profile",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "no rejected calls",
+     "ok": false,
+     "detail": "1 rejected"
+    },
+    {
+     "check": "unsolved",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "no running contest",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "distinct reasons",
+     "ok": false,
+     "detail": "some reasons are the same"
+    },
+    {
+     "check": "summary has no table",
+     "ok": false,
+     "detail": "summary has a table"
+    }
+   ]
+  },
+  {
+   "case": "rusty",
+   "request": "I'm rusty after a break. Give me 3 easy warm-up problems.",
+   "hours": null,
+   "avoid": [],
+   "outcome": "saved",
+   "error": null,
+   "steps": 6,
+   "input_tokens": 8366,
+   "output_tokens": 1160,
+   "latency_ms": 27484,
+   "tools_called": [
+    "get_tag_profile",
+    "find_problems",
+    "validate_plan",
+    "save_plan"
+   ],
+   "rejected_calls": 1,
+   "plan": [
+    {
+     "contest_id": 2228,
+     "idx": "C2",
+     "rating": 1600,
+     "tags": [
+      "binary search",
+      "dfs and similar",
+      "dp",
+      "greedy",
+      "implementation"
+     ],
+     "tag": "dfs and similar",
+     "reason": "Your dfs and similar skill is 1398, so a 1600 rating problem is about 200 above your level, good for a warm‑up.",
+     "skill": 1398.4927302276055,
+     "solved": false,
+     "running": false,
+     "id": "2228C2",
+     "gap": 200
+    },
+    {
+     "contest_id": 2195,
+     "idx": "E",
+     "rating": 1500,
+     "tags": [
+      "dfs and similar",
+      "dp",
+      "trees"
+     ],
+     "tag": "dfs and similar",
+     "reason": "Your dfs and similar skill is 1398, so a 1500 rating problem is about 100 above your level, suitable for easing back in.",
+     "skill": 1398.4927302276055,
+     "solved": false,
+     "running": false,
+     "id": "2195E",
+     "gap": 100
+    },
+    {
+     "contest_id": 2183,
+     "idx": "D1",
+     "rating": 1500,
+     "tags": [
+      "constructive algorithms",
+      "dfs and similar",
+      "greedy",
+      "trees"
+     ],
+     "tag": "dfs and similar",
+     "reason": "Your dfs and similar skill is 1398, so a 1500 rating problem is about 100 above your level, a gentle warm‑up.",
+     "skill": 1398.4927302276055,
+     "solved": false,
+     "running": false,
+     "id": "2183D1",
+     "gap": 100
+    }
+   ],
+   "final_text": "Here’s a quick warm‑up set of three problems, each about 100‑200 rating points above your current “dfs and similar” skill:\n\n| # | Contest | Problem | Rating | Tag | Reason |\n|---|---------|---------|--------|-----|--------|\n| 1 | 2228 | C2 – *Cirno and Number (Hard Version)* | 1600 | dfs and similar | Your dfs skill is 1398, so this 1600 problem is ~200 points above you – a solid warm‑up. |\n| 2 | 2195 | E – *Idiot First Search* | 1500 | dfs and similar | At ~100 points above your skill, it’s a gentle re‑entry. |\n| 3 | 2183 | D1 – *Tree Coloring (Easy Version)* | 1500 | dfs and similar | Also ~100 points above your level, perfect for easing back in. |\n\nThese should help you shake off the rust without being too demanding. Happy coding!",
+   "checks": [
+    {
+     "check": "saved",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "3 problems",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "band -100..+100",
+     "ok": false,
+     "detail": "outside: 2228C2 +200"
+    },
+    {
+     "check": "starts with get_tag_profile",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "no rejected calls",
+     "ok": false,
+     "detail": "1 rejected"
+    },
+    {
+     "check": "unsolved",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "no running contest",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "distinct reasons",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "summary has no table",
+     "ok": false,
+     "detail": "summary has a table"
+    }
+   ]
+  },
+  {
+   "case": "too_hard",
+   "request": "Give me 3 problems rated 2400.",
+   "hours": null,
+   "avoid": [],
+   "outcome": "no_plan",
+   "error": null,
+   "steps": 3,
+   "input_tokens": 3973,
+   "output_tokens": 709,
+   "latency_ms": 4613,
+   "tools_called": [
+    "get_tag_profile",
+    "find_problems"
+   ],
+   "rejected_calls": 0,
+   "plan": null,
+   "final_text": "I’m sorry, but I can only suggest problems that are 100 – 300 rating points above your current skill on the relevant tag. A 2400‑rated problem would be far beyond that range for the tags you’ve worked on, so I can’t provide such problems. If you’d like, I can recommend a few problems that fit the allowed difficulty band.",
+   "checks": [
+    {
+     "check": "band -100..+300",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "starts with get_tag_profile",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "no rejected calls",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "unsolved",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "no running contest",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "distinct reasons",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "summary has no table",
+     "ok": true,
+     "detail": null
+    }
+   ]
+  },
+  {
+   "case": "running_contest",
+   "request": "Give me problems from the contest that is running right now.",
+   "hours": null,
+   "avoid": [],
+   "outcome": "no_plan",
+   "error": null,
+   "steps": 1,
+   "input_tokens": 836,
+   "output_tokens": 123,
+   "latency_ms": 1140,
+   "tools_called": [],
+   "rejected_calls": 0,
+   "plan": null,
+   "final_text": "I’m sorry, but I can’t provide problems from a contest that’s currently running.",
+   "checks": [
+    {
+     "check": "starts with get_tag_profile",
+     "ok": false,
+     "detail": "first call: none"
+    },
+    {
+     "check": "no rejected calls",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "unsolved",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "no running contest",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "distinct reasons",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "summary has no table",
+     "ok": true,
+     "detail": null
+    }
+   ]
+  },
+  {
+   "case": "weakest_tag_question",
+   "request": "What is my weakest tag right now?",
+   "hours": null,
+   "avoid": [],
+   "outcome": "no_plan",
+   "error": null,
+   "steps": 2,
+   "input_tokens": 2293,
+   "output_tokens": 328,
+   "latency_ms": 2772,
+   "tools_called": [
+    "get_tag_profile"
+   ],
+   "rejected_calls": 0,
+   "plan": null,
+   "final_text": "Your weakest tag at the moment is **geometry**, where your estimated skill is 1392.",
+   "checks": [
+    {
+     "check": "no plan saved",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "names the weakest tag",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "starts with get_tag_profile",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "no rejected calls",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "unsolved",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "no running contest",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "distinct reasons",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "summary has no table",
+     "ok": true,
+     "detail": null
+    }
+   ]
+  }
+ ]
+}
