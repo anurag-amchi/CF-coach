@@ -8,7 +8,7 @@ from cf_coach.agent.schemas import (
     SavePlanInput, ToolArgsError, ValidatePlanInput, parse_args,
 )
 
-ITEM = {"contest_id": 2000, "idx": "B", "tag": "dp", "reason": "Weakest tag."}
+ITEM = {"id": "2000B", "reason": "Weakest tag."}
 
 
 def test_one_schema_per_tool_and_no_handle_argument():
@@ -57,13 +57,30 @@ def test_date_is_parsed_from_iso_string():
 
 
 def test_nested_plan_errors_name_the_item():
-    raw = json.dumps({"items": [ITEM, {"contest_id": 0, "idx": "B", "tag": "dp"}]})
+    raw = json.dumps({"items": [ITEM, {"id": "B"}]})
     with pytest.raises(ToolArgsError) as e:
         parse_args(ValidatePlanInput, raw)
     msg = str(e.value)
-    assert "items.1.contest_id: Input should be greater than 0" in msg
+    assert "items.1.id: String should have at least 2 characters" in msg
     assert "items.1.reason: Field required" in msg
     assert "items.0" not in msg
+
+
+def test_plan_item_is_just_id_and_reason():
+    """Groq checks arguments against this schema; fewer required fields = fewer rejected calls."""
+    schema = next(s for s in TOOL_SCHEMAS if s["function"]["name"] == "validate_plan")
+    item = schema["function"]["parameters"]["$defs"]["PlanItem"]
+    assert sorted(item["properties"]) == ["id", "reason"]
+    assert sorted(item["required"]) == ["id", "reason"]
+
+
+def test_old_item_format_is_rejected():
+    raw = json.dumps({"items": [{"contest_id": 2000, "idx": "B", "tag": "dp", "reason": "r"}]})
+    with pytest.raises(ToolArgsError) as e:
+        parse_args(ValidatePlanInput, raw)
+    msg = str(e.value)
+    assert "items.0.id: Field required" in msg
+    assert "items.0.contest_id: Extra inputs are not permitted" in msg
 
 
 def test_plan_needs_at_least_one_item():
