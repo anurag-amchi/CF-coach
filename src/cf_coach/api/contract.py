@@ -30,6 +30,8 @@ from pydantic import BaseModel, ConfigDict, Field, TypeAdapter, model_validator
 
 Difficulty = Literal["easier", "normal", "harder"]
 Auth = Literal["public", "guest_ok", "account"]
+# A CF handle: 3-24 letters, digits, _ . -  (used in bodies and in /users/{handle} paths)
+HANDLE_PATTERN = r"^[A-Za-z0-9_.-]+$"
 
 
 class In(BaseModel):
@@ -54,6 +56,7 @@ ErrorCode = Literal[
     "budget_exhausted",    # 503: today's token budget is spent
     "run_in_progress",     # 409: this account or guest already has a run going
     "cf_unavailable",      # 502: the Codeforces API failed after retries
+    "internal",            # 500: a bug on our side; the details go to the server log only
 ]
 
 
@@ -85,7 +88,7 @@ class MeOut(Out):
 
 
 class MeUpdateIn(In):
-    handle: str = Field(min_length=3, max_length=24, pattern=r"^[A-Za-z0-9_.-]+$")
+    handle: str = Field(min_length=3, max_length=24, pattern=HANDLE_PATTERN)
 
 
 # ---------- Sync and profile (slices 3, 8) ----------
@@ -185,7 +188,7 @@ class RunIn(In):
     # adjust: change the current plan in words (account only, needs plan_id)
     # question: ask about your data, read-only tools (account only)
     kind: Literal["plan", "adjust", "question"]
-    handle: str = Field(min_length=3, max_length=24, pattern=r"^[A-Za-z0-9_.-]+$")
+    handle: str = Field(min_length=3, max_length=24, pattern=HANDLE_PATTERN)
     request: str = Field(min_length=1, max_length=500)
     difficulty: Difficulty | None = None      # None = read it from the request text
     hours: int | None = Field(None, ge=1, le=40)
@@ -285,8 +288,8 @@ ENDPOINTS = [
     # httpOnly cookie, never in a body or in localStorage
     Endpoint("POST", "/api/auth/session", "public", SessionIn, MeOut, 200, "4a",
              "verifies the Firebase ID token, sets the session cookie; claims the guest plan"),
-    Endpoint("POST", "/api/auth/logout", "account", None, None, 204, "4a",
-             "clears the cookie, revokes the Firebase session"),
+    Endpoint("POST", "/api/auth/logout", "public", None, None, 204, "4a",
+             "clears the cookie, revokes the Firebase sessions; ok without a valid one"),
     Endpoint("GET", "/api/me", "account", None, MeOut, 200, "4a"),
     Endpoint("PATCH", "/api/me", "account", MeUpdateIn, MeOut, 200, "4a",
              "sets the CF handle"),

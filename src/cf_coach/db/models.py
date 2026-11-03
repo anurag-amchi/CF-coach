@@ -1,4 +1,4 @@
-"""The 6 database tables, written as SQLAlchemy 2 models.
+"""The 7 database tables, written as SQLAlchemy 2 models.
 
 One class = one table. One attribute = one column.
   Mapped[int]         -> NOT NULL integer column
@@ -6,7 +6,7 @@ One class = one table. One attribute = one column.
   mapped_column(...)  -> extra details: primary key, foreign key, exact type, default
 
 See the SQL these turn into:  uv run python -m cf_coach.db.models
-Design reasons: docs/decisions.md #14.
+Design reasons: docs/decisions.md #14 (the first 6), #60 (accounts).
 """
 
 from datetime import datetime
@@ -108,6 +108,23 @@ class AgentRun(Base):
     output_tokens: Mapped[int]
     latency_ms: Mapped[int]
     outcome: Mapped[str] = mapped_column(String(16))   # saved / max_steps / error
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+
+class Account(Base):
+    """A person who signed in to the web app (Firebase Authentication, decision #53).
+
+    Separate from `users`, which is one row per synced CF handle: an account may not have
+    linked a handle yet, and a handle can be synced (by anyone) without an account.
+    Firebase keeps the password and the sign-in methods; we keep only what we need.
+    """
+    __tablename__ = "accounts"
+
+    uid: Mapped[str] = mapped_column(String(128), primary_key=True)  # Firebase's user id
+    email: Mapped[str] = mapped_column(String(320))
+    # The CF handle this account plans for. No foreign key to users: it is set before
+    # the first sync (PATCH /api/me, then POST .../sync), when no users row exists yet.
+    handle: Mapped[str | None] = mapped_column(String(64))
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
 
