@@ -79,11 +79,14 @@ def me_out(who: Identity, account: Account) -> MeOut:
                  sign_in_provider=who.provider, handle=account.handle)
 
 
-def current_account(session: DbSession, fb: Firebase, cookie: SessionCookie = None) -> SignedIn:
-    """The dependency behind CurrentAccount: a signed-in account, or a 401.
-    FastAPI gives it the same DbSession as the route (one session per request)."""
+def optional_account(session: DbSession, fb: Firebase,
+                     cookie: SessionCookie = None) -> SignedIn | None:
+    """The dependency behind OptionalAccount (guest_ok routes): None = a guest (no cookie).
+    A cookie that is there but bad is still a 401, so the browser knows to sign in again
+    instead of quietly showing the guest view. FastAPI gives it the same DbSession as the
+    route (one session per request)."""
     if not cookie:
-        raise ApiError(401, "sign_in_required", "sign in to do this")
+        return None
     try:
         who = fb.verify_session_cookie(cookie)
     except AuthFailed:
@@ -94,6 +97,14 @@ def current_account(session: DbSession, fb: Firebase, cookie: SessionCookie = No
     return SignedIn(who, account)
 
 
+def current_account(me: Annotated[SignedIn | None, Depends(optional_account)]) -> SignedIn:
+    """The dependency behind CurrentAccount (account routes): a signed-in account, or a 401."""
+    if me is None:
+        raise ApiError(401, "sign_in_required", "sign in to do this")
+    return me
+
+
+OptionalAccount = Annotated[SignedIn | None, Depends(optional_account)]
 CurrentAccount = Annotated[SignedIn, Depends(current_account)]
 
 

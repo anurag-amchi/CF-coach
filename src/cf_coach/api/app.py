@@ -19,7 +19,7 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from starlette.exceptions import HTTPException
 
-from cf_coach.api import auth, users
+from cf_coach.api import auth, plans, users
 from cf_coach.api.common import ApiError
 from cf_coach.api.contract import ErrorBody, ErrorCode, ErrorOut
 
@@ -28,6 +28,7 @@ log = logging.getLogger("cf_coach.api")
 app = FastAPI(title="CF Coach API", version="0.1.0")
 app.include_router(auth.router)
 app.include_router(users.router)
+app.include_router(plans.router)
 
 
 def error_response(status: int, code: ErrorCode, message: str,
